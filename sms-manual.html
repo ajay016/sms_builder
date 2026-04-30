@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMS Manual – PRODRIVE Compliance</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --purple: #8b5cf6;
+  --cyan: #06b6d4;
+  --dark: #0f172a;
+  --dark2: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --light-bg: #f8fafc;
+  --soft: #eef4ff;
+  --card-r: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--light-bg);
+  color: var(--dark2);
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar { background: var(--dark); color: rgba(255,255,255,0.8); font-size: 13px; padding: 8px 0; }
+.topbar a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color .2s; }
+.topbar a:hover { color: white; }
+
+/* ── NAVBAR ── */
+.navbar { background: white; box-shadow: 0 2px 20px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 300; }
+.brand-title { font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1; }
+.brand-subtitle { font-size: 11px; color: #94a3b8; }
+.nav-link { font-weight: 600; color: #374151 !important; font-size: 14px; border-radius: 8px; transition: all .2s; }
+.nav-link:hover { color: var(--primary) !important; background: var(--soft); }
+.nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--cyan)); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 800; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  background: linear-gradient(140deg, #06142e 0%, #0f3d91 60%, #0c2461 100%);
+  color: white;
+  padding: 28px 0 24px;
+  position: relative;
+  overflow: hidden;
+}
+.page-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7dd3fc; background: rgba(125,211,252,0.1); border: 1px solid rgba(125,211,252,0.2); padding: 4px 12px; border-radius: 40px; margin-bottom: 10px; }
+.page-header h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.page-header .sub { color: #94a3b8; font-size: 13px; }
+.header-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: all .2s; text-decoration: none; }
+.btn-white { background: white; color: var(--primary); }
+.btn-white:hover { background: #f0f9ff; color: var(--primary); }
+.btn-outline-white { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.35); }
+.btn-outline-white:hover { background: rgba(255,255,255,0.1); color: white; }
+.btn-blue-solid { background: var(--primary); color: white; }
+.btn-blue-solid:hover { background: var(--primary-dark); }
+
+/* ── STAT STRIP ── */
+.stat-strip { background: white; border-bottom: 1px solid var(--border); }
+.stat-item { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-right: 1px solid var(--border); flex: 1; }
+.stat-item:last-child { border-right: none; }
+.stat-icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.stat-num { font-size: 22px; font-weight: 800; line-height: 1; }
+.stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+/* ── COMPLIANCE TAGS ── */
+.coverage-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ctag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 40px; font-size: 12px; font-weight: 600; }
+.ctag-blue { background: #dbeafe; color: #1d4ed8; }
+.ctag-green { background: #dcfce7; color: #166534; }
+.ctag-amber { background: #fef3c7; color: #92400e; }
+.ctag-purple { background: #ede9fe; color: #6d28d9; }
+.ctag-cyan { background: #cffafe; color: #0e7490; }
+
+/* ── CARDS ── */
+.card-box { background: white; border-radius: var(--card-r); border: 1px solid var(--border); overflow: hidden; }
+.card-box:hover { box-shadow: 0 4px 20px rgba(37,99,235,0.07); }
+.card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-head-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.card-head-title i { color: var(--primary); }
+.card-body-p { padding: 16px 18px; }
+
+/* ── ADMIN OVERVIEW ── */
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.admin-item { display: flex; align-items: flex-start; gap: 10px; }
+.admin-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.admin-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.admin-val { font-size: 13px; font-weight: 600; color: var(--dark2); margin-top: 2px; }
+
+/* ── ACTIVITY FEED ── */
+.act-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f8fafc; }
+.act-item:last-child { border-bottom: none; }
+.act-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 5px; }
+.act-text { font-size: 13px; color: #374151; line-height: 1.5; flex: 1; }
+.act-text strong { color: var(--dark2); }
+.act-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── FILTER TABS ── */
+.filter-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.filter-tab { background: white; border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+.filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+.filter-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+.filter-tab .count { background: rgba(255,255,255,0.25); border-radius: 40px; padding: 1px 7px; font-size: 11px; font-weight: 700; }
+.filter-tab:not(.active) .count { background: #f1f5f9; color: var(--muted); }
+
+/* ── DOC GRID ── */
+.doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+
+.doc-card {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all .2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.doc-card:hover { border-color: #bfdbfe; box-shadow: 0 6px 24px rgba(37,99,235,0.1); transform: translateY(-2px); }
+.doc-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: transparent; transition: background .2s; }
+.doc-card:hover::before { background: linear-gradient(90deg, var(--primary), var(--cyan)); }
+
+.doc-type-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.doc-badge { position: absolute; top: 12px; right: 12px; background: #dcfce7; color: #166534; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 40px; display: flex; align-items: center; gap: 4px; }
+.doc-badge i { font-size: 9px; }
+.doc-title { font-size: 13px; font-weight: 700; color: var(--dark2); line-height: 1.4; }
+.doc-type-lbl { font-size: 11px; color: var(--muted); font-weight: 500; }
+.doc-actions { display: flex; gap: 6px; margin-top: auto; }
+.doc-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; transition: all .15s; text-decoration: none; }
+.doc-btn-view { background: var(--soft); color: var(--primary); }
+.doc-btn-view:hover { background: #dbeafe; }
+.doc-btn-dl { background: #f1f5f9; color: #475569; }
+.doc-btn-dl:hover { background: #e2e8f0; }
+
+/* ── TYPE COLOR MAP ── */
+.ic-policy { background: #eff6ff; color: var(--primary); }
+.ic-procedure { background: #f0fdf4; color: var(--success); }
+.ic-form { background: #fefce8; color: #b45309; }
+.ic-chapter { background: #fdf4ff; color: var(--purple); }
+.ic-register { background: #ecfeff; color: var(--cyan); }
+
+/* ── VIEWER MODAL ── */
+.viewer-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 500; backdrop-filter: blur(4px); }
+.viewer-overlay.open { display: flex; }
+.viewer-shell { display: flex; width: 100%; height: 100%; max-width: 1100px; margin: auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.25); }
+.viewer-sidebar { width: 240px; background: #f8fafc; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.viewer-sidebar-head { padding: 16px; border-bottom: 1px solid var(--border); }
+.viewer-sidebar-head h6 { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 0; }
+.viewer-sidebar-list { flex: 1; overflow-y: auto; padding: 8px; }
+.viewer-sidebar-list::-webkit-scrollbar { width: 4px; }
+.viewer-sidebar-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+.sidebar-doc-item { display: block; padding: 9px 10px; border-radius: 9px; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; transition: background .15s; text-decoration: none; line-height: 1.4; }
+.sidebar-doc-item:hover { background: #f1f5f9; color: var(--dark2); }
+.sidebar-doc-item.active { background: var(--primary); color: white; font-weight: 600; }
+.viewer-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.viewer-topbar { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+.viewer-topbar-left { display: flex; align-items: center; gap: 10px; }
+.viewer-doc-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--soft); color: var(--primary); flex-shrink: 0; }
+.viewer-doc-title { font-size: 15px; font-weight: 700; }
+.viewer-doc-meta { font-size: 12px; color: var(--muted); }
+.viewer-actions { display: flex; gap: 8px; }
+.vbtn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 9px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: all .15s; }
+.vbtn-outline { background: white; border: 1.5px solid var(--border); color: #374151; }
+.vbtn-outline:hover { border-color: var(--primary); color: var(--primary); }
+.vbtn-primary { background: var(--primary); color: white; }
+.vbtn-primary:hover { background: var(--primary-dark); }
+.vbtn-close { background: #f1f5f9; color: #374151; border: none; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: background .15s; padding: 0; }
+.vbtn-close:hover { background: #fee2e2; color: var(--danger); }
+.viewer-content { flex: 1; overflow-y: auto; padding: 40px 60px; background: white; }
+.viewer-content::-webkit-scrollbar { width: 6px; }
+.viewer-content::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+.doc-rendered h1 { font-size: 26px; font-weight: 800; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
+.doc-rendered h2 { font-size: 18px; font-weight: 700; margin: 28px 0 10px; color: var(--dark2); }
+.doc-rendered p { font-size: 14px; line-height: 1.8; color: #374151; margin-bottom: 14px; }
+.doc-rendered ul { padding-left: 20px; margin-bottom: 14px; }
+.doc-rendered ul li { font-size: 14px; line-height: 1.8; color: #374151; margin-bottom: 4px; }
+.doc-rendered strong { color: var(--dark2); font-weight: 700; }
+.doc-rendered .disclaimer { background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-bottom: 20px; }
+
+/* ── MOBILE VIEWER ── */
+@media (max-width: 767px) {
+  .viewer-sidebar { display: none; }
+  .viewer-content { padding: 24px 20px; }
+  .viewer-topbar { flex-wrap: wrap; gap: 8px; }
+  .viewer-actions { flex-wrap: wrap; }
+}
+
+/* ── SECTION LABEL ── */
+.section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── MISC UTILS ── */
+.badge-gen { background: #dcfce7; color: #166534; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 40px; display: inline-flex; align-items: center; gap: 3px; }
+
+/* ── SEARCH ── */
+.search-wrap { position: relative; }
+.search-wrap input { width: 100%; padding: 9px 14px 9px 38px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-family: inherit; background: white; outline: none; transition: border-color .2s; }
+.search-wrap input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+.search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px; pointer-events: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 991px) {
+  .doc-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+@media (max-width: 767px) {
+  .stat-item { padding: 12px 14px; }
+  .stat-num { font-size: 18px; }
+  .doc-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .doc-card { padding: 12px; }
+  .doc-title { font-size: 12px; }
+  .admin-grid { grid-template-columns: 1fr; }
+  .header-btn { padding: 7px 12px; font-size: 12px; }
+  .page-header h1 { font-size: 18px; }
+  .viewer-shell { border-radius: 0; height: 100%; max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .doc-grid { grid-template-columns: 1fr 1fr; }
+  .filter-bar { gap: 5px; }
+  .filter-tab { padding: 6px 10px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar py-2">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
+      <span><i class="bi bi-telephone-fill me-1"></i>+61 4XX XXX XXX</span>
+      <span class="d-none d-md-inline" style="color:#475569">|</span>
+      <span class="d-none d-md-inline"><i class="bi bi-envelope-fill me-1"></i>info@prodrivecompliance.com</span>
+    </div>
+    <div class="d-none d-sm-flex gap-3">
+      <a href="#"><i class="bi bi-facebook"></i></a>
+      <a href="#"><i class="bi bi-linkedin"></i></a>
+      <a href="#"><i class="bi bi-instagram"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container py-2">
+    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="sms_builder/templates/index.html">
+        <img src="images/logo.png" alt="ProDrive Logo" style="height:60px;">
+      <div><div class="brand-title">PRODRIVE</div><small class="brand-subtitle">SMS Builder</small></div>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link px-3" href="sms_builder/templates/index.html#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link px-3" href="sms_builder/templates/index.html#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link px-3" href="form.html">SMS Builder</a></li>
+        <li class="nav-item dropdown ms-lg-2">
+          <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 p-0 px-2" href="#" role="button" data-bs-toggle="dropdown">
+            <div class="nav-avatar">AF</div>
+            <span class="fw-semibold small d-none d-lg-inline">Apex Freight</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius:14px;min-width:210px">
+            <li><div class="px-3 py-2 border-bottom"><div class="fw-bold small">Apex Freight Pty Ltd</div><div class="text-muted" style="font-size:12px">admin@apexfreight.com.au</div></div></li>
+            <li><a class="dropdown-item py-2" href="sms_builder/templates/profile.html"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</a></li>
+            <li><a class="dropdown-item py-2" href="form.html"><i class="bi bi-file-earmark-text me-2 text-primary"></i>SMS Builder</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item py-2 text-danger" href="sms_builder/templates/signin.html"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container position-relative">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <div class="eyebrow"><i class="bi bi-file-earmark-text"></i>Safety Management System</div>
+        <h1>Your SMS Manual</h1>
+        <p class="sub">Generated for <strong style="color:white">Apex Freight Pty Ltd</strong> &nbsp;·&nbsp; ABN 51 234 567 890 &nbsp;·&nbsp; Sydney NSW</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="header-btn btn-outline-white" onclick="startNew()"><i class="bi bi-plus-lg"></i>Start New Manual</button>
+        <button class="header-btn btn-outline-white"><i class="bi bi-file-earmark-zip"></i><span class="d-none d-sm-inline">Open SMS Manual</span></button>
+        <button class="header-btn btn-outline-white"><i class="bi bi-download"></i><span class="d-none d-sm-inline">Download ZIP</span></button>
+        <button class="header-btn btn-blue-solid"><i class="bi bi-file-earmark-word"></i><span class="d-none d-sm-inline">Download Manual (DOCX)</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STAT STRIP -->
+<div class="stat-strip">
+  <div class="container">
+    <div class="d-flex overflow-auto" style="scrollbar-width:none">
+      <div class="stat-item">
+        <div class="stat-icon-box" style="background:#eff6ff;color:var(--primary)"><i class="bi bi-file-earmark-text"></i></div>
+        <div><div class="stat-num">11</div><div class="stat-lbl">Policies</div></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon-box" style="background:#f0fdf4;color:var(--success)"><i class="bi bi-list-check"></i></div>
+        <div><div class="stat-num">7</div><div class="stat-lbl">Procedures</div></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon-box" style="background:#fefce8;color:#b45309"><i class="bi bi-ui-checks"></i></div>
+        <div><div class="stat-num">7</div><div class="stat-lbl">Forms</div></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon-box" style="background:#ecfeff;color:var(--cyan)"><i class="bi bi-journal-bookmark"></i></div>
+        <div><div class="stat-num">4</div><div class="stat-lbl">Registers</div></div>
+      </div>
+      <div class="stat-item d-none d-sm-flex">
+        <div class="stat-icon-box" style="background:#fdf4ff;color:var(--purple)"><i class="bi bi-book"></i></div>
+        <div><div class="stat-num">24</div><div class="stat-lbl">Chapters</div></div>
+      </div>
+      <div class="stat-item d-none d-md-flex">
+        <div class="stat-icon-box" style="background:#f0fdf4;color:var(--success)"><i class="bi bi-check-circle"></i></div>
+        <div><div class="stat-num">53</div><div class="stat-lbl">Total Documents</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container py-4">
+
+  <!-- TOP PANEL: Compliance Coverage + Admin + Activity -->
+  <div class="row g-3 mb-4">
+
+    <!-- Compliance Coverage (full width) -->
+    <div class="col-12">
+      <div class="card-box">
+        <div class="card-head">
+          <div class="card-head-title"><i class="bi bi-shield-check"></i>Compliance Coverage</div>
+          <span style="font-size:12px;color:var(--muted)">Your manual covers the following regulatory requirements</span>
+        </div>
+        <div class="card-body-p">
+          <div class="coverage-row">
+            <span class="ctag ctag-blue"><i class="bi bi-check-circle-fill" style="font-size:10px"></i>HVNL Fatigue Management</span>
+            <span class="ctag ctag-green"><i class="bi bi-check-circle-fill" style="font-size:10px"></i>Chain of Responsibility</span>
+            <span class="ctag ctag-amber"><i class="bi bi-check-circle-fill" style="font-size:10px"></i>Speed Compliance</span>
+            <span class="ctag ctag-purple"><i class="bi bi-check-circle-fill" style="font-size:10px"></i>Vehicle Standards</span>
+            <span class="ctag ctag-cyan"><i class="bi bi-check-circle-fill" style="font-size:10px"></i>Load Restraint</span>
+            <span class="ctag ctag-blue"><i class="bi bi-check-circle-fill" style="font-size:10px"></i>Mass &amp; Dimension</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Overview -->
+    <div class="col-md-6">
+      <div class="card-box h-100">
+        <div class="card-head">
+          <div class="card-head-title"><i class="bi bi-person-gear"></i>Admin Overview</div>
+          <span style="font-size:11px;color:var(--muted)">Version control and onboarding status</span>
+        </div>
+        <div class="card-body-p">
+          <!-- Company info banner -->
+          <div style="background:var(--soft);border-radius:10px;padding:12px 14px;margin-bottom:16px;border:1px solid #bfdbfe;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:6px">Generated For</div>
+            <div style="font-size:15px;font-weight:800;color:var(--dark2)">Apex Freight Pty Ltd</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">ABN 51 234 567 890 &nbsp;·&nbsp; Sydney NSW 2164</div>
+            <div style="font-size:12px;color:var(--muted);">Contact: James Crawford &nbsp;·&nbsp; Fleet Manager</div>
+          </div>
+          <div class="admin-grid">
+            <div class="admin-item">
+              <div class="admin-icon"><i class="bi bi-calendar-check"></i></div>
+              <div>
+                <div class="admin-label">Last Generated</div>
+                <div class="admin-val">Mar 25, 2026 at 12:09 AM</div>
+              </div>
+            </div>
+            <div class="admin-item">
+              <div class="admin-icon"><i class="bi bi-layers"></i></div>
+              <div>
+                <div class="admin-label">Total Versions</div>
+                <div class="admin-val">3.3</div>
+              </div>
+            </div>
+            <div class="admin-item">
+              <div class="admin-icon"><i class="bi bi-file-earmark-check"></i></div>
+              <div>
+                <div class="admin-label">Current Documents</div>
+                <div class="admin-val">53</div>
+              </div>
+            </div>
+            <div class="admin-item">
+              <div class="admin-icon"><i class="bi bi-patch-check"></i></div>
+              <div>
+                <div class="admin-label">Onboarding</div>
+                <div class="admin-val" style="color:var(--success)">✓ Complete</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="col-md-6">
+      <div class="card-box h-100">
+        <div class="card-head">
+          <div class="card-head-title"><i class="bi bi-clock-history"></i>Activity Log</div>
+          <span style="font-size:11px;color:var(--muted)">Recent changes and actions for this profile</span>
+        </div>
+        <div class="card-body-p" style="padding-top:8px;padding-bottom:8px">
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--success)"></div>
+            <div>
+              <div class="act-text"><strong>Regenerated Manual</strong> <span style="background:#f1f5f9;color:var(--muted);font-size:11px;font-weight:600;padding:1px 7px;border-radius:40px">company_profile</span><br>Regenerated SMS manual with 53 documents.</div>
+              <div class="act-time"><i class="bi bi-clock me-1"></i>Mar 25, 2026 at 12:09 AM</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--primary)"></div>
+            <div>
+              <div class="act-text"><strong>Profile Updated</strong> — Fleet and operations information revised</div>
+              <div class="act-time"><i class="bi bi-clock me-1"></i>Mar 20, 2026 at 11:02 AM</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--warning)"></div>
+            <div>
+              <div class="act-text"><strong>New Version Published</strong> — SMS Manual v3.3 finalised and distributed</div>
+              <div class="act-time"><i class="bi bi-clock me-1"></i>Mar 15, 2026 at 2:30 PM</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--cyan)"></div>
+            <div>
+              <div class="act-text"><strong>Initial SMS Generated</strong> — 53 documents created for Apex Freight Pty Ltd</div>
+              <div class="act-time"><i class="bi bi-clock me-1"></i>Jan 8, 2024 at 9:00 AM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTS SECTION -->
+  <div class="card-box">
+    <div class="card-head">
+      <div class="card-head-title"><i class="bi bi-folder2-open"></i>All Documents <span style="background:#f1f5f9;color:var(--muted);font-size:11px;font-weight:700;padding:2px 8px;border-radius:40px;margin-left:4px">53</span></div>
+    </div>
+    <div class="card-body-p">
+      <!-- Filters + Search -->
+      <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+        <div class="filter-bar flex-wrap">
+          <button class="filter-tab active" onclick="filterDocs('all',this)">All <span class="count">53</span></button>
+          <button class="filter-tab" onclick="filterDocs('policy',this)">Policies <span class="count">11</span></button>
+          <button class="filter-tab" onclick="filterDocs('procedure',this)">Procedures <span class="count">7</span></button>
+          <button class="filter-tab" onclick="filterDocs('form',this)">Forms <span class="count">7</span></button>
+          <button class="filter-tab" onclick="filterDocs('register',this)">Registers <span class="count">4</span></button>
+          <button class="filter-tab" onclick="filterDocs('chapter',this)">Chapters <span class="count">24</span></button>
+        </div>
+        <div class="search-wrap ms-sm-auto" style="min-width:200px">
+          <i class="bi bi-search"></i>
+          <input type="text" id="docSearch" placeholder="Search documents…" oninput="searchDocs(this.value)">
+        </div>
+      </div>
+
+      <!-- Document Grid -->
+      <div class="doc-grid" id="docGrid"></div>
+      <div id="noResults" style="display:none;text-align:center;padding:40px;color:var(--muted)">
+        <i class="bi bi-search" style="font-size:32px;margin-bottom:12px;display:block"></i>
+        No documents match your search.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- DOCUMENT VIEWER MODAL -->
+<div class="viewer-overlay" id="viewerOverlay">
+  <div class="viewer-shell" style="max-height:90vh;margin:5vh auto;">
+    <div class="viewer-sidebar">
+      <div class="viewer-sidebar-head">
+        <h6>Documents</h6>
+      </div>
+      <div class="viewer-sidebar-list" id="viewerSidebarList"></div>
+    </div>
+    <div class="viewer-main">
+      <div class="viewer-topbar">
+        <div class="viewer-topbar-left">
+          <div class="viewer-doc-icon" id="viewerIcon"><i class="bi bi-file-earmark-text"></i></div>
+          <div>
+            <div class="viewer-doc-title" id="viewerTitle">Document Title</div>
+            <div class="viewer-doc-meta" id="viewerMeta">Type · Document X of 53</div>
+          </div>
+        </div>
+        <div class="viewer-actions">
+          <button class="vbtn vbtn-outline"><i class="bi bi-download"></i><span class="d-none d-sm-inline">DOCX</span></button>
+          <button class="vbtn vbtn-outline"><i class="bi bi-filetype-pdf"></i><span class="d-none d-sm-inline">PDF</span></button>
+          <button class="vbtn-close" onclick="closeViewer()"><i class="bi bi-x"></i></button>
+        </div>
+      </div>
+      <div class="viewer-content">
+        <div class="doc-rendered" id="viewerContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── DOCUMENT DATA ──
+const COMPANY = 'Apex Freight Pty Ltd';
+
+const DOCS = [
+  // FORMS (7)
+  { id:1,  title:'Incident Report Form',                     type:'form',      icon:'bi-ui-checks' },
+  { id:2,  title:'Daily Fitness for Duty Declaration',       type:'form',      icon:'bi-ui-checks' },
+  { id:3,  title:'Speed Incident Report Form',               type:'form',      icon:'bi-ui-checks' },
+  { id:4,  title:'Pre-Trip Load Check Checklist',            type:'form',      icon:'bi-ui-checks' },
+  { id:5,  title:'Vehicle Defect Report Form',               type:'form',      icon:'bi-ui-checks' },
+  { id:6,  title:'Pre-Trip Inspection Checklist',            type:'form',      icon:'bi-ui-checks' },
+  { id:7,  title:'Restraint Equipment Inspection Checklist', type:'form',      icon:'bi-ui-checks' },
+
+  // POLICIES (11)
+  { id:8,  title:'Driver Training and Competency Procedure', type:'procedure', icon:'bi-list-check' },
+  { id:9,  title:'Safety Management Policy',                  type:'policy',    icon:'bi-file-earmark-text' },
+  { id:10, title:'Fatigue Management Policy',                 type:'policy',    icon:'bi-file-earmark-text' },
+  { id:11, title:'Monitoring Devices and Safety Systems Policy', type:'policy', icon:'bi-file-earmark-text' },
+  { id:12, title:'Speed Compliance Policy',                   type:'policy',    icon:'bi-file-earmark-text' },
+  { id:13, title:'Mass and Dimension Compliance Policy',      type:'policy',    icon:'bi-file-earmark-text' },
+  { id:14, title:'Maintenance Management Policy',             type:'policy',    icon:'bi-file-earmark-text' },
+  { id:15, title:'Subcontractor Management Policy',           type:'policy',    icon:'bi-file-earmark-text' },
+  { id:16, title:'Load Restraint Policy',                     type:'policy',    icon:'bi-file-earmark-text' },
+  { id:17, title:'Animal Welfare and Livestock Transport Policy', type:'policy',icon:'bi-file-earmark-text' },
+  { id:18, title:'Dangerous Goods Transport Policy',          type:'policy',    icon:'bi-file-earmark-text' },
+  { id:19, title:'Driver Health and Fitness to Drive Policy', type:'policy',    icon:'bi-file-earmark-text' },
+
+  // PROCEDURES (7)
+  { id:20, title:'17. Incident Management and Reporting',     type:'chapter',   icon:'bi-book' },
+  { id:21, title:'11. Mass, Dimension and Loading Compliance',type:'chapter',   icon:'bi-book' },
+  { id:22, title:'12. Vehicle Maintenance and Roadworthiness',type:'chapter',   icon:'bi-book' },
+  { id:23, title:'13. Premises and Site-Safety Management',   type:'chapter',   icon:'bi-book' },
+  { id:24, title:'14. Container and Specialised Freight Operations',type:'chapter',icon:'bi-book'},
+  { id:25, title:'Incident Reporting and Investigation Procedure',type:'procedure',icon:'bi-list-check'},
+  { id:26, title:'15. Procurement, Tendering and Contract-Risk Management',type:'chapter',icon:'bi-book'},
+  { id:27, title:'Fatigue Trip Planning Procedure',           type:'procedure', icon:'bi-list-check' },
+  { id:28, title:'Speed Monitoring and Review Procedure',     type:'procedure', icon:'bi-list-check' },
+  { id:29, title:'Scheduled Maintenance Procedure',           type:'procedure', icon:'bi-list-check' },
+  { id:30, title:'Weighbridge Operations Procedure',          type:'procedure', icon:'bi-list-check' },
+  { id:31, title:'Load Restraint Inspection Procedure',       type:'procedure', icon:'bi-list-check' },
+
+  // REGISTERS (4)
+  { id:32, title:'Work/Rest Hours Register',                  type:'register',  icon:'bi-journal-bookmark' },
+  { id:33, title:'Speed Compliance Register',                 type:'register',  icon:'bi-journal-bookmark' },
+  { id:34, title:'Mass Compliance Register',                  type:'register',  icon:'bi-journal-bookmark' },
+  { id:35, title:'Vehicle Maintenance History Register',      type:'register',  icon:'bi-journal-bookmark' },
+
+  // CHAPTERS (24)
+  { id:36, title:'1. Introduction',                           type:'chapter',   icon:'bi-book' },
+  { id:37, title:'2. Scope of the Safety Management System',  type:'chapter',   icon:'bi-book' },
+  { id:38, title:'3. Governance Framework and Legal Duties',  type:'chapter',   icon:'bi-book' },
+  { id:39, title:'4. Policy Framework',                       type:'chapter',   icon:'bi-book' },
+  { id:40, title:'5. Transport-Activity-Based Risk Governance (2026 Model)', type:'chapter', icon:'bi-book' },
+  { id:41, title:'6. Roles, Responsibilities and Accountability', type:'chapter', icon:'bi-book' },
+  { id:42, title:'7. Fatigue Risk Management System',         type:'chapter',   icon:'bi-book' },
+  { id:43, title:'8. Scheduler Decision-Making Framework',    type:'chapter',   icon:'bi-book' },
+  { id:44, title:'9. Delay, Queuing and Escalation Management',type:'chapter',  icon:'bi-book' },
+  { id:45, title:'10. Speed Management',                      type:'chapter',   icon:'bi-book' },
+  { id:46, title:'18. Breach Management and Disciplinary Framework', type:'chapter', icon:'bi-book' },
+  { id:47, title:'19. Internal Audit Program',                type:'chapter',   icon:'bi-book' },
+  { id:48, title:'20. Corrective and Preventive Action System',type:'chapter',  icon:'bi-book' },
+  { id:49, title:'21. Training and Competency Management',    type:'chapter',   icon:'bi-book' },
+  { id:50, title:'22. Record Keeping and Document Control',   type:'chapter',   icon:'bi-book' },
+  { id:51, title:'23. Performance Measurement and KPIs',      type:'chapter',   icon:'bi-book' },
+  { id:52, title:'24. Continuous Improvement',                type:'chapter',   icon:'bi-book' },
+  { id:53, title:'16. Executive Reporting and Assurance',     type:'chapter',   icon:'bi-book' },
+];
+
+const TYPE_COLOR = {
+  policy:    { bg:'#eff6ff', color:'#1d4ed8', label:'Policy' },
+  procedure: { bg:'#f0fdf4', color:'#166534', label:'Procedure' },
+  form:      { bg:'#fefce8', color:'#b45309', label:'Form' },
+  register:  { bg:'#ecfeff', color:'#0e7490', label:'Register' },
+  chapter:   { bg:'#fdf4ff', color:'#6d28d9', label:'Chapter' },
+};
+
+// ── RENDER DOCS ──
+let currentFilter = 'all';
+let currentSearch = '';
+
+function renderDocs() {
+  const grid = document.getElementById('docGrid');
+  const noRes = document.getElementById('noResults');
+  let filtered = DOCS.filter(d => {
+    const matchType = currentFilter === 'all' || d.type === currentFilter;
+    const matchSearch = !currentSearch || d.title.toLowerCase().includes(currentSearch.toLowerCase());
+    return matchType && matchSearch;
+  });
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    noRes.style.display = 'block';
+    return;
+  }
+  noRes.style.display = 'none';
+  const tc = TYPE_COLOR;
+  grid.innerHTML = filtered.map(d => `
+    <div class="doc-card" onclick="openViewer(${d.id})" data-type="${d.type}" data-id="${d.id}">
+      <div class="doc-badge"><i class="bi bi-check-circle-fill"></i>Generated</div>
+      <div class="doc-type-icon" style="background:${tc[d.type].bg};color:${tc[d.type].color}">
+        <i class="bi ${d.icon}"></i>
+      </div>
+      <div>
+        <div class="doc-title">${d.title}</div>
+        <div class="doc-type-lbl" style="color:${tc[d.type].color}">${tc[d.type].label}</div>
+      </div>
+      <div class="doc-actions">
+        <button class="doc-btn doc-btn-view" onclick="event.stopPropagation();openViewer(${d.id})"><i class="bi bi-eye"></i>View Document</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterDocs(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs();
+}
+
+function searchDocs(val) {
+  currentSearch = val;
+  renderDocs();
+}
+
+// ── VIEWER ──
+const DOC_CONTENT = {
+  9: `<h1>${COMPANY} Safety Management Policy</h1>
+<h2>Purpose</h2>
+<p>This policy establishes ${COMPANY}'s commitment to the safety of all workers, contractors, and the public affected by our heavy vehicle operations.</p>
+<div class="disclaimer"><strong>Disclaimer:</strong> This document provides a general compliance framework and does not constitute legal advice. Operators should seek specific legal guidance for their circumstances.</div>
+<h2>Scope</h2>
+<p>This policy applies to all personnel employed by or engaged by ${COMPANY}, including:</p>
+<ul><li>Drivers and operators</li><li>Supervisors and managers</li><li>Contractors and subcontractors</li><li>Visitors to our premises</li></ul>
+<h2>Policy Statement</h2>
+<p>${COMPANY} is committed to:</p>
+<ul>
+<li><strong>Safety Leadership:</strong> Management will demonstrate visible commitment to safety through active participation in safety activities and adequate resource allocation.</li>
+<li><strong>Legal Compliance:</strong> We will meet or exceed all requirements of the Heavy Vehicle National Law (HVNL) and relevant Work Health and Safety legislation.</li>
+<li><strong>Chain of Responsibility:</strong> We acknowledge and accept our Chain of Responsibility obligations and will ensure all parties in our supply chain understand their duties.</li>
+<li><strong>Risk Management:</strong> We will identify, assess, and control risks to as low as reasonably practicable (ALARP).</li>
+<li><strong>Continuous Improvement:</strong> We will continually improve our safety performance through monitoring, review, and action.</li>
+</ul>
+<h2>Responsibilities</h2>
+<p>All employees, contractors, and subcontractors are responsible for following this policy and reporting any unsafe conditions or behaviours immediately to their supervisor or the Fleet Manager.</p>
+<h2>Review</h2>
+<p>This policy will be reviewed annually or following any significant incident, regulatory change, or operational change that may affect its relevance or effectiveness.</p>`,
+
+  10: `<h1>${COMPANY} Fatigue Management Policy</h1>
+<h2>Purpose</h2>
+<p>This policy establishes ${COMPANY}'s approach to managing driver fatigue in compliance with the Heavy Vehicle National Law (HVNL) and the National Heavy Vehicle Fatigue Management Standard.</p>
+<h2>Policy Statement</h2>
+<p>${COMPANY} recognises that driver fatigue is a significant safety risk and is committed to managing fatigue through robust systems, training, and monitoring.</p>
+<h2>Key Requirements</h2>
+<ul><li>All drivers must comply with standard hours unless operating under an Advanced or Basic Fatigue Management (BFM/AFM) accreditation.</li><li>Work and rest records must be maintained accurately and made available for inspection.</li><li>Schedulers must not set tasks or schedules that require drivers to exceed lawful hours.</li><li>Drivers must declare fitness for duty prior to each shift.</li></ul>
+<h2>Review</h2><p>Reviewed annually by the Fleet Manager in consultation with drivers and operational staff.</p>`,
+
+  default: `<h1>${COMPANY}</h1>
+<h2>Document Overview</h2>
+<p>This document has been generated as part of the ${COMPANY} Safety Management System (SMS) Manual. It forms part of a comprehensive compliance framework aligned with the Heavy Vehicle National Law (HVNL).</p>
+<div class="disclaimer"><strong>Note:</strong> This document was automatically generated based on your company profile. Review and customise all sections to reflect your actual operational procedures.</div>
+<h2>Purpose</h2>
+<p>This document establishes the requirements, responsibilities, and procedures relevant to this area of ${COMPANY}'s safety management system.</p>
+<h2>Scope</h2>
+<p>Applies to all personnel, contractors, and subcontractors engaged by ${COMPANY} in relevant operational activities.</p>
+<h2>Responsibilities</h2>
+<ul><li>Fleet Manager: Ensure policy is communicated and implemented.</li><li>Drivers: Comply with all requirements outlined in this document.</li><li>Supervisors: Monitor compliance and report non-conformances.</li></ul>
+<h2>Review Schedule</h2>
+<p>This document will be reviewed annually or when significant operational or regulatory changes occur.</p>`
+};
+
+function openViewer(id) {
+  const doc = DOCS.find(d => d.id === id);
+  if (!doc) return;
+  const tc = TYPE_COLOR[doc.type];
+  document.getElementById('viewerTitle').textContent = doc.title;
+  document.getElementById('viewerMeta').textContent = tc.label + ' · Document ' + id + ' of ' + DOCS.length;
+  const icon = document.getElementById('viewerIcon');
+  icon.innerHTML = `<i class="bi ${doc.icon}"></i>`;
+  icon.style.background = tc.bg;
+  icon.style.color = tc.color;
+
+  const content = DOC_CONTENT[id] || DOC_CONTENT['default'];
+  // Replace generic title with actual doc title if using default
+  const rendered = id !== 9 && id !== 10
+    ? content.replace(`<h1>${COMPANY}</h1>`, `<h1>${COMPANY} — ${doc.title}</h1>`)
+    : content;
+  document.getElementById('viewerContent').innerHTML = rendered;
+
+  // Sidebar
+  const sidebar = document.getElementById('viewerSidebarList');
+  sidebar.innerHTML = DOCS.map(d => `
+    <span class="sidebar-doc-item ${d.id === id ? 'active' : ''}" onclick="openViewer(${d.id})">${d.title}</span>
+  `).join('');
+
+  document.getElementById('viewerOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeViewer() {
+  document.getElementById('viewerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function startNew() {
+  if (confirm('Start a new SMS Manual? Your current manual will be saved.')) {
+    window.location.href = 'form.html';
+  }
+}
+
+// Close viewer on overlay click
+document.getElementById('viewerOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeViewer();
+});
+
+// ESC key closes viewer
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeViewer(); });
+
+// Init
+renderDocs();
+</script>
+</body>
+</html>

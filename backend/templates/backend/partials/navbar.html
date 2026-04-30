@@ -1,0 +1,65 @@
+{% load static %}
+
+<div class="topbar">
+    <div class="tb-left">
+        <button class="tb-hamburger" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <div>
+            <div class="tb-title" id="tb-title">Dashboard</div>
+            <div class="tb-crumb" id="tb-crumb">
+                admin / overview
+            </div>
+        </div>
+    </div>
+
+    <div class="tb-right">
+
+        <div class="tb-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search anything…" />
+        </div>
+
+        <div class="tb-time" id="clock">--:--</div>
+
+        <div class="tb-btn tb-notif" title="Notifications">
+            <i class="bi bi-bell"></i>
+        </div>
+
+        <div class="tb-btn"
+             onclick="showToast('Data refreshed')"
+             title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+        </div>
+
+        <!-- 🔥 LOGOUT BUTTON -->
+        <a href="{% url 'admin_logout' %}" class="tb-btn"
+           style="
+                background: #ff4d4f;
+                color: white;
+                font-weight: 600;
+                text-decoration: none;
+           "
+           title="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+        </a>
+
+        <div
+            class="tb-btn"
+            style="
+                background: linear-gradient(135deg, var(--blue), var(--cyan));
+                border-color: transparent;
+                color: white;
+                font-weight: 700;
+                font-size: 12px;
+                font-family: 'DM Mono', monospace;
+                width: auto;
+                padding: 0 12px;
+            "
+        >
+            SA
+        </div>
+
+    </div>
+</div>

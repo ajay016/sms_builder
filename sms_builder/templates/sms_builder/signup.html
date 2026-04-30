@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Your Company – PRODRIVE Compliance</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --dark: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --soft: #eff6ff;
+  --success: #10b981;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f1f5f9;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--dark);
+  color: rgba(255,255,255,0.8);
+  font-size: 13px;
+  padding: 9px 0;
+  flex-shrink: 0;
+}
+.topbar a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color .2s; }
+.topbar a:hover { color: white; }
+
+/* ── NAVBAR ── */
+.navbar {
+  background: white;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+.brand-title { font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1; }
+.brand-subtitle { font-size: 11px; color: #94a3b8; margin: 0; }
+
+/* ── MAIN ── */
+.auth-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 36px 16px 48px;
+  background: linear-gradient(140deg, #f0f7ff 0%, #f1f5f9 100%);
+}
+
+/* ── CARD ── */
+.auth-card {
+  width: 100%;
+  max-width: 540px;
+  background: white;
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.1);
+  border: 1px solid var(--border);
+}
+
+/* ── BRAND ── */
+.auth-brand-title { font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1; }
+.auth-brand-sub { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.section-label:first-of-type { margin-top: 8px; }
+
+/* ── FORM FIELDS ── */
+.form-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 5px; display: block; }
+.form-control {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); background: white; }
+.form-control.error { border-color: #ef4444; }
+.field-error { font-size: 12px; color: #ef4444; margin-top: 4px; display: none; }
+.field-error.show { display: block; }
+
+/* ── PASSWORD STRENGTH ── */
+.strength-bar { height: 4px; border-radius: 99px; background: var(--border); margin-top: 8px; overflow: hidden; }
+.strength-fill { height: 100%; border-radius: 99px; transition: width .3s, background .3s; width: 0%; }
+.strength-text { font-size: 11px; margin-top: 4px; }
+
+/* ── BUTTON ── */
+.btn-auth {
+  width: 100%;
+  padding: 13px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, transform .15s;
+  margin-top: 8px;
+}
+.btn-auth:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-auth:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .2s;
+}
+.btn-back:hover { color: var(--primary); }
+
+/* ── SUCCESS ── */
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 20px 0;
+  animation: fadeUp .4s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.success-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--success), #4ade80);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 30px; color: white;
+}
+
+/* ── FOOTER ── */
+.auth-footer {
+  background: var(--dark);
+  color: #64748b;
+  font-size: 12px;
+  padding: 16px 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 576px) {
+  .auth-card { padding: 28px 18px; border-radius: 16px; }
+  .auth-brand-title { font-size: 24px; }
+  .btn-auth { font-size: 14px; }
+  .auth-wrapper { padding: 24px 12px 40px; }
+  .row.g-3 > [class*="col-sm"] { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar py-2" style="background: #0f172a; color: white; font-size: 13px;">
+    <div class="container d-flex justify-content-between">
+        <div>
+            <span>
+                <i class="bi bi-telephone-fill me-2"></i>
+                <a href="tel:+61437064814" class="text-white text-decoration-none">
+                    
+0437064814
+                </a>
+            </span>
+
+            <span class="mx-2">|</span>
+
+            <span>
+                <i class="bi bi-envelope-fill me-2"></i>
+                <a href="mailto:info@prodrivecompliance.com" class="text-white text-decoration-none">
+                    info@prodrivecompliance.com
+                </a>
+            </span>
+        </div>
+<div>
+    <a href="https://www.facebook.com/prodrivecompliancegroup/" target="_blank" rel="noopener noreferrer" class="text-white me-2">
+        <i class="bi bi-facebook"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/bruce-gunter-3678a786/" target="_blank" rel="noopener noreferrer" class="text-white me-2">
+        <i class="bi bi-linkedin"></i>
+    </a>
+    <a href="https://www.instagram.com/prodrivecompliancegroup/?hl=en" target="_blank" rel="noopener noreferrer" class="text-white">
+        <i class="bi bi-instagram"></i>
+    </a>
+</div>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container py-2 d-flex align-items-center justify-content: space-between">
+    <a href="{% url 'index' %}" class="text-decoration-none me-auto">
+      <div class="brand-title">PRODRIVE</div>
+      <div class="brand-subtitle">SMS Builder</div>
+    </a>
+    <a href="{% url 'signin' %}" class="btn-back"><i class="bi bi-arrow-left"></i>Sign In</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <div class="text-center mb-4">
+      <div class="auth-brand-title">PRODRIVE</div>
+      <div class="auth-brand-sub">SMS Builder</div>
+    </div>
+
+    <h5 class="fw-bold mb-1" style="font-size:18px">Create your company account</h5>
+    <p style="font-size:14px;color:#64748b;margin-bottom:4px">Get started with PRODRIVE Compliance in minutes.</p>
+
+    <!-- Success screen -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon"><i class="bi bi-check-lg"></i></div>
+      <h5 class="fw-bold mb-2">Account Created!</h5>
+      <p style="color:#64748b;font-size:14px;margin-bottom:24px">Welcome to PRODRIVE. Your company account is ready.</p>
+      <a href="{% url 'signin' %}" style="display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">
+        <i class="bi bi-box-arrow-in-right"></i>Sign In Now
+      </a>
+    </div>
+
+    <!-- Registration form -->
+    <form method="POST" action="{% url 'signup' %}" onsubmit="return handleRegister()">
+       {% csrf_token %}
+
+        {% if messages %}
+        <div class="alert-messages">
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+      <div class="section-label">Company Info</div>
+      <div class="row g-3">
+        <div class="col-sm-8">
+          <label class="form-label" for="companyName">Company Name *</label>
+          <input type="text" class="form-control" name="company_name" id="companyName" placeholder="e.g. Apex Freight Pty Ltd" autocomplete="organization" value="{{ request.POST.company_name|default:'' }}">
+          <div class="field-error" id="companyErr">Company name is required.</div>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label" for="abnField">ABN *</label>
+          <input type="text" class="form-control" name="abn" id="abnField" placeholder="12345678901" maxlength="11" value="{{ request.POST.abn|default:'' }}" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <div class="field-error" id="abnErr">ABN must be 11 digits.</div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <label class="form-label" for="addressField">Address</label>
+        <input type="text" class="form-control" name="address" id="addressField" placeholder="123 Main Street, Sydney NSW 2000" autocomplete="street-address" value="{{ request.POST.address|default:'' }}">
+      </div>
+
+      <div class="section-label">Contact Person</div>
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label class="form-label" for="fullName">Full Name *</label>
+          <input type="text" class="form-control" name="full_name" id="fullName" placeholder="Full name" autocomplete="name" value="{{ request.POST.full_name|default:'' }}">
+          <div class="field-error" id="nameErr">Full name is required.</div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="roleField">Role / Position</label>
+          <input type="text" class="form-control" name="role" id="roleField" placeholder="e.g. Fleet Manager" value="{{ request.POST.role|default:'' }}">
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="emailField">Email Address *</label>
+          <input type="email" class="form-control" name="email" id="emailField" placeholder="name@company.com.au" autocomplete="email" value="{{ request.POST.email|default:'' }}">
+          <div class="field-error" id="emailErr">Please enter a valid email.</div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="phoneField">Phone</label>
+          <input type="tel" class="form-control" name="phone" id="phoneField" placeholder="+61 4XX XXX XXX" autocomplete="tel" value="{{ request.POST.phone|default:'' }}">
+        </div>
+      </div>
+
+      <div class="section-label">Security</div>
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label class="form-label" for="passField">Create Password *</label>
+          <input type="password" class="form-control" name="password" id="passField" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <div class="strength-text" id="strengthText"></div>
+          <div class="field-error" id="passErr">Password must be at least 8 characters.</div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="passConfirm">Confirm Password *</label>
+          <input type="password" class="form-control" name="confirm_password" id="passConfirm" placeholder="Repeat password" autocomplete="new-password">
+          <div class="field-error" id="confirmErr">Passwords do not match.</div>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-start gap-2 mt-3">
+        <input type="checkbox" id="termsCheck" name="termsCheck" style="accent-color:var(--primary);width:15px;height:15px;flex-shrink:0;margin-top:2px" {% if request.POST.termsCheck %}checked{% endif %}>
+        <label for="termsCheck" style="font-size:13px;color:#64748b;cursor:pointer;line-height:1.5">
+          I agree to the <a href="#" style="color:var(--primary);text-decoration:none;font-weight:600">Terms of Service</a> and <a href="#" style="color:var(--primary);text-decoration:none;font-weight:600">Privacy Policy</a>.
+        </label>
+      </div>
+      <div class="field-error" id="termsErr">You must agree to continue.</div>
+
+      <button id="registerBtn" class="btn-auth" type="submit">
+        <span id="btnRegText">Create Company Account</span>
+        <span id="btnRegLoad" style="display:none"><span class="spinner-border spinner-border-sm me-2"></span>Creating account…</span>
+      </button>
+
+      <div class="text-center mt-3" style="font-size:13px;color:#64748b">
+        Already registered? <a href="{% url 'signin' %}" style="color:var(--primary);font-weight:600;text-decoration:none">
+          Sign in
+        </a>
+      </div>
+    </form>
+    </div><!-- /registerForm -->
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="auth-footer">
+  © 2026 PRODRIVE Compliance. All rights reserved.
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function checkStrength(val) {
+  const fill = document.getElementById('strengthFill');
+  const text = document.getElementById('strengthText');
+  if (!val) { fill.style.width='0%'; text.textContent=''; return; }
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (val.length >= 12) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [
+    { w:'20%', bg:'#ef4444', label:'Weak' },
+    { w:'40%', bg:'#f97316', label:'Fair' },
+    { w:'60%', bg:'#eab308', label:'Good' },
+    { w:'80%', bg:'#22c55e', label:'Strong' },
+    { w:'100%', bg:'#10b981', label:'Very strong' },
+  ];
+  const lvl = levels[Math.min(score, 4)];
+  fill.style.width = lvl.w;
+  fill.style.background = lvl.bg;
+  text.textContent = lvl.label;
+  text.style.color = lvl.bg;
+}
+
+function handleRegister() {
+  let valid = true;
+
+  function chk(id, errId, testFn) {
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    const bad = !testFn(el.value.trim());
+
+    el.classList.toggle('error', bad);
+    err.classList.toggle('show', bad);
+
+    if (bad) valid = false;
+  }
+
+  chk('companyName', 'companyErr', v => v.length > 0);
+  
+  // ABN validation - must be 11 digits
+  const abnField = document.getElementById('abnField');
+  const abnErr = document.getElementById('abnErr');
+  const abnValue = abnField.value.trim().replace(/[^0-9]/g, '');
+  const isAbnValid = abnValue.length === 11;
+  if (!isAbnValid) {
+    abnField.classList.add('error');
+    abnErr.classList.add('show');
+    valid = false;
+  } else {
+    abnField.classList.remove('error');
+    abnErr.classList.remove('show');
+  }
+  
+  chk('fullName', 'nameErr', v => v.length > 1);
+  chk('emailField', 'emailErr', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+  chk('passField', 'passErr', v => v.length >= 8);
+
+  const pass = document.getElementById('passField').value;
+  const conf = document.getElementById('passConfirm').value;
+
+  const mismatch = pass !== conf || conf.length === 0;
+  document.getElementById('passConfirm').classList.toggle('error', mismatch);
+  document.getElementById('confirmErr').classList.toggle('show', mismatch);
+
+  if (mismatch) valid = false;
+
+  // Terms and conditions validation
+  const terms = document.getElementById('termsCheck').checked;
+  if (!terms) {
+    document.getElementById('termsErr').classList.add('show');
+    valid = false;
+  } else {
+    document.getElementById('termsErr').classList.remove('show');
+  }
+
+  // Show loading spinner if valid
+  if (valid) {
+    const btn = document.getElementById('registerBtn');
+    const btnText = document.getElementById('btnRegText');
+    const btnLoad = document.getElementById('btnRegLoad');
+    btn.disabled = true;
+    btnText.style.display = 'none';
+    btnLoad.style.display = 'inline-block';
+  }
+
+  return valid;
+}
+
+// Clear ABN error on input
+document.getElementById('abnField').addEventListener('input', function() {
+  this.value = this.value.replace(/[^0-9]/g, '');
+  if (this.value.length === 11) {
+    this.classList.remove('error');
+    document.getElementById('abnErr').classList.remove('show');
+  }
+});
+</script>
+</body>
+</html>

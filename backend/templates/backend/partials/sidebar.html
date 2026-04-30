@@ -1,0 +1,85 @@
+{% load static %}
+
+<aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+        <div class="sb-logo">
+            <div class="sb-logo-icon">
+                <i class="bi bi-truck-front-fill" style="color: white"></i>
+            </div>
+            <div class="sb-logo-text">
+                <strong>PRODRIVE</strong><span>SMS Builder</span>
+            </div>
+        </div>
+        <div class="sb-tag">Admin Portal</div>
+    </div>
+    <nav class="sb-nav">
+        <div class="sb-section">Overview</div>
+        <a href="{% url 'dashboard' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-grid-1x2-fill"></i>Dashboard
+        </a>
+        <a href="{% url 'analytics' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-bar-chart-line-fill"></i>Analytics
+        </a>
+        
+        <div class="sb-section">Manage</div>
+        <a href="{% url 'companies' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-buildings-fill"></i>Companies
+            <span class="sb-badge g">42</span>
+        </a>
+        <a href="{% url 'drivers' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-person-badge-fill"></i>Drivers
+        </a>
+        <a href="{% url 'vehicles' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-truck-flatbed"></i>Vehicles
+        </a>
+        <a href="{% url 'admin_services' %}" class="sb-link" style="text-decoration: none;">
+    <i class="bi bi-grid-3x3-gap-fill"></i>Services
+</a>
+       <a href="{% url 'admin_why_us' %}" class="sb-link">
+    <i class="bi bi-grid-3x3-gap-fill"></i> Why Us
+</a>
+<a href="{% url 'admin_pricing' %}" class="sb-link" style="text-decoration: none;">
+    <i class="bi bi-currency-dollar"></i>Pricing Plans
+</a>
+        <div class="sb-section">Compliance</div>
+       <a href="{% url 'incidents' %}" class="sb-link" style="text-decoration: none;">
+    <i class="bi bi-exclamation-triangle-fill"></i> Incidents
+    <span class="sb-badge" style="background: #ef4444;">{{ open_incidents }}</span>
+</a>
+        <a href="{% url 'company_documents_admin' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-folder-fill"></i>Documents
+        </a>
+       
+         <a href="{% url 'admin_contact_messages' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-ui-checks-grid"></i>Messages
+        </a>
+        <div class="sb-section">System</div>
+        <a href="{% url 'admin_reviews' %}" class="sb-link" style="text-decoration: none;">
+    <i class="bi bi-star-fill"></i> Reviews
+    <span class="sb-badge" style="background: #f59e0b;">{{ pending_reviews }}</span>
+</a>
+       
+        <a href="{% url 'subscription_history' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-clock-history"></i> Subscription History
+        </a>
+        <a href="{% url 'payment_history' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-clock-history"></i> Payment History
+        </a>
+ <a href="{% url 'admin_settings' %}" class="sb-link" style="text-decoration: none;">
+            <i class="bi bi-gear-fill"></i>Settings
+        </a>
+        <a href="{% url 'admin_logout' %}" class="sb-link" style="color: var(--red); text-decoration: none;">
+            <i class="bi bi-box-arrow-left"></i>Sign Out
+        </a>
+    </nav>
+    <div class="sb-footer">
+        <div class="sb-user">
+            <div class="sb-avatar">SA</div>
+            <div class="sb-user-info">
+                <strong>Super Admin</strong>
+                <span>admin@prodrive.com</span>
+            </div>
+            <div class="sb-dot"></div>
+        </div>
+    </div>
+</aside>

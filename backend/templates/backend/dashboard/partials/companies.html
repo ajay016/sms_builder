@@ -1,0 +1,671 @@
+<div class="view" id="view-companies">
+    <div class="card">
+        <div class="card-head">
+            <div class="card-title">
+                <i class="bi bi-buildings-fill"></i>All
+                Companies
+            </div>
+            <button
+                class="btn btn-primary"
+                onclick="
+                    document
+                        .getElementById('addModal')
+                        .classList.add('show')
+                "
+            >
+                <i class="bi bi-plus-lg"></i>Add Company
+            </button>
+        </div>
+        <div class="filter-bar">
+            <div class="search-field">
+                <i class="bi bi-search"></i
+                ><input
+                    type="text"
+                    placeholder="Search companies, ABN…"
+                    oninput="filterTbl(this.value, 'coTbody')"
+                />
+            </div>
+            <select class="sel">
+                <option>All Status</option>
+                <option>Active</option>
+                <option>Pending</option>
+                <option>Trial</option></select
+            ><select class="sel">
+                <option>All Plans</option>
+                <option>Starter</option>
+                <option>Professional</option>
+                <option>Enterprise</option>
+            </select>
+        </div>
+        <div class="tbl-wrap">
+            <table class="dt">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Contact</th>
+                        <th>Plan</th>
+                        <th>Vehicles</th>
+                        <th>Drivers</th>
+                        <th>Compliance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="coTbody">
+                    <tr>
+                        <td>
+                            <div class="ent">
+                                <div
+                                    class="ent-av"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            #3b82f6,
+                                            #06b6d4
+                                        );
+                                    "
+                                >
+                                    AF
+                                </div>
+                                <div>
+                                    <div class="ent-name">
+                                        Apex Freight Pty Ltd
+                                    </div>
+                                    <div class="ent-sub">
+                                        ABN 12 345 678 901
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strong">
+                                James Crawford
+                            </div>
+                            <div
+                                style="
+                                    font-size: 11px;
+                                    color: var(--text3);
+                                    font-family:
+                                        &quot;DM Mono&quot;,
+                                        monospace;
+                                "
+                            >
+                                james@apexfreight.com.au
+                            </div>
+                        </td>
+                        <td>
+                            <span class="plan p-pro"
+                                >Professional</span
+                            >
+                        </td>
+                        <td class="strong">42</td>
+                        <td class="strong">18</td>
+                        <td>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                "
+                            >
+                                <div
+                                    class="prog-track"
+                                    style="
+                                        width: 60px;
+                                        display: inline-block;
+                                    "
+                                >
+                                    <div
+                                        class="prog-fill"
+                                        style="
+                                            width: 92%;
+                                            background: var(
+                                                --green
+                                            );
+                                        "
+                                    ></div>
+                                </div>
+                                <span
+                                    style="
+                                        font-size: 11px;
+                                        font-weight: 700;
+                                        color: var(--green);
+                                        font-family:
+                                            &quot;DM Mono&quot;,
+                                            monospace;
+                                    "
+                                    >92%</span
+                                >
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge b-green"
+                                ><span class="dot"></span
+                                >Active</span
+                            >
+                        </td>
+                        <td>
+                            <div
+                                style="display: flex; gap: 6px"
+                            >
+                                <button
+                                    class="btn btn-ghost btn-sm"
+                                    onclick="
+                                        openModal(
+                                            'Apex Freight Pty Ltd',
+                                            '12 345 678 901',
+                                        )
+                                    "
+                                >
+                                    <i
+                                        class="bi bi-pencil"
+                                    ></i></button
+                                ><button
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    <i class="bi bi-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ent">
+                                <div
+                                    class="ent-av"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            #10b981,
+                                            #06b6d4
+                                        );
+                                    "
+                                >
+                                    BT
+                                </div>
+                                <div>
+                                    <div class="ent-name">
+                                        Blue Star Transport
+                                    </div>
+                                    <div class="ent-sub">
+                                        ABN 98 765 432 109
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strong">
+                                Sarah Mitchell
+                            </div>
+                            <div
+                                style="
+                                    font-size: 11px;
+                                    color: var(--text3);
+                                    font-family:
+                                        &quot;DM Mono&quot;,
+                                        monospace;
+                                "
+                            >
+                                s.mitchell@bluestar.com.au
+                            </div>
+                        </td>
+                        <td>
+                            <span class="plan p-starter"
+                                >Starter</span
+                            >
+                        </td>
+                        <td class="strong">11</td>
+                        <td class="strong">4</td>
+                        <td>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                "
+                            >
+                                <div
+                                    class="prog-track"
+                                    style="
+                                        width: 60px;
+                                        display: inline-block;
+                                    "
+                                >
+                                    <div
+                                        class="prog-fill"
+                                        style="
+                                            width: 78%;
+                                            background: var(
+                                                --amber
+                                            );
+                                        "
+                                    ></div>
+                                </div>
+                                <span
+                                    style="
+                                        font-size: 11px;
+                                        font-weight: 700;
+                                        color: var(--amber);
+                                        font-family:
+                                            &quot;DM Mono&quot;,
+                                            monospace;
+                                    "
+                                    >78%</span
+                                >
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge b-green"
+                                ><span class="dot"></span
+                                >Active</span
+                            >
+                        </td>
+                        <td>
+                            <div
+                                style="display: flex; gap: 6px"
+                            >
+                                <button
+                                    class="btn btn-ghost btn-sm"
+                                    onclick="
+                                        openModal(
+                                            'Blue Star Transport',
+                                            '98 765 432 109',
+                                        )
+                                    "
+                                >
+                                    <i
+                                        class="bi bi-pencil"
+                                    ></i></button
+                                ><button
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    <i class="bi bi-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ent">
+                                <div
+                                    class="ent-av"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            #f59e0b,
+                                            #ef4444
+                                        );
+                                    "
+                                >
+                                    RH
+                                </div>
+                                <div>
+                                    <div class="ent-name">
+                                        RedHawk Logistics
+                                    </div>
+                                    <div class="ent-sub">
+                                        ABN 55 234 567 890
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strong">
+                                Mark Stevens
+                            </div>
+                            <div
+                                style="
+                                    font-size: 11px;
+                                    color: var(--text3);
+                                    font-family:
+                                        &quot;DM Mono&quot;,
+                                        monospace;
+                                "
+                            >
+                                mark@redhawk.com.au
+                            </div>
+                        </td>
+                        <td>
+                            <span class="plan p-ent"
+                                >Enterprise</span
+                            >
+                        </td>
+                        <td class="strong">78</td>
+                        <td class="strong">34</td>
+                        <td>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                "
+                            >
+                                <div
+                                    class="prog-track"
+                                    style="
+                                        width: 60px;
+                                        display: inline-block;
+                                    "
+                                >
+                                    <div
+                                        class="prog-fill"
+                                        style="
+                                            width: 85%;
+                                            background: var(
+                                                --green
+                                            );
+                                        "
+                                    ></div>
+                                </div>
+                                <span
+                                    style="
+                                        font-size: 11px;
+                                        font-weight: 700;
+                                        color: var(--green);
+                                        font-family:
+                                            &quot;DM Mono&quot;,
+                                            monospace;
+                                    "
+                                    >85%</span
+                                >
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge b-amber"
+                                ><span class="dot"></span
+                                >Pending</span
+                            >
+                        </td>
+                        <td>
+                            <div
+                                style="display: flex; gap: 6px"
+                            >
+                                <button
+                                    class="btn btn-success btn-sm"
+                                    onclick="approveCo(this)"
+                                >
+                                    <i class="bi bi-check"></i
+                                    >Approve</button
+                                ><button
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ent">
+                                <div
+                                    class="ent-av"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            #8b5cf6,
+                                            #ec4899
+                                        );
+                                    "
+                                >
+                                    NT
+                                </div>
+                                <div>
+                                    <div class="ent-name">
+                                        NorthLine Transport
+                                    </div>
+                                    <div class="ent-sub">
+                                        ABN 44 321 654 987
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strong">Linda Park</div>
+                            <div
+                                style="
+                                    font-size: 11px;
+                                    color: var(--text3);
+                                    font-family:
+                                        &quot;DM Mono&quot;,
+                                        monospace;
+                                "
+                            >
+                                linda@northline.com.au
+                            </div>
+                        </td>
+                        <td>
+                            <span class="plan p-starter"
+                                >Starter</span
+                            >
+                        </td>
+                        <td class="strong">6</td>
+                        <td class="strong">3</td>
+                        <td>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                "
+                            >
+                                <div
+                                    class="prog-track"
+                                    style="
+                                        width: 60px;
+                                        display: inline-block;
+                                    "
+                                >
+                                    <div
+                                        class="prog-fill"
+                                        style="
+                                            width: 55%;
+                                            background: var(
+                                                --red
+                                            );
+                                        "
+                                    ></div>
+                                </div>
+                                <span
+                                    style="
+                                        font-size: 11px;
+                                        font-weight: 700;
+                                        color: var(--red);
+                                        font-family:
+                                            &quot;DM Mono&quot;,
+                                            monospace;
+                                    "
+                                    >55%</span
+                                >
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge b-cyan"
+                                ><span class="dot"></span
+                                >Trial</span
+                            >
+                        </td>
+                        <td>
+                            <div
+                                style="display: flex; gap: 6px"
+                            >
+                                <button
+                                    class="btn btn-ghost btn-sm"
+                                    onclick="
+                                        openModal(
+                                            'NorthLine Transport',
+                                            '44 321 654 987',
+                                        )
+                                    "
+                                >
+                                    <i
+                                        class="bi bi-pencil"
+                                    ></i></button
+                                ><button
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    <i class="bi bi-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="modalHeading">Edit Company</span
+            ><button
+                class="modal-close"
+                onclick="closeModal('editModal')"
+            >
+                &times;
+            </button>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Company Name</label><input id="mName" />
+            </div>
+            <div class="field">
+                <label>ABN</label><input id="mABN" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Contact Person</label
+                ><input placeholder="Full name" />
+            </div>
+            <div class="field">
+                <label>Email</label
+                ><input
+                    type="email"
+                    placeholder="email@company.com.au"
+                />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Phone</label
+                ><input placeholder="+61 4XX XXX XXX" />
+            </div>
+            <div class="field">
+                <label>Address</label
+                ><input placeholder="City, State" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Plan</label
+                ><select>
+                    <option>Starter</option>
+                    <option>Professional</option>
+                    <option>Enterprise</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Status</label
+                ><select>
+                    <option>Active</option>
+                    <option>Pending</option>
+                    <option>Trial</option>
+                    <option>Suspended</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button
+                class="btn btn-ghost"
+                onclick="closeModal('editModal')"
+            >
+                Cancel</button
+            ><button
+                class="btn btn-primary"
+                onclick="
+                    closeModal('editModal');
+                    showToast('Company saved!');
+                "
+            >
+                <i class="bi bi-check"></i>Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-bg" id="addModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span>Add New Company</span
+            ><button
+                class="modal-close"
+                onclick="closeModal('addModal')"
+            >
+                &times;
+            </button>
+        </div>
+        <div class="field-row full">
+            <div class="field">
+                <label>Company Name *</label
+                ><input placeholder="e.g. Apex Freight Pty Ltd" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>ABN *</label
+                ><input placeholder="XX XXX XXX XXX" />
+            </div>
+            <div class="field">
+                <label>Contact Person *</label
+                ><input placeholder="Full name" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Email *</label
+                ><input
+                    type="email"
+                    placeholder="email@company.com.au"
+                />
+            </div>
+            <div class="field">
+                <label>Phone</label
+                ><input placeholder="+61 4XX XXX XXX" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Plan</label
+                ><select>
+                    <option>Starter</option>
+                    <option>Professional</option>
+                    <option>Enterprise</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Address</label
+                ><input placeholder="Sydney NSW 2000" />
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button
+                class="btn btn-ghost"
+                onclick="closeModal('addModal')"
+            >
+                Cancel</button
+            ><button
+                class="btn btn-primary"
+                onclick="
+                    closeModal('addModal');
+                    showToast('Company added!');
+                "
+            >
+                <i class="bi bi-plus-lg"></i>Add Company
+            </button>
+        </div>
+    </div>
+</div>

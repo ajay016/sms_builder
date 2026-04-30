@@ -1,0 +1,200 @@
+{% load static %}
+
+
+        <footer class="footer-main pt-5" id="contact">
+            <div class="container py-5">
+                <div class="row g-4 g-lg-5 align-items-start">
+                    <div class="col-12 col-lg-5">
+                        <div class="footer-brand mb-4">
+                            <div class="footer-brand-title">PRODRIVE</div>
+                            <div class="footer-brand-sub">SMS Builder</div>
+                        </div>
+                        <p class="mb-4 footer-tagline">
+                            Let's build a safer and smarter compliance system
+                            for your business.
+                        </p>
+                        <div class="footer-contact-items mb-4">
+                            <a
+                                href="mailto:info@prodrivecompliance.com"
+                                class="footer-contact-item"
+                            >
+                                <div class="footer-contact-icon">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </div>
+                                <span>info@prodrivecompliance.com</span>
+                            </a>
+                            <a
+                                href="tel:+0437064814"
+                                class="footer-contact-item"
+                            >
+                                <div class="footer-contact-icon">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </div>
+                                <span>+0437064814</span>
+                            </a>
+                            <div class="footer-contact-item">
+                                <div class="footer-contact-icon">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                </div>
+                                <span>Sydney, Australia</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <p class="mb-3 fw-semibold text-white">
+                                Compliance &amp; Industry Alignment
+                            </p>
+                            <div class="d-flex flex-wrap gap-3">
+                                <img
+                            src="{% static 'sms_builder/assets/images/pd1.webp' %}"
+                            alt="Membership 1"
+                            class="membership-logo"
+                        />
+
+                        <img
+                            src="{% static 'sms_builder/assets/images/pd2.webp' %}"
+                            alt="Membership 2"
+                            class="membership-logo"
+                        />
+
+                        <img
+                            src="{% static 'sms_builder/assets/images/pd3.webp' %}"
+                            alt="Membership 3"
+                            class="membership-logo"
+                        />
+                            </div>
+                        </div>
+                        <div class="footer-socials">
+    <a
+        href="https://www.facebook.com/prodrivecompliancegroup/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-social-btn"
+        aria-label="Facebook"
+    >
+        <i class="bi bi-facebook"></i>
+    </a>
+
+    <a
+        href="https://www.linkedin.com/in/bruce-gunter-3678a786/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-social-btn"
+        aria-label="LinkedIn"
+    >
+        <i class="bi bi-linkedin"></i>
+    </a>
+
+    <a
+        href="https://www.instagram.com/prodrivecompliancegroup/?hl=en"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-social-btn"
+        aria-label="Instagram"
+    >
+        <i class="bi bi-instagram"></i>
+    </a>
+
+    <a
+        href="#"
+        class="footer-social-btn"
+        aria-label="Twitter/X"
+    >
+        <i class="bi bi-twitter-x"></i>
+    </a>
+</div>
+                    </div>
+
+                   <div class="col-12 col-lg-7">
+    <div class="simple-form-card">
+        <h4 class="fw-bold mb-3">Send a Message</h4>
+
+        <div class="simple-success d-none" id="formSuccess">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            Message sent! We'll be in touch within 1 business day.
+        </div>
+
+        <div id="contactForm">
+            <div class="mb-2">
+                <input type="text" class="simple-input" id="contactName" placeholder="Your Name *" />
+                <div class="simple-error" id="nameError">Please enter your name.</div>
+            </div>
+            <div class="mb-2">
+                <input type="email" class="simple-input" id="contactEmail" placeholder="Email Address *" />
+                <div class="simple-error" id="emailError">Please enter a valid email.</div>
+            </div>
+            <div class="mb-2">
+                <textarea class="simple-input" id="contactMessage" rows="3" placeholder="Write your message *"></textarea>
+                <div class="simple-error" id="messageErrorMsg">Please write a message (min. 20 characters).</div>
+            </div>
+            <div class="mb-2 d-flex align-items-start gap-2">
+                <input type="checkbox" class="form-check-input mt-1" id="privacyCheck" style="flex-shrink: 0" />
+                <label class="form-check-label small" for="privacyCheck" style="color: #94a3b8">
+                    I agree to the <a href="#" style="color: #60a5fa">Privacy Policy</a>.
+                </label>
+            </div>
+            <div class="simple-error mb-2" id="privacyError">You must agree to continue.</div>
+            <button type="button" class="simple-submit-btn" id="contactSubmitBtn" onclick="submitContactForm()">
+                <span id="btnText">Submit</span>
+                <span id="btnLoading" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-2"></span>Sending…
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+
+            <div class="footer-bottom py-4">
+                <div class="container">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
+                    >
+                        <div>
+                            © 2026 PRODRIVE Compliance. All rights reserved.
+                        </div>
+                        {% comment %} <div class="d-flex gap-3 footer-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                            <a href="#">Cookie Policy</a>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="membership-strip py-4">
+                <div class="container text-center">
+                    <p
+                        class="mb-3 text-white small fw-semibold"
+                        style="text-transform: uppercase; letter-spacing: 1.5px"
+                    >
+                        Proud Member Of
+                    </p>
+                    <div
+                        class="d-flex justify-content-center align-items-center flex-wrap gap-3"
+                    >
+                        
+                        <img
+                            src="{% static 'sms_builder/assets/images/pd1.webp' %}"
+                            alt="Membership 1"
+                            class="membership-logo"
+                        />
+
+                        <img
+                            src="{% static 'sms_builder/assets/images/pd2.webp' %}"
+                            alt="Membership 2"
+                            class="membership-logo"
+                        />
+
+                        <img
+                            src="{% static 'sms_builder/assets/images/pd3.webp' %}"
+                            alt="Membership 3"
+                            class="membership-logo"
+                        />
+                    </div>
+                </div>
+            </div>
+
+
+
+        </footer>

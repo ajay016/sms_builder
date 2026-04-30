@@ -1,0 +1,910 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+    /* Dark Theme */
+    body {
+        background: #0a0a0a;
+    }
+    
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .status-approved {
+        background: #064e3b;
+        color: #34d399;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .status-rejected {
+        background: #7f1d1d;
+        color: #f87171;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    
+    /* DataTables */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        margin-bottom: 15px;
+        color: #9ca3af;
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        padding: 5px 10px;
+        color: #ffffff;
+        font-size: 12px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 8px;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 6px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        color: #9ca3af !important;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+        text-decoration: none;
+        line-height: 1;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.4);
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        background: #0d0d0d;
+        border-color: #1a1a1a;
+        color: #4a4a4a !important;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+     .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    padding: 0;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #ffffff;
+}
+    /* Select2 */
+    .select2-container--bootstrap-5 .select2-selection {
+        background: #1a1a1a;
+        border-color: #2a2a2a;
+        border-radius: 6px;
+        min-height: 32px;
+    }
+    .select2-container--bootstrap-5 .select2-selection__rendered {
+        color: #ffffff;
+        font-size: 12px;
+        line-height: 32px;
+    }
+    .select2-dropdown {
+        background: #1a1a1a;
+        border-color: #2a2a2a;
+    }
+    .select2-results__option {
+        color: #9ca3af;
+        font-size: 12px;
+    }
+    .select2-results__option--highlighted {
+        background: #2563eb !important;
+        color: white !important;
+    }
+    
+    /* Filter Bar - Compact */
+    .filter-bar {
+        padding: 12px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .filter-bar .select2-container {
+        width: 160px !important;
+    }
+    .search-field {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+    .search-field i {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 12px;
+    }
+    .search-field input {
+        width: 100%;
+        padding: 6px 10px 6px 32px;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 12px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    .search-field input:focus {
+        border-color: #2563eb;
+    }
+    .sel {
+        padding: 6px 10px;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 12px;
+        background: #1a1a1a;
+        color: #ffffff;
+        cursor: pointer;
+        width: 160px;
+    }
+    
+    /* Table - Compact */
+    .dt tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 12px;
+        vertical-align: middle;
+        color: #e5e7eb;
+    }
+    .dt thead th {
+        padding: 12px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 1px solid #2a2a2a;
+        background: #0d0d0d;
+    }
+    
+    /* Card */
+    .card {
+        background: #141c2e;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        overflow: hidden;
+        border: 1px solid #2a2a2a;
+        margin-bottom: 20px;
+    }
+    .card-head {
+        padding: 14px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Buttons - Compact */
+    .btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; border: 1px solid #2a2a2a; color: #9ca3af; }
+    .btn-ghost:hover { background: #1a1a1a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; }
+    
+    /* Badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+    .b-green { background: #064e3b; color: #34d399; }
+    .b-amber { background: #451a03; color: #fbbf24; }
+    .b-red { background: #7f1d1d; color: #f87171; }
+    .b-blue { background: #1e3a5f; color: #60a5fa; }
+    .b-gray { background: #1f2937; color: #9ca3af; }
+    .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        display: inline-block;
+    }
+    
+    .ent-name {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 2px;
+        font-size: 13px;
+    }
+    .ent-sub {
+        font-size: 10px;
+        color: #9ca3af;
+    }
+    
+    /* Modal */
+    .modal-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+    .modal-bg.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-box {
+        background: #141c2e;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid #2a2a2a;
+    }
+    .modal-title {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        background: #0d0d0d;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #9ca3af;
+    }
+    .field-row {
+        display: flex;
+        gap: 12px;
+        padding: 12px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        background: #141c2e;
+    }
+    .field-row.full {
+        flex-direction: column;
+    }
+    .field {
+        flex: 1;
+    }
+    .field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+    .field input, .field select, .field textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 12px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    .modal-actions {
+        padding: 16px 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        background: #141c2e;
+        border-top: 1px solid #2a2a2a;
+    }
+    
+    /* Toast */
+    .toast-message {
+        background: #1a1a1a;
+        padding: 10px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: slideIn 0.3s ease;
+        border-left: 3px solid;
+        color: white;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        font-size: 12px;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .tbl-wrap {
+        overflow-x: auto;
+    }
+    .required {
+        color: #ef4444;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+    .status-current { background: #064e3b; color: #34d399; }
+    .status-expired { background: #7f1d1d; color: #f87171; }
+    .status-due_soon { background: #451a03; color: #fbbf24; }
+    .status-suspended { background: #1f2937; color: #9ca3af; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="bi bi-truck-flatbed"></i>All Vehicles
+            <span class="badge" style="background: #1e3a5f; color: #60a5fa;">{{ total_vehicles }}</span>
+        </div>
+        <button class="btn btn-primary" onclick="openAddVehicleModal()">
+            <i class="bi bi-plus-lg"></i>Add Vehicle
+        </button>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-field">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by rego, VIN, make, model…" />
+        </div>
+        <select class="sel" id="typeFilter">
+            <option value="">All Types</option>
+            <option value="rigid_lt_4_5t">Rigid (&lt;4.5t)</option>
+            <option value="rigid_4_5_12t">Rigid (4.5t-12t)</option>
+            <option value="rigid_gt_12t">Rigid (&gt;12t)</option>
+            <option value="b_doubles">B-Doubles</option>
+            <option value="tankers">Tankers</option>
+            <option value="tippers">Tippers</option>
+            <option value="road_trains">Road Trains</option>
+            <option value="flatbeds">Flatbeds</option>
+            <option value="prime_movers">Prime Movers</option>
+            <option value="refrigerated">Refrigerated</option>
+        </select>
+        <select class="sel" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="current">Current</option>
+            <option value="due_soon">Due Soon</option>
+            <option value="expired">Expired</option>
+            <option value="suspended">Suspended</option>
+        </select>
+        <select class="sel" id="approvalFilter">
+            <option value="">All Approval</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="applyFilters()">Apply</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetFilters()">Reset</button>
+    </div>
+
+    <div class="tbl-wrap">
+        <table class="dt" id="vehiclesTable">
+            <thead>
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Rego</th>
+                    <th>Company</th>
+                    <th>Type</th>
+                    <th>Year</th>
+                    <th>Rego Expiry</th>
+                    <th>Status</th>
+                    <th>Approval</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehicle in vehicles %}
+                <tr data-id="{{ vehicle.id }}">
+                    <td>
+                        <div class="ent-name"><strong>{{ vehicle.make }} {{ vehicle.model }}</strong></div>
+                        <div class="ent-sub">VIN: {{ vehicle.vin|slice:":10" }}...</div>
+                    </td>
+                    <td style="font-family: monospace;">{{ vehicle.registration_number }}</td>
+                    <td>{{ vehicle.company_name }}</td>
+                    <td>
+                        {% if vehicle.vehicle_type == 'rigid_lt_4_5t' %}Rigid (&lt;4.5t)
+                        {% elif vehicle.vehicle_type == 'rigid_4_5_12t' %}Rigid (4.5t-12t)
+                        {% elif vehicle.vehicle_type == 'rigid_gt_12t' %}Rigid (&gt;12t)
+                        {% elif vehicle.vehicle_type == 'b_doubles' %}B-Doubles
+                        {% elif vehicle.vehicle_type == 'tankers' %}Tankers
+                        {% elif vehicle.vehicle_type == 'tippers' %}Tippers
+                        {% elif vehicle.vehicle_type == 'road_trains' %}Road Trains
+                        {% elif vehicle.vehicle_type == 'flatbeds' %}Flatbeds
+                        {% elif vehicle.vehicle_type == 'prime_movers' %}Prime Movers
+                        {% else %}Refrigerated{% endif %}
+                    </td>
+                    <td>{{ vehicle.year }}</td>
+                    <td style="font-family: monospace;">{{ vehicle.registration_expiry|date:"M d, Y" }}</td>
+                    <td>
+                        {% if vehicle.status == 'current' %}
+                        <span class="badge b-green"><span class="dot"></span>Current</span>
+                        {% elif vehicle.status == 'expired' %}
+                        <span class="badge b-red"><span class="dot"></span>Expired</span>
+                        {% elif vehicle.status == 'due_soon' %}
+                        <span class="badge b-amber"><span class="dot"></span>Due Soon</span>
+                        {% else %}
+                        <span class="badge b-gray">{{ vehicle.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if vehicle.approval_status == 'approved' %}
+                        <span class="status-approved"><i class="bi bi-check-circle-fill"></i> Approved</span>
+                        {% elif vehicle.approval_status == 'pending' %}
+                        <span class="status-pending"><i class="bi bi-clock-history"></i> Pending</span>
+                        {% elif vehicle.approval_status == 'rejected' %}
+                        <span class="status-rejected"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                        {% else %}
+                        <span class="badge b-gray">{{ vehicle.approval_status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-ghost btn-sm" onclick="openEditVehicleModal({{ vehicle.id }})" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            {% if vehicle.approval_status == 'pending' %}
+                            <button class="btn btn-success btn-sm" onclick="approveVehicle({{ vehicle.id }})" title="Approve">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="openRejectModal({{ vehicle.id }})" title="Reject">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-danger btn-sm" onclick="deleteVehicle({{ vehicle.id }})" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px;">
+                        <i class="bi bi-inbox" style="font-size: 36px; color: #4a4a4a;"></i>
+                        <p class="mt-2" style="color: #9ca3af;">No vehicles found. Click "Add Vehicle" to create one.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ADD/EDIT VEHICLE MODAL -->
+<div class="modal-bg" id="vehicleModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="modalTitle"><i class="bi bi-plus-circle"></i> Add New Vehicle</span>
+            <button class="modal-close" onclick="closeModal('vehicleModal')">&times;</button>
+        </div>
+        <input type="hidden" id="vehicleId">
+        <div class="field-row">
+            <div class="field">
+                <label>Make <span class="required">*</span></label>
+                <input id="make" placeholder="e.g., Kenworth, Volvo">
+            </div>
+            <div class="field">
+                <label>Model <span class="required">*</span></label>
+                <input id="model" placeholder="e.g., T610, FH16">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Year <span class="required">*</span></label>
+                <input id="year" type="number" placeholder="2024">
+            </div>
+            <div class="field">
+                <label>VIN <span class="required">*</span></label>
+                <input id="vin" placeholder="17-character VIN" maxlength="17">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Registration Number <span class="required">*</span></label>
+                <input id="registrationNumber" placeholder="NSW AB 1234">
+            </div>
+            <div class="field">
+                <label>Vehicle Type <span class="required">*</span></label>
+                <select id="vehicleType" class="sel">
+                    <option value="rigid_lt_4_5t">Rigid Trucks (&lt;4.5t)</option>
+                    <option value="rigid_4_5_12t">Rigid Trucks (4.5t–12t)</option>
+                    <option value="rigid_gt_12t">Rigid Trucks (&gt;12t)</option>
+                    <option value="b_doubles">B-Doubles</option>
+                    <option value="tankers">Tankers</option>
+                    <option value="tippers">Tippers</option>
+                    <option value="road_trains">Road Trains</option>
+                    <option value="flatbeds">Flatbeds</option>
+                    <option value="prime_movers">Prime Movers</option>
+                    <option value="refrigerated">Refrigerated Vehicles</option>
+                </select>
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Registration Expiry <span class="required">*</span></label>
+                <input id="registrationExpiry" type="date">
+            </div>
+            <div class="field">
+                <label>Company <span class="required">*</span></label>
+                <select id="companyId" class="sel">
+                    <option value="">Select Company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}">{{ company.company_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Status</label>
+                <select id="status" class="sel">
+                    <option value="current">Current</option>
+                    <option value="due_soon">Due Soon</option>
+                    <option value="expired">Expired</option>
+                    <option value="suspended">Suspended</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Approval Status</label>
+                <select id="approvalStatus" class="sel">
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('vehicleModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveVehicle()">Save Vehicle</button>
+        </div>
+    </div>
+</div>
+
+<!-- REJECTION REASON MODAL -->
+<div class="modal-bg" id="rejectModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span><i class="bi bi-x-circle"></i> Reject Vehicle</span>
+            <button class="modal-close" onclick="closeModal('rejectModal')">&times;</button>
+        </div>
+        <input type="hidden" id="rejectVehicleId">
+        <div class="field-row full">
+            <div class="field">
+                <label>Rejection Reason</label>
+                <textarea id="rejectionReason" rows="3" placeholder="Please provide a reason for rejection..."></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('rejectModal')">Cancel</button>
+            <button class="btn btn-danger" onclick="submitVehicleRejection()">Confirm Rejection</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+let vehiclesTable;
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.style.borderLeftColor = type === 'success' ? '#10b981' : '#ef4444';
+    toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Initialize DataTable
+$(document).ready(function() {
+    vehiclesTable = $('#vehiclesTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'asc']],
+        paging: true,
+        pagingType: 'full_numbers',
+        language: {
+            search: "",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ vehicles",
+            emptyTable: "No vehicles found",
+            paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" }
+        },
+        columnDefs: [{ orderable: false, targets: [8] }],
+        initComplete: function() {
+            // Hide default search box since we have custom search
+            $('.dataTables_filter').hide();
+        }
+    });
+    
+    $('#searchInput').on('keyup', function() {
+        vehiclesTable.search(this.value).draw();
+    });
+    
+    // Initialize Select2 for filters
+    $('#typeFilter, #statusFilter, #approvalFilter').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        allowClear: true,
+        placeholder: function() { return $(this).data('placeholder'); }
+    });
+});
+
+function applyFilters() {
+    const type = $('#typeFilter').val();
+    const status = $('#statusFilter').val();
+    const approval = $('#approvalFilter').val();
+    
+    if (type) vehiclesTable.column(3).search(type, true, false).draw();
+    else vehiclesTable.column(3).search('').draw();
+    
+    if (status) vehiclesTable.column(6).search(status, true, false).draw();
+    else vehiclesTable.column(6).search('').draw();
+    
+    if (approval) vehiclesTable.column(7).search(approval, true, false).draw();
+    else vehiclesTable.column(7).search('').draw();
+}
+
+function resetFilters() {
+    $('#typeFilter').val('');
+    $('#statusFilter').val('');
+    $('#approvalFilter').val('');
+    $('#searchInput').val('');
+    vehiclesTable.search('').draw();
+    vehiclesTable.columns().search('').draw();
+}
+
+function openAddVehicleModal() {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-plus-circle"></i> Add New Vehicle';
+    document.getElementById('vehicleId').value = '';
+    document.getElementById('make').value = '';
+    document.getElementById('model').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('vin').value = '';
+    document.getElementById('registrationNumber').value = '';
+    document.getElementById('vehicleType').value = 'rigid_gt_12t';
+    document.getElementById('registrationExpiry').value = '';
+    document.getElementById('companyId').value = '';
+    document.getElementById('status').value = 'current';
+    document.getElementById('approvalStatus').value = 'pending';
+    
+    // Initialize Select2 for company select
+    $('#companyId').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Select Company',
+        allowClear: true,
+        dropdownParent: $('#vehicleModal')
+    });
+    
+    document.getElementById('vehicleModal').classList.add('show');
+}
+
+function openEditVehicleModal(id) {
+    fetch('/admin/vehicles/get-details/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json'},
+        body: JSON.stringify({ vehicle_id: id })
+    }).then(r=>r.json()).then(data => {
+        if(data.success){
+            const v = data.vehicle;
+            document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil-square"></i> Edit Vehicle';
+            document.getElementById('vehicleId').value = v.id;
+            document.getElementById('make').value = v.make;
+            document.getElementById('model').value = v.model;
+            document.getElementById('year').value = v.year;
+            document.getElementById('vin').value = v.vin;
+            document.getElementById('registrationNumber').value = v.registration_number;
+            document.getElementById('vehicleType').value = v.vehicle_type;
+            document.getElementById('registrationExpiry').value = v.registration_expiry;
+            document.getElementById('companyId').value = v.company_id;
+            document.getElementById('status').value = v.status;
+            document.getElementById('approvalStatus').value = v.approval_status || 'pending';
+            
+            // Initialize Select2 for company select
+            $('#companyId').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Select Company',
+                allowClear: true,
+                dropdownParent: $('#vehicleModal')
+            });
+            
+            document.getElementById('vehicleModal').classList.add('show');
+        }
+    });
+}
+
+function saveVehicle() {
+    const id = document.getElementById('vehicleId').value;
+    const formData = new FormData();
+    formData.append('make', document.getElementById('make').value);
+    formData.append('model', document.getElementById('model').value);
+    formData.append('year', document.getElementById('year').value);
+    formData.append('vin', document.getElementById('vin').value);
+    formData.append('registration_number', document.getElementById('registrationNumber').value);
+    formData.append('vehicle_type', document.getElementById('vehicleType').value);
+    formData.append('registration_expiry', document.getElementById('registrationExpiry').value);
+    formData.append('company_id', document.getElementById('companyId').value);
+    formData.append('status', document.getElementById('status').value);
+    formData.append('approval_status', document.getElementById('approvalStatus').value);
+    
+    let url = id ? `/admin/vehicles/edit/${id}/` : '/admin/vehicles/add/';
+    fetch(url, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+        body: formData
+    }).then(r=>r.json()).then(data => {
+        if(data.success){
+            showToast(id ? 'Vehicle updated!' : 'Vehicle added!');
+            closeModal('vehicleModal');
+            setTimeout(()=>location.reload(), 800);
+        } else showToast(data.error, 'error');
+    });
+}
+
+function approveVehicle(id) {
+    if(confirm('Approve this vehicle?')){
+        fetch(`/admin/vehicles/approve/${id}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': getCookie('csrftoken')}
+        }).then(r=>r.json()).then(data => {
+            if(data.success){ showToast('Vehicle approved!'); setTimeout(()=>location.reload(), 800); }
+            else showToast(data.error, 'error');
+        });
+    }
+}
+
+function openRejectModal(id) {
+    document.getElementById('rejectVehicleId').value = id;
+    document.getElementById('rejectionReason').value = '';
+    document.getElementById('rejectModal').classList.add('show');
+}
+
+function submitVehicleRejection() {
+    const id = document.getElementById('rejectVehicleId').value;
+    const reason = document.getElementById('rejectionReason').value;
+    const formData = new FormData();
+    formData.append('rejection_reason', reason);
+    
+    fetch(`/admin/vehicles/reject/${id}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+        body: formData
+    }).then(r=>r.json()).then(data => {
+        if(data.success){
+            showToast('Vehicle rejected!');
+            closeModal('rejectModal');
+            setTimeout(()=>location.reload(), 800);
+        } else showToast(data.error, 'error');
+    });
+}
+
+function deleteVehicle(id) {
+    if(confirm('Delete this vehicle?')){
+        fetch(`/admin/vehicles/delete/${id}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': getCookie('csrftoken')}
+        }).then(r=>r.json()).then(data => {
+            if(data.success){ showToast('Vehicle deleted!'); setTimeout(()=>location.reload(), 800); }
+            else showToast(data.error, 'error');
+        });
+    }
+}
+
+function closeModal(modalId) {
+    // Destroy Select2 instances when closing modal
+    if (modalId === 'vehicleModal') {
+        $('#companyId').select2('destroy');
+    }
+    document.getElementById(modalId).classList.remove('show');
+}
+
+document.querySelectorAll('.modal-bg').forEach(modal => {
+    modal.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('show'); });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRODRIVE — Admin Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root {
+  --bg:#080c14;--bg2:#0d1320;--bg3:#111827;--surface:#141c2e;--surface2:#1a2540;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.10);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,0.12);--blue-glow:rgba(59,130,246,0.25);
+  --cyan:#06b6d4;--cyan-dim:rgba(6,182,212,0.12);
+  --green:#10b981;--green-dim:rgba(16,185,129,0.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.12);
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;
+  --sidebar-w:240px;--topbar-h:62px;--radius:14px;--radius-sm:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);min-height:100vh;position:fixed;top:0;left:0;bottom:0;z-index:400;display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sb-brand{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.sb-logo{display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 20px var(--blue-glow)}
+.sb-logo-text strong{font-size:15px;font-weight:700;color:var(--text);letter-spacing:.3px;display:block}
+.sb-logo-text span{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.sb-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);color:#fca5a5;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:3px 8px;border-radius:40px;margin-top:10px;width:fit-content}
+.sb-tag::before{content:'';width:5px;height:5px;border-radius:50%;background:#ef4444;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 0}
+.sb-section{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:16px 20px 6px;font-family:'DM Mono',monospace}
+.sb-link{display:flex;align-items:center;gap:10px;padding:9px 20px;color:var(--text2);font-size:13.5px;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;transition:all .15s;position:relative}
+.sb-link i{font-size:15px;width:18px;flex-shrink:0}
+.sb-link:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.sb-link.active{color:var(--blue);background:var(--blue-dim)}
+.sb-link.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue);border-radius:0 2px 2px 0}
+.sb-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:40px;font-family:'DM Mono',monospace}
+.sb-badge.g{background:var(--green)}.sb-badge.a{background:var(--amber);color:#000}
+.sb-footer{padding:14px 16px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s}
+.sb-user:hover{background:var(--surface)}
+.sb-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0}
+.sb-user-info strong{font-size:12px;font-weight:600;color:var(--text);display:block}
+.sb-user-info span{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.sb-dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:var(--topbar-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:300}
+.tb-left{display:flex;align-items:center;gap:14px}
+.tb-title{font-size:16px;font-weight:700;color:var(--text)}
+.tb-crumb{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:1px}
+.tb-hamburger{display:none;background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;font-size:15px;transition:all .15s;position:relative}
+.tb-btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.tb-notif::after{content:'';position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg2)}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;height:36px;width:200px;transition:all .2s}
+.tb-search:focus-within{border-color:var(--blue);width:240px}
+.tb-search i{color:var(--text3);font-size:13px}
+.tb-search input{background:none;border:none;outline:none;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.tb-search input::placeholder{color:var(--text3)}
+.tb-time{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;padding:0 12px;border-left:1px solid var(--border)}
+.body{padding:24px 28px}
+
+/* VIEWS */
+.view{display:none;animation:fadeIn .2s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:all .2s;cursor:default}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3)}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 var(--radius) 0 100%;opacity:.07}
+.sc-blue::after{background:var(--blue)}.sc-green::after{background:var(--green)}.sc-amber::after{background:var(--amber)}.sc-red::after{background:var(--red)}.sc-purple::after{background:var(--purple)}.sc-cyan::after{background:var(--cyan)}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:14px}
+.si-blue{background:var(--blue-dim);color:var(--blue)}.si-green{background:var(--green-dim);color:var(--green)}.si-amber{background:var(--amber-dim);color:var(--amber)}.si-red{background:var(--red-dim);color:var(--red)}.si-purple{background:var(--purple-dim);color:var(--purple)}.si-cyan{background:var(--cyan-dim);color:var(--cyan)}
+.stat-val{font-size:30px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-1px}
+.stat-lbl{font-size:12px;color:var(--text3);margin-top:4px;font-weight:500}
+.stat-delta{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;margin-top:12px;padding:3px 8px;border-radius:40px;font-family:'DM Mono',monospace}
+.delta-up{background:var(--green-dim);color:var(--green)}.delta-down{background:var(--red-dim);color:var(--red)}.delta-flat{background:var(--amber-dim);color:var(--amber)}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:1fr 340px;gap:20px}
+.grid-2-eq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.card:last-child{margin-bottom:0}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.card-title i{color:var(--blue);font-size:14px}
+.card-sub{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.card-body{padding:16px 18px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse}
+.dt th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap;font-family:'DM Mono',monospace}
+.dt td{font-size:13px;padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:rgba(255,255,255,0.02)}
+.dt .strong{font-weight:600;color:var(--text)}
+.ent{display:flex;align-items:center;gap:10px}
+.ent-av{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0;font-family:'DM Mono',monospace}
+.ent-name{font-size:13px;font-weight:600;color:var(--text)}
+.ent-sub{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:40px;font-size:11px;font-weight:600;white-space:nowrap;font-family:'DM Mono',monospace}
+.badge .dot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
+.b-green{background:var(--green-dim);color:var(--green)}.b-amber{background:var(--amber-dim);color:var(--amber)}.b-blue{background:var(--blue-dim);color:var(--blue)}.b-red{background:var(--red-dim);color:var(--red)}.b-purple{background:var(--purple-dim);color:var(--purple)}.b-cyan{background:var(--cyan-dim);color:var(--cyan)}.b-gray{background:rgba(255,255,255,0.06);color:var(--text3)}
+.plan{display:inline-block;padding:2px 9px;border-radius:40px;font-size:10px;font-weight:700;font-family:'DM Mono',monospace}
+.p-starter{background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border)}
+.p-pro{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,0.2)}
+.p-ent{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--blue);color:white}.btn-primary:hover{background:#2563eb;box-shadow:0 0 16px var(--blue-glow)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.2)}.btn-danger:hover{background:var(--red);color:white}
+.btn-success{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.2)}.btn-success:hover{background:var(--green);color:white}
+.btn-sm{padding:5px 11px;font-size:11px;border-radius:6px}
+
+/* FILTER */
+.filter-bar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--bg3)}
+.search-field{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;flex:1;min-width:180px;transition:all .2s}
+.search-field:focus-within{border-color:var(--blue)}
+.search-field i{color:var(--text3);font-size:13px}
+.search-field input{background:none;border:none;outline:none;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.search-field input::placeholder{color:var(--text3)}
+.sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;font-size:12px;color:var(--text2);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer}
+.sel:focus{border-color:var(--blue)}
+
+/* FEED */
+.feed-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.feed-item:last-child{border-bottom:none}
+.feed-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.feed-text{font-size:13px;color:var(--text2);line-height:1.5}
+.feed-text strong{color:var(--text)}
+.feed-time{font-size:10px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace}
+
+/* ALERTS */
+.alert-banner{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:10px;font-size:12.5px;border:1px solid}
+.alert-banner:last-child{margin-bottom:0}
+.al-amber{background:var(--amber-dim);border-color:rgba(245,158,11,0.2);color:#fbbf24}.al-red{background:var(--red-dim);border-color:rgba(239,68,68,0.2);color:#f87171}.al-blue{background:var(--blue-dim);border-color:rgba(59,130,246,0.2);color:#60a5fa}
+.alert-banner i{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-banner .al-msg{color:var(--text2)}.alert-banner .al-msg strong{color:var(--text)}
+
+/* PROGRESS */
+.prog{margin-bottom:14px}.prog:last-child{margin-bottom:0}
+.prog-head{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-lbl{font-size:12px;font-weight:500;color:var(--text2)}
+.prog-val{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.prog-track{height:4px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;transition:width 1s ease .3s}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:900;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:28px;width:100%;max-width:520px;box-shadow:0 32px 80px rgba(0,0,0,0.5);animation:modalIn .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;transition:color .15s}.modal-close:hover{color:var(--text)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.field-row.full{grid-template-columns:1fr}
+.field label{font-size:11px;font-weight:600;color:var(--text3);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;font-family:'DM Mono',monospace}
+.field input,.field select{width:100%;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}.modal-actions .btn{flex:1;justify-content:center;padding:10px}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}.toggle-row:last-child{border-bottom:none}
+.toggle-info strong{font-size:13px;font-weight:600;color:var(--text);display:block}.toggle-info span{font-size:11px;color:var(--text3)}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--surface2);border-radius:20px;cursor:pointer;transition:.2s;border:1px solid var(--border)}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--text3);left:2px;top:2px;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--blue-dim);border-color:var(--blue)}.toggle input:checked+.toggle-slider::before{transform:translateX(16px);background:var(--blue)}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:9px;box-shadow:0 12px 32px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast i{color:var(--green);font-size:15px}
+
+/* RESPONSIVE */
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}}
+@media(max-width:900px){.grid-2-eq{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.tb-hamburger{display:block}.tb-search,.tb-time{display:none}.body{padding:16px}.topbar{padding:0 16px}.stats-row{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.modal-box{margin:16px}.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-logo-icon"><i class="bi bi-truck-front-fill" style="color:white"></i></div>
+      <div class="sb-logo-text"><strong>PRODRIVE</strong><span>SMS Builder</span></div>
+    </div>
+    <div class="sb-tag">Admin Portal</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Overview</div>
+    <button class="sb-link active" onclick="nav('dashboard',this)"><i class="bi bi-grid-1x2-fill"></i>Dashboard</button>
+    <button class="sb-link" onclick="nav('analytics',this)"><i class="bi bi-bar-chart-line-fill"></i>Analytics</button>
+    <div class="sb-section">Manage</div>
+    <button class="sb-link" onclick="nav('companies',this)"><i class="bi bi-buildings-fill"></i>Companies <span class="sb-badge g">42</span></button>
+    <button class="sb-link" onclick="nav('drivers',this)"><i class="bi bi-person-badge-fill"></i>Drivers</button>
+    <button class="sb-link" onclick="nav('vehicles',this)"><i class="bi bi-truck-flatbed"></i>Vehicles</button>
+    <div class="sb-section">Compliance</div>
+    <button class="sb-link" onclick="nav('incidents',this)"><i class="bi bi-exclamation-triangle-fill"></i>Incidents <span class="sb-badge">3</span></button>
+    <button class="sb-link" onclick="nav('documents',this)"><i class="bi bi-folder-fill"></i>Documents</button>
+    <button class="sb-link" onclick="nav('forms',this)"><i class="bi bi-ui-checks-grid"></i>Forms &amp; SMS</button>
+    <div class="sb-section">System</div>
+    <button class="sb-link" onclick="nav('settings',this)"><i class="bi bi-gear-fill"></i>Settings</button>
+    <button class="sb-link" onclick="window.location='signin.html'" style="color:var(--red)"><i class="bi bi-box-arrow-left"></i>Sign Out</button>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">SA</div>
+      <div class="sb-user-info"><strong>Super Admin</strong><span>admin@prodrive.com</span></div>
+      <div class="sb-dot"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="tb-hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+      <div><div class="tb-title" id="tb-title">Dashboard</div><div class="tb-crumb" id="tb-crumb">admin / overview</div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-search"><i class="bi bi-search"></i><input type="text" placeholder="Search anything…"></div>
+      <div class="tb-time" id="clock">--:--</div>
+      <div class="tb-btn tb-notif" title="Notifications"><i class="bi bi-bell"></i></div>
+      <div class="tb-btn" onclick="showToast('Data refreshed')" title="Refresh"><i class="bi bi-arrow-clockwise"></i></div>
+      <div class="tb-btn" style="background:linear-gradient(135deg,var(--blue),var(--cyan));border-color:transparent;color:white;font-weight:700;font-size:12px;font-family:'DM Mono',monospace;width:auto;padding:0 12px">SA</div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-row">
+        <div class="stat-card sc-blue"><div class="stat-icon si-blue"><i class="bi bi-buildings"></i></div><div class="stat-val">42</div><div class="stat-lbl">Registered Companies</div><div class="stat-delta delta-up"><i class="bi bi-arrow-up-short"></i>+5 this month</div></div>
+        <div class="stat-card sc-green"><div class="stat-icon si-green"><i class="bi bi-person-badge"></i></div><div class="stat-val">187</div><div class="stat-lbl">Active Drivers</div><div class="stat-delta delta-up"><i class="bi bi-arrow-up-short"></i>+12 this month</div></div>
+        <div class="stat-card sc-amber"><div class="stat-icon si-amber"><i class="bi bi-truck"></i></div><div class="stat-val">315</div><div class="stat-lbl">Total Vehicles</div><div class="stat-delta delta-up"><i class="bi bi-arrow-up-short"></i>+8 this month</div></div>
+        <div class="stat-card sc-red"><div class="stat-icon si-red"><i class="bi bi-exclamation-triangle"></i></div><div class="stat-val">3</div><div class="stat-lbl">Open Incidents</div><div class="stat-delta delta-down"><i class="bi bi-arrow-down-short"></i>−2 vs last month</div></div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(5,1fr);padding:0">
+          <div style="padding:16px 20px;border-right:1px solid var(--border);text-align:center"><div style="font-size:22px;font-weight:700;color:var(--text)">$8,240</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:3px">Monthly MRR</div></div>
+          <div style="padding:16px 20px;border-right:1px solid var(--border);text-align:center"><div style="font-size:22px;font-weight:700;color:var(--text)">29</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:3px">Starter Plans</div></div>
+          <div style="padding:16px 20px;border-right:1px solid var(--border);text-align:center"><div style="font-size:22px;font-weight:700;color:var(--blue)">10</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:3px">Pro Plans</div></div>
+          <div style="padding:16px 20px;border-right:1px solid var(--border);text-align:center"><div style="font-size:22px;font-weight:700;color:var(--purple)">3</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:3px">Enterprise</div></div>
+          <div style="padding:16px 20px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--green)">96%</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:3px">Avg Compliance</div></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-head"><div class="card-title"><i class="bi bi-buildings-fill"></i>Recent Registrations</div><button class="btn btn-ghost btn-sm" onclick="nav('companies',document.querySelectorAll('.sb-link')[4])"><i class="bi bi-arrow-right"></i>View All</button></div>
+            <div class="tbl-wrap"><table class="dt"><thead><tr><th>Company</th><th>Plan</th><th>Status</th><th>Joined</th><th></th></tr></thead><tbody>
+              <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">AF</div><div><div class="ent-name">Apex Freight Pty Ltd</div><div class="ent-sub">ABN 12 345 678 901</div></div></div></td><td><span class="plan p-pro">Professional</span></td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Jan 8, 2024</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('Apex Freight Pty Ltd','12 345 678 901')"><i class="bi bi-pencil"></i></button></td></tr>
+              <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">BT</div><div><div class="ent-name">Blue Star Transport</div><div class="ent-sub">ABN 98 765 432 109</div></div></div></td><td><span class="plan p-starter">Starter</span></td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Feb 14, 2024</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('Blue Star Transport','98 765 432 109')"><i class="bi bi-pencil"></i></button></td></tr>
+              <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">RH</div><div><div class="ent-name">RedHawk Logistics</div><div class="ent-sub">ABN 55 234 567 890</div></div></div></td><td><span class="plan p-ent">Enterprise</span></td><td><span class="badge b-amber"><span class="dot"></span>Pending</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Mar 1, 2026</td><td><button class="btn btn-success btn-sm" onclick="approveCo(this)"><i class="bi bi-check"></i>Approve</button></td></tr>
+              <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">NT</div><div><div class="ent-name">NorthLine Transport</div><div class="ent-sub">ABN 44 321 654 987</div></div></div></td><td><span class="plan p-starter">Starter</span></td><td><span class="badge b-cyan"><span class="dot"></span>Trial</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Mar 20, 2026</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('NorthLine Transport','44 321 654 987')"><i class="bi bi-pencil"></i></button></td></tr>
+            </tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title"><i class="bi bi-bell-fill" style="color:var(--amber)"></i>System Alerts</div><span class="badge b-amber"><span class="dot"></span>3 active</span></div>
+            <div class="card-body">
+              <div class="alert-banner al-amber"><i class="bi bi-exclamation-triangle-fill"></i><div class="al-msg"><strong>WAHVA Renewal Due</strong> — 2 companies have accreditation expiring within 30 days.</div></div>
+              <div class="alert-banner al-red"><i class="bi bi-exclamation-circle-fill"></i><div class="al-msg"><strong>Incident Open</strong> — Near-miss at Eastern Depot (RedHawk) requires admin review.</div></div>
+              <div class="alert-banner al-blue"><i class="bi bi-info-circle-fill"></i><div class="al-msg"><strong>New Trial</strong> — NorthLine Transport registered and is in a 14-day free trial.</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-head"><div class="card-title"><i class="bi bi-pie-chart-fill"></i>Revenue Breakdown</div><span class="card-sub">Mar 2026</span></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-bottom:16px">
+                <div style="flex:1;border-radius:3px 3px 0 0;background:var(--blue);opacity:.5;height:45%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--blue);opacity:.6;height:58%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--blue);opacity:.55;height:50%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--blue);opacity:.65;height:68%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--cyan);opacity:.7;height:72%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--cyan);opacity:.8;height:80%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--cyan);opacity:.9;height:88%"></div><div style="flex:1;border-radius:3px 3px 0 0;background:var(--cyan);height:100%"></div>
+              </div>
+              <div class="prog"><div class="prog-head"><div class="prog-lbl">Starter (29×$29)</div><div class="prog-val" style="color:var(--text3)">$841</div></div><div class="prog-track"><div class="prog-fill" style="width:37%;background:var(--text3)"></div></div></div>
+              <div class="prog"><div class="prog-head"><div class="prog-lbl">Professional (10×$59)</div><div class="prog-val" style="color:var(--blue)">$590</div></div><div class="prog-track"><div class="prog-fill" style="width:26%;background:var(--blue)"></div></div></div>
+              <div class="prog"><div class="prog-head"><div class="prog-lbl">Enterprise (3×$99)</div><div class="prog-val" style="color:var(--purple)">$297</div></div><div class="prog-track"><div class="prog-fill" style="width:13%;background:var(--purple)"></div></div></div>
+              <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--text3)">Total Monthly Revenue</span><span style="font-size:22px;font-weight:700;color:var(--text)">$8,240</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title"><i class="bi bi-clock-history"></i>Recent Activity</div></div>
+            <div class="card-body" style="padding-top:4px">
+              <div class="feed-item"><div class="feed-icon" style="background:var(--green-dim);color:var(--green)"><i class="bi bi-person-check-fill"></i></div><div><div class="feed-text"><strong>NorthLine Transport</strong> registered</div><div class="feed-time">2 hours ago</div></div></div>
+              <div class="feed-item"><div class="feed-icon" style="background:var(--amber-dim);color:var(--amber)"><i class="bi bi-exclamation-triangle-fill"></i></div><div><div class="feed-text">Incident filed — <strong>RedHawk Logistics</strong></div><div class="feed-time">Yesterday, 3:42 PM</div></div></div>
+              <div class="feed-item"><div class="feed-icon" style="background:var(--blue-dim);color:var(--blue)"><i class="bi bi-file-earmark-text-fill"></i></div><div><div class="feed-text">SMS form submitted — <strong>Apex Freight</strong></div><div class="feed-time">Mar 20, 2026</div></div></div>
+              <div class="feed-item"><div class="feed-icon" style="background:var(--green-dim);color:var(--green)"><i class="bi bi-shield-fill-check"></i></div><div><div class="feed-text">TruckSafe cert uploaded — <strong>Apex Freight</strong></div><div class="feed-time">Mar 15, 2026</div></div></div>
+              <div class="feed-item"><div class="feed-icon" style="background:var(--purple-dim);color:var(--purple)"><i class="bi bi-arrow-up-circle-fill"></i></div><div><div class="feed-text"><strong>Blue Star</strong> upgraded to Starter plan</div><div class="feed-time">Mar 12, 2026</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS ── -->
+    <div class="view" id="view-analytics">
+      <div class="stats-row" style="margin-bottom:20px">
+        <div class="stat-card sc-cyan"><div class="stat-icon si-cyan"><i class="bi bi-graph-up-arrow"></i></div><div class="stat-val">+18%</div><div class="stat-lbl">MoM Revenue Growth</div><div class="stat-delta delta-up"><i class="bi bi-arrow-up-short"></i>vs Feb 2026</div></div>
+        <div class="stat-card sc-blue"><div class="stat-icon si-blue"><i class="bi bi-hourglass-split"></i></div><div class="stat-val">4.2d</div><div class="stat-lbl">Avg Onboarding Time</div><div class="stat-delta delta-down"><i class="bi bi-arrow-down-short"></i>−0.8d improved</div></div>
+        <div class="stat-card sc-green"><div class="stat-icon si-green"><i class="bi bi-patch-check-fill"></i></div><div class="stat-val">96%</div><div class="stat-lbl">Avg Compliance Score</div><div class="stat-delta delta-up"><i class="bi bi-arrow-up-short"></i>+2% vs last qtr</div></div>
+        <div class="stat-card sc-purple"><div class="stat-icon si-purple"><i class="bi bi-people-fill"></i></div><div class="stat-val">89%</div><div class="stat-lbl">Client Retention Rate</div><div class="stat-delta delta-flat"><i class="bi bi-dash"></i>Stable</div></div>
+      </div>
+      <div class="grid-2-eq">
+        <div class="card">
+          <div class="card-head"><div class="card-title"><i class="bi bi-bar-chart-fill"></i>Signups by Month</div></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:flex-end;gap:8px;height:100px">
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;height:100%"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:40%;background:var(--blue);border-radius:4px 4px 0 0;opacity:.7"></div></div><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px">Oct</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;height:100%"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:55%;background:var(--blue);border-radius:4px 4px 0 0;opacity:.7"></div></div><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px">Nov</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;height:100%"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:45%;background:var(--blue);border-radius:4px 4px 0 0;opacity:.7"></div></div><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px">Dec</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;height:100%"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:62%;background:var(--cyan);border-radius:4px 4px 0 0;opacity:.8"></div></div><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px">Jan</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;height:100%"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:74%;background:var(--cyan);border-radius:4px 4px 0 0;opacity:.85"></div></div><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px">Feb</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;flex:1;height:100%"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:90%;background:var(--cyan);border-radius:4px 4px 0 0"></div></div><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:4px">Mar</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title"><i class="bi bi-pie-chart-fill"></i>Compliance Scores</div></div>
+          <div class="card-body">
+            <div class="prog"><div class="prog-head"><div class="prog-lbl">Apex Freight Pty Ltd</div><div class="prog-val" style="color:var(--green)">92%</div></div><div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--green)"></div></div></div>
+            <div class="prog"><div class="prog-head"><div class="prog-lbl">RedHawk Logistics</div><div class="prog-val" style="color:var(--green)">85%</div></div><div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--green)"></div></div></div>
+            <div class="prog"><div class="prog-head"><div class="prog-lbl">Blue Star Transport</div><div class="prog-val" style="color:var(--amber)">78%</div></div><div class="prog-track"><div class="prog-fill" style="width:78%;background:var(--amber)"></div></div></div>
+            <div class="prog" style="margin-bottom:0"><div class="prog-head"><div class="prog-lbl">NorthLine Transport</div><div class="prog-val" style="color:var(--red)">55%</div></div><div class="prog-track"><div class="prog-fill" style="width:55%;background:var(--red)"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMPANIES ── -->
+    <div class="view" id="view-companies">
+      <div class="card">
+        <div class="card-head"><div class="card-title"><i class="bi bi-buildings-fill"></i>All Companies</div><button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('show')"><i class="bi bi-plus-lg"></i>Add Company</button></div>
+        <div class="filter-bar"><div class="search-field"><i class="bi bi-search"></i><input type="text" placeholder="Search companies, ABN…" oninput="filterTbl(this.value,'coTbody')"></div><select class="sel"><option>All Status</option><option>Active</option><option>Pending</option><option>Trial</option></select><select class="sel"><option>All Plans</option><option>Starter</option><option>Professional</option><option>Enterprise</option></select></div>
+        <div class="tbl-wrap"><table class="dt"><thead><tr><th>Company</th><th>Contact</th><th>Plan</th><th>Vehicles</th><th>Drivers</th><th>Compliance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="coTbody">
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">AF</div><div><div class="ent-name">Apex Freight Pty Ltd</div><div class="ent-sub">ABN 12 345 678 901</div></div></div></td><td><div class="strong">James Crawford</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">james@apexfreight.com.au</div></td><td><span class="plan p-pro">Professional</span></td><td class="strong">42</td><td class="strong">18</td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog-track" style="width:60px;display:inline-block"><div class="prog-fill" style="width:92%;background:var(--green)"></div></div><span style="font-size:11px;font-weight:700;color:var(--green);font-family:'DM Mono',monospace">92%</span></div></td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="openModal('Apex Freight Pty Ltd','12 345 678 901')"><i class="bi bi-pencil"></i></button><button class="btn btn-danger btn-sm"><i class="bi bi-ban"></i></button></div></td></tr>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">BT</div><div><div class="ent-name">Blue Star Transport</div><div class="ent-sub">ABN 98 765 432 109</div></div></div></td><td><div class="strong">Sarah Mitchell</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">s.mitchell@bluestar.com.au</div></td><td><span class="plan p-starter">Starter</span></td><td class="strong">11</td><td class="strong">4</td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog-track" style="width:60px;display:inline-block"><div class="prog-fill" style="width:78%;background:var(--amber)"></div></div><span style="font-size:11px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace">78%</span></div></td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="openModal('Blue Star Transport','98 765 432 109')"><i class="bi bi-pencil"></i></button><button class="btn btn-danger btn-sm"><i class="bi bi-ban"></i></button></div></td></tr>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">RH</div><div><div class="ent-name">RedHawk Logistics</div><div class="ent-sub">ABN 55 234 567 890</div></div></div></td><td><div class="strong">Mark Stevens</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">mark@redhawk.com.au</div></td><td><span class="plan p-ent">Enterprise</span></td><td class="strong">78</td><td class="strong">34</td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog-track" style="width:60px;display:inline-block"><div class="prog-fill" style="width:85%;background:var(--green)"></div></div><span style="font-size:11px;font-weight:700;color:var(--green);font-family:'DM Mono',monospace">85%</span></div></td><td><span class="badge b-amber"><span class="dot"></span>Pending</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-success btn-sm" onclick="approveCo(this)"><i class="bi bi-check"></i>Approve</button><button class="btn btn-danger btn-sm"><i class="bi bi-x"></i></button></div></td></tr>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">NT</div><div><div class="ent-name">NorthLine Transport</div><div class="ent-sub">ABN 44 321 654 987</div></div></div></td><td><div class="strong">Linda Park</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">linda@northline.com.au</div></td><td><span class="plan p-starter">Starter</span></td><td class="strong">6</td><td class="strong">3</td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog-track" style="width:60px;display:inline-block"><div class="prog-fill" style="width:55%;background:var(--red)"></div></div><span style="font-size:11px;font-weight:700;color:var(--red);font-family:'DM Mono',monospace">55%</span></div></td><td><span class="badge b-cyan"><span class="dot"></span>Trial</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="openModal('NorthLine Transport','44 321 654 987')"><i class="bi bi-pencil"></i></button><button class="btn btn-danger btn-sm"><i class="bi bi-ban"></i></button></div></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── DRIVERS ── -->
+    <div class="view" id="view-drivers">
+      <div class="card">
+        <div class="card-head"><div class="card-title"><i class="bi bi-person-badge-fill"></i>All Drivers</div><button class="btn btn-primary"><i class="bi bi-plus-lg"></i>Add Driver</button></div>
+        <div class="filter-bar"><div class="search-field"><i class="bi bi-search"></i><input type="text" placeholder="Search drivers…"></div><select class="sel"><option>All Companies</option><option>Apex Freight</option><option>Blue Star</option><option>RedHawk</option></select><select class="sel"><option>All Licences</option><option>HC</option><option>MC</option><option>MR</option></select></div>
+        <div class="tbl-wrap"><table class="dt"><thead><tr><th>Driver</th><th>Company</th><th>Licence</th><th>Licence No.</th><th>Expiry</th><th>Status</th><th></th></tr></thead><tbody>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);font-size:10px">JC</div><div><div class="ent-name">James Crawford</div><div class="ent-sub">Fleet Manager</div></div></div></td><td>Apex Freight</td><td><span class="badge b-blue"><span class="dot"></span>HC</span></td><td style="font-family:'DM Mono',monospace;font-size:12px">NSW 234 561 789</td><td style="font-family:'DM Mono',monospace;font-size:12px">Dec 15, 2027</td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i></button></td></tr>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#10b981,#06b6d4);font-size:10px">MS</div><div><div class="ent-name">Mark Stevens</div><div class="ent-sub">Senior Driver</div></div></div></td><td>RedHawk Logistics</td><td><span class="badge b-blue"><span class="dot"></span>MC</span></td><td style="font-family:'DM Mono',monospace;font-size:12px">VIC 876 543 210</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amber)">Jun 30, 2026</td><td><span class="badge b-amber"><span class="dot"></span>Review Due</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i></button></td></tr>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);font-size:10px">LP</div><div><div class="ent-name">Linda Park</div><div class="ent-sub">Owner-Driver</div></div></div></td><td>NorthLine Transport</td><td><span class="badge b-blue"><span class="dot"></span>MR</span></td><td style="font-family:'DM Mono',monospace;font-size:12px">QLD 555 444 333</td><td style="font-family:'DM Mono',monospace;font-size:12px">Sep 10, 2026</td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i></button></td></tr>
+          <tr><td><div class="ent"><div class="ent-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444);font-size:10px">TR</div><div><div class="ent-name">Tony Russo</div><div class="ent-sub">Driver</div></div></div></td><td>Apex Freight</td><td><span class="badge b-blue"><span class="dot"></span>HC</span></td><td style="font-family:'DM Mono',monospace;font-size:12px">NSW 123 456 789</td><td style="font-family:'DM Mono',monospace;font-size:12px">Mar 1, 2028</td><td><span class="badge b-green"><span class="dot"></span>Active</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i></button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── VEHICLES ── -->
+    <div class="view" id="view-vehicles">
+      <div class="card">
+        <div class="card-head"><div class="card-title"><i class="bi bi-truck-flatbed"></i>All Vehicles</div><button class="btn btn-primary"><i class="bi bi-plus-lg"></i>Add Vehicle</button></div>
+        <div class="filter-bar"><div class="search-field"><i class="bi bi-search"></i><input type="text" placeholder="Search rego, VIN…"></div><select class="sel"><option>All Companies</option><option>Apex Freight</option><option>Blue Star</option><option>RedHawk</option></select><select class="sel"><option>All Types</option><option>Prime Mover</option><option>Rigid Truck</option><option>Trailer</option></select></div>
+        <div class="tbl-wrap"><table class="dt"><thead><tr><th>Vehicle</th><th>Rego</th><th>Company</th><th>Type</th><th>Year</th><th>Rego Expiry</th><th>Status</th><th></th></tr></thead><tbody>
+          <tr><td><div class="ent-name">Kenworth T610</div><div class="ent-sub">VIN 1NKDLB0X4LJ264322</div></td><td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">NSW AB 1234</td><td>Apex Freight</td><td>Prime Mover</td><td style="font-family:'DM Mono',monospace;font-size:12px">2021</td><td style="font-family:'DM Mono',monospace;font-size:12px">Jun 30, 2026</td><td><span class="badge b-green"><span class="dot"></span>Current</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i></button></td></tr>
+          <tr><td><div class="ent-name">Volvo FH16</div><div class="ent-sub">VIN YV2RG40A9LA134567</div></td><td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">VIC XY 5678</td><td>RedHawk Logistics</td><td>Prime Mover</td><td style="font-family:'DM Mono',monospace;font-size:12px">2019</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--red)">Mar 15, 2026</td><td><span class="badge b-red"><span class="dot"></span>Expired</span></td><td><button class="btn btn-danger btn-sm"><i class="bi bi-exclamation-circle"></i>Urgent</button></td></tr>
+          <tr><td><div class="ent-name">Isuzu FVZ 1400</div><div class="ent-sub">VIN JABVAZ7Z4J7001234</div></td><td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">NSW CD 9012</td><td>Blue Star Transport</td><td>Rigid Truck</td><td style="font-family:'DM Mono',monospace;font-size:12px">2020</td><td style="font-family:'DM Mono',monospace;font-size:12px">Dec 1, 2026</td><td><span class="badge b-green"><span class="dot"></span>Current</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i></button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── INCIDENTS ── -->
+    <div class="view" id="view-incidents">
+      <div class="card">
+        <div class="card-head"><div class="card-title"><i class="bi bi-exclamation-triangle-fill" style="color:var(--amber)"></i>Incident Reports</div><span class="badge b-red"><span class="dot"></span>3 Open</span></div>
+        <div class="tbl-wrap"><table class="dt"><thead><tr><th>ID</th><th>Type</th><th>Company</th><th>Location</th><th>Reported</th><th>Severity</th><th>Status</th><th></th></tr></thead><tbody>
+          <tr><td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">#INC-037</td><td>Near-Miss</td><td>RedHawk Logistics</td><td>Eastern Depot, Sydney</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Yesterday 3:42 PM</td><td><span class="badge b-amber"><span class="dot"></span>Medium</span></td><td><span class="badge b-red"><span class="dot"></span>Open</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i>Review</button></td></tr>
+          <tr><td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">#INC-036</td><td>Vehicle Damage</td><td>Blue Star Transport</td><td>Parramatta Rd, Sydney</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Mar 22, 2026</td><td><span class="badge b-blue"><span class="dot"></span>Low</span></td><td><span class="badge b-red"><span class="dot"></span>Open</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i>Review</button></td></tr>
+          <tr><td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">#INC-035</td><td>Fatigue Event</td><td>Apex Freight</td><td>Pacific Hwy, NSW</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Mar 18, 2026</td><td><span class="badge b-red"><span class="dot"></span>High</span></td><td><span class="badge b-green"><span class="dot"></span>Resolved</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i>View</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── DOCUMENTS ── -->
+    <div class="view" id="view-documents">
+      <div class="card">
+        <div class="card-head"><div class="card-title"><i class="bi bi-folder-fill"></i>Document Library</div><button class="btn btn-primary"><i class="bi bi-cloud-upload"></i>Upload</button></div>
+        <div class="tbl-wrap"><table class="dt"><thead><tr><th>Document</th><th>Company</th><th>Type</th><th>Uploaded</th><th>Size</th><th>Status</th><th></th></tr></thead><tbody>
+          <tr><td><div style="display:flex;align-items:center;gap:10px"><i class="bi bi-file-earmark-pdf-fill" style="font-size:20px;color:#ef4444"></i><div class="ent-name">Fatigue Management Policy v3.pdf</div></div></td><td>Apex Freight</td><td><span class="badge b-gray">Policy</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Mar 20, 2026</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">1.2 MB</td><td><span class="badge b-green"><span class="dot"></span>Current</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></button></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:10px"><i class="bi bi-file-earmark-pdf-fill" style="font-size:20px;color:#ef4444"></i><div class="ent-name">Emergency Response Plan.pdf</div></div></td><td>RedHawk Logistics</td><td><span class="badge b-gray">Plan</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Jun 3, 2025</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">2.1 MB</td><td><span class="badge b-amber"><span class="dot"></span>Needs Review</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></button></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:10px"><i class="bi bi-file-earmark-spreadsheet-fill" style="font-size:20px;color:#10b981"></i><div class="ent-name">Risk Register 2026.xlsx</div></div></td><td>Blue Star Transport</td><td><span class="badge b-gray">Register</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">Feb 18, 2026</td><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">145 KB</td><td><span class="badge b-green"><span class="dot"></span>Current</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── FORMS ── -->
+    <div class="view" id="view-forms">
+      <div class="card">
+        <div class="card-head"><div class="card-title"><i class="bi bi-ui-checks-grid"></i>Forms &amp; SMS Submissions</div><button class="btn btn-primary"><i class="bi bi-plus-lg"></i>New Form</button></div>
+        <div class="tbl-wrap"><table class="dt"><thead><tr><th>Form</th><th>Company</th><th>Submitted</th><th>By</th><th>Status</th><th></th></tr></thead><tbody>
+          <tr><td class="strong">Full SMS Profile — 2026</td><td>Apex Freight Pty Ltd</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">Feb 28, 2026</td><td>James Crawford</td><td><span class="badge b-green"><span class="dot"></span>Approved</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i>View</button></td></tr>
+          <tr><td class="strong">Incident Report #INC-037</td><td>RedHawk Logistics</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">Mar 26, 2026</td><td>Mark Stevens</td><td><span class="badge b-amber"><span class="dot"></span>Under Review</span></td><td><button class="btn btn-ghost btn-sm"><i class="bi bi-eye"></i>View</button></td></tr>
+          <tr><td class="strong">Vehicle Pre-Start Checklist</td><td>NorthLine Transport</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">Mar 21, 2026</td><td>Linda Park</td><td><span class="badge b-blue"><span class="dot"></span>Draft</span></td><td><button class="btn btn-success btn-sm"><i class="bi bi-check"></i>Approve</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="view" id="view-settings">
+      <div class="grid-2-eq">
+        <div>
+          <div class="card"><div class="card-head"><div class="card-title"><i class="bi bi-person-gear"></i>Admin Profile</div></div><div class="card-body">
+            <div class="field-row"><div class="field"><label>Full Name</label><input value="Super Admin"></div><div class="field"><label>Role</label><input value="Super Administrator"></div></div>
+            <div class="field-row full"><div class="field"><label>Email Address</label><input type="email" value="admin@prodrivecompliance.com"></div></div>
+            <div class="field-row"><div class="field"><label>Phone</label><input value="+61 4XX XXX XXX"></div><div class="field"><label>Location</label><input value="Sydney, NSW"></div></div>
+            <button class="btn btn-primary" style="margin-top:8px" onclick="showToast('Profile saved!')"><i class="bi bi-check"></i>Save Changes</button>
+          </div></div>
+          <div class="card"><div class="card-head"><div class="card-title"><i class="bi bi-shield-lock-fill"></i>Security</div></div><div class="card-body">
+            <div class="field-row full"><div class="field"><label>Current Password</label><input type="password" placeholder="••••••••"></div></div>
+            <div class="field-row"><div class="field"><label>New Password</label><input type="password" placeholder="••••••••"></div><div class="field"><label>Confirm Password</label><input type="password" placeholder="••••••••"></div></div>
+            <button class="btn btn-ghost" style="margin-top:8px" onclick="showToast('Password updated!')"><i class="bi bi-lock"></i>Update Password</button>
+          </div></div>
+        </div>
+        <div>
+          <div class="card"><div class="card-head"><div class="card-title"><i class="bi bi-toggles"></i>Notifications</div></div><div class="card-body">
+            <div class="toggle-row"><div class="toggle-info"><strong>Email Notifications</strong><span>Receive system alerts by email</span></div><label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label></div>
+            <div class="toggle-row"><div class="toggle-info"><strong>New Registration Alerts</strong><span>Alert when a company registers</span></div><label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label></div>
+            <div class="toggle-row"><div class="toggle-info"><strong>Incident Notifications</strong><span>Alert on new incident reports</span></div><label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label></div>
+            <div class="toggle-row"><div class="toggle-info"><strong>Compliance Reminders</strong><span>Warn on accreditation expiry</span></div><label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label></div>
+            <div class="toggle-row"><div class="toggle-info"><strong>Maintenance Mode</strong><span>Disable public site access</span></div><label class="toggle"><input type="checkbox"><div class="toggle-slider"></div></label></div>
+          </div></div>
+          <div class="card"><div class="card-head"><div class="card-title"><i class="bi bi-info-circle-fill"></i>System Info</div></div>
+            <div style="padding:0">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600;color:var(--text2)">Version</span><span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">v2.4.1</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600;color:var(--text2)">Environment</span><span class="badge b-green"><span class="dot"></span>Production</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600;color:var(--text2)">Last Backup</span><span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text3)">Today, 3:00 AM</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600;color:var(--text2)">Database</span><span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--green)">Healthy</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px"><span style="font-size:12px;font-weight:600;color:var(--text2)">Uptime</span><span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--green)">99.97%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <div class="modal-title"><span id="modalHeading">Edit Company</span><button class="modal-close" onclick="closeModal('editModal')">&times;</button></div>
+    <div class="field-row"><div class="field"><label>Company Name</label><input id="mName"></div><div class="field"><label>ABN</label><input id="mABN"></div></div>
+    <div class="field-row"><div class="field"><label>Contact Person</label><input placeholder="Full name"></div><div class="field"><label>Email</label><input type="email" placeholder="email@company.com.au"></div></div>
+    <div class="field-row"><div class="field"><label>Phone</label><input placeholder="+61 4XX XXX XXX"></div><div class="field"><label>Address</label><input placeholder="City, State"></div></div>
+    <div class="field-row"><div class="field"><label>Plan</label><select><option>Starter</option><option>Professional</option><option>Enterprise</option></select></div><div class="field"><label>Status</label><select><option>Active</option><option>Pending</option><option>Trial</option><option>Suspended</option></select></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('editModal');showToast('Company saved!')"><i class="bi bi-check"></i>Save Changes</button></div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-bg" id="addModal">
+  <div class="modal-box">
+    <div class="modal-title"><span>Add New Company</span><button class="modal-close" onclick="closeModal('addModal')">&times;</button></div>
+    <div class="field-row full"><div class="field"><label>Company Name *</label><input placeholder="e.g. Apex Freight Pty Ltd"></div></div>
+    <div class="field-row"><div class="field"><label>ABN *</label><input placeholder="XX XXX XXX XXX"></div><div class="field"><label>Contact Person *</label><input placeholder="Full name"></div></div>
+    <div class="field-row"><div class="field"><label>Email *</label><input type="email" placeholder="email@company.com.au"></div><div class="field"><label>Phone</label><input placeholder="+61 4XX XXX XXX"></div></div>
+    <div class="field-row"><div class="field"><label>Plan</label><select><option>Starter</option><option>Professional</option><option>Enterprise</option></select></div><div class="field"><label>Address</label><input placeholder="Sydney NSW 2000"></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('addModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('addModal');showToast('Company added!')"><i class="bi bi-plus-lg"></i>Add Company</button></div>
+  </div>
+</div>
+
+<div id="sb-overlay" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:399;backdrop-filter:blur(2px)"></div>
+<div id="toast"><i class="bi bi-check-circle-fill"></i><span id="toastMsg">Done!</span></div>
+
+<script>
+function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})+' AEST'}
+tick();setInterval(tick,1000);
+const T={dashboard:['Dashboard','admin / overview'],analytics:['Analytics','admin / analytics'],companies:['Companies','admin / manage / companies'],drivers:['Drivers','admin / manage / drivers'],vehicles:['Vehicles','admin / manage / vehicles'],incidents:['Incidents','admin / compliance / incidents'],documents:['Documents','admin / compliance / documents'],forms:['Forms & SMS','admin / compliance / forms'],settings:['Settings','admin / system / settings']};
+function nav(id,btn){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));document.getElementById('view-'+id).classList.add('active');if(btn)btn.classList.add('active');const t=T[id]||[id,'admin'];document.getElementById('tb-title').textContent=t[0];document.getElementById('tb-crumb').textContent=t[1];if(window.innerWidth<=768)toggleSidebar(false)}
+function toggleSidebar(f){const s=document.getElementById('sidebar'),o=document.getElementById('sb-overlay'),open=f!==undefined?f:!s.classList.contains('open');s.classList.toggle('open',open);o.style.display=open?'block':'none'}
+function openModal(n,a){document.getElementById('modalHeading').textContent='Edit — '+n;document.getElementById('mName').value=n;document.getElementById('mABN').value=a||'';document.getElementById('editModal').classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+function approveCo(btn){const r=btn.closest('tr'),c=r.querySelectorAll('td');c[6].innerHTML='<span class="badge b-green"><span class="dot"></span>Active</span>';c[7].innerHTML='<div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm"><i class="bi bi-pencil"></i></button><button class="btn btn-danger btn-sm"><i class="bi bi-ban"></i></button></div>';showToast('Company approved!')}
+function filterTbl(v,id){document.querySelectorAll('#'+id+' tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(v.toLowerCase())?'':'none')}
+let tt;function showToast(m){clearTimeout(tt);document.getElementById('toastMsg').textContent=m;document.getElementById('toast').classList.add('show');tt=setTimeout(()=>document.getElementById('toast').classList.remove('show'),2800)}
+</script>
+</body>
+</html>

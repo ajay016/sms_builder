@@ -1,0 +1,795 @@
+{% extends "sms_builder/base.html" %}
+{% load static %}
+
+
+{% block custom_css %}
+<style>
+    /* ============ AI CHATBOT (ISOLATED SYSTEM) ============ */
+
+.pd-chat-launcher {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1060;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+/* BUTTON */
+.pd-chat-button {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #1e40af);
+    border: none;
+    color: white;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.4);
+    transition: all 0.25s;
+    position: relative;
+}
+
+.pd-chat-button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 36px rgba(37, 99, 235, 0.5);
+}
+
+/* NOTIFICATION PING */
+.pd-chat-ping {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid white;
+    animation: pdPing 1.5s ease-in-out infinite;
+}
+
+@keyframes pdPing {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+/* CHAT WINDOW */
+.pd-chat-window {
+    width: 360px;
+    max-height: 520px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pd-chat-window.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* HEADER */
+.pd-chat-header {
+    background: linear-gradient(135deg, var(--primary), #1e40af);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.pd-chat-header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.pd-chat-header-info strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.pd-chat-header-info small {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* CLOSE BUTTON */
+.pd-chat-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.pd-chat-close:hover {
+    opacity: 1;
+}
+
+/* MESSAGES AREA */
+.pd-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f8fafc;
+}
+
+.pd-chat-messages::-webkit-scrollbar {
+    width: 4px;
+}
+
+.pd-chat-messages::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 4px;
+}
+
+/* MESSAGE */
+.pd-chat-msg {
+    max-width: 82%;
+}
+
+.pd-chat-msg.bot {
+    align-self: flex-start;
+}
+
+.pd-chat-msg.user {
+    align-self: flex-end;
+}
+
+.pd-chat-bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+/* BOT MESSAGE */
+.pd-chat-msg.bot .pd-chat-bubble {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px 18px 18px 18px;
+    color: #1e293b;
+}
+
+/* USER MESSAGE */
+.pd-chat-msg.user .pd-chat-bubble {
+    background: linear-gradient(135deg, var(--primary), #1e40af);
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+}
+
+/* TIME */
+.pd-chat-time {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.pd-chat-msg.user .pd-chat-time {
+    text-align: right;
+}
+
+/* TYPING */
+.pd-chat-typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px 18px 18px 18px;
+}
+
+.pd-chat-dot {
+    width: 7px;
+    height: 7px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: pdTyping 1.4s infinite;
+}
+
+.pd-chat-dot:nth-child(2) { animation-delay: 0.2s; }
+.pd-chat-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pdTyping {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+}
+
+/* QUICK REPLIES */
+.pd-chat-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 20px 12px;
+    background: #f8fafc;
+}
+
+.pd-chat-quick-btn {
+    background: white;
+    border: 1.5px solid #dbeafe;
+    color: var(--primary);
+    border-radius: 40px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pd-chat-quick-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* INPUT AREA */
+.pd-chat-input-area {
+    padding: 14px 16px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 8px;
+    background: white;
+}
+
+.pd-chat-input {
+    flex: 1;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 10px 18px;
+    font-size: 13px;
+    outline: none;
+}
+
+.pd-chat-input:focus {
+    border-color: var(--primary);
+}
+
+.pd-chat-send {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pd-chat-send:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+</style>
+{% endblock custom_css %}
+
+
+{% block content %}
+<!-- ========== HERO ========== -->
+
+
+{% load static %}
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="home">
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+
+            <!-- LEFT -->
+            <div class="col-lg-6">
+
+                <span class="hero-badge">
+                    <i class="bi bi-shield-check"></i>
+                    {{ system_settings.hero_badge }}
+                </span>
+
+                <h1>
+                    {{ system_settings.hero_title|default:"Smarter Safety Management"|safe }}
+                </h1>
+
+                <p>
+                    {{ system_settings.hero_description|default:"Manage SMS easily." }}
+                </p>
+
+                <div class="hero-cta-group">
+                    <a href="{{ system_settings.hero_button_link|default:'#' }}" class="btn-hero-primary">
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                        {{ system_settings.hero_button_text|default:"Get Started" }}
+                    </a>
+
+                    <a href="#services" class="btn-hero-outline">
+                        <i class="bi bi-play-circle"></i>See How It Works
+                    </a>
+                </div>
+
+                <!-- TRUST -->
+                <div class="hero-trust">
+                    <div class="hero-trust-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        {{ system_settings.trust_item_1|default:"No credit card required" }}
+                    </div>
+                    <div class="hero-trust-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        {{ system_settings.trust_item_2|default:"NHVR aligned" }}
+                    </div>
+                    <div class="hero-trust-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        {{ system_settings.trust_item_3|default:"Setup in minutes" }}
+                    </div>
+                </div>
+
+                <!-- ✅ CAROUSEL -->
+                <div id="heroSlider" class="carousel slide mt-5" data-bs-ride="carousel">
+
+                    <!-- Indicators -->
+                    <div class="carousel-indicators position-static justify-content-start m-0 mb-3">
+                        {% if carousel_images %}
+                            {% for image in carousel_images %}
+                                <button type="button"
+                                        data-bs-target="#heroSlider"
+                                        data-bs-slide-to="{{ forloop.counter0 }}"
+                                        class="{% if forloop.first %}active{% endif %}">
+                                </button>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Slides -->
+                    <div class="carousel-inner rounded-4 overflow-hidden">
+
+                        {% if carousel_images %}
+                            {% for image in carousel_images %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ image }}"
+                                         class="d-block w-100"
+                                         style="height:220px; object-fit:cover;"
+                                         onerror="this.src='{% static 'sms_builder/assets/images/placeholder.jpg' %}'">
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- fallback -->
+                            <div class="carousel-item active">
+                                <img src="{% static 'sms_builder/assets/images/c1.jpg' %}" class="d-block w-100">
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        <!-- RIGHT -->
+<div class="col-lg-6">
+    <div class="hero-video-wrap">
+        <div class="ratio ratio-16x9">
+
+            <iframe 
+                src="{{ video_url }}"
+                title="PRODRIVE – Heavy Vehicle Safety Management"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+            </iframe>
+
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</section>
+<!-- ========== SERVICES ========== -->
+<section class="section" id="services">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">What We Offer</span>
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-desc">
+                A complete digital solution for compliance, document
+                management, and heavy vehicle safety workflows.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            {% for service in services %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card custom-card h-100 border-0">
+
+                    <div class="card-body p-4">
+
+                        <div class="service-icon mb-4">
+                            <i class="bi {{ service.icon }}"></i>
+                        </div>
+
+                        <h4 class="fw-bold mb-3">
+                            {{ service.title }}
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            {{ service.description }}
+                        </p>
+
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ========== PRICING ========== -->
+<section class="section bg-white" id="pricing">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">Simple Pricing</span>
+            <h2 class="section-title">Pricing Plans</h2>
+            <p class="section-desc">
+                Transparent, flexible pricing for transport businesses
+                of all sizes. No hidden fees.
+            </p>
+        </div>
+        
+        {% if user.is_authenticated %}
+            {% if current_subscription and current_subscription.status == 'active' %}
+            <div class="alert alert-success text-center mb-4">
+                <i class="bi bi-check-circle-fill"></i>
+                <strong>Active Plan:</strong> You are currently on the <strong>{{ current_subscription.plan.display_name }}</strong> plan.
+                {% if current_subscription.end_date %}
+                <br><small>Valid until {{ current_subscription.end_date|date:"F j, Y" }}</small>
+                {% endif %}
+                <div class="mt-2">
+                    <a href="{% url 'profile' %}" class="btn btn-sm btn-primary">Go to Dashboard</a>
+                </div>
+            </div>
+            {% elif current_subscription and current_subscription.status == 'pending' %}
+            <div class="alert alert-warning text-center mb-4">
+                <i class="bi bi-clock-history"></i>
+                <strong>Pending Plan:</strong> You have selected the <strong>{{ current_subscription.plan.display_name }}</strong> plan.
+                <br><small>Your plan is pending approval. You will be notified once activated.</small>
+                <div class="mt-2">
+                    <a href="{% url 'cancel_pending_plan' current_subscription.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this plan?')">
+                        Cancel Selection
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+        
+        <div class="row g-4 justify-content-center">
+            {% for plan in pricing_plans %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card custom-card h-100 pricing-card {% if plan.is_popular %}featured position-relative{% endif %}">
+                    {% if plan.is_popular %}
+                    <div class="pricing-badge">Most Popular</div>
+                    {% endif %}
+                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
+                        <h4 class="fw-bold mb-1">{{ plan.display_name }}</h4>
+                        <p class="text-muted small mb-3">{{ plan.description|default:"Perfect for your business" }}</p>
+                        <div class="pricing-price mb-4">
+                            <sup>$</sup>{{ plan.price }}<span>/{{ plan.price_period }}</span>
+                        </div>
+                        
+                        {% for feature in plan.get_features_list %}
+                        <div class="pricing-feature">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>{{ feature }}</span>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if user.is_authenticated %}
+                            {% if current_subscription and current_subscription.status == 'active' %}
+                                {% if current_subscription.plan.name == plan.name %}
+                                <button class="btn btn-success mt-4" disabled>
+                                    <i class="bi bi-check-circle"></i> Current Plan
+                                </button>
+                                {% else %}
+                                <button class="btn btn-secondary mt-4" disabled>
+                                    Contact Sales to Upgrade
+                                </button>
+                                {% endif %}
+                            {% elif current_subscription and current_subscription.status == 'pending' %}
+                                {% if current_subscription.plan.name == plan.name %}
+                                <button class="btn btn-warning mt-4" disabled>
+                                    <i class="bi bi-hourglass-split"></i> Pending Approval
+                                </button>
+                                {% else %}
+                                <button class="btn btn-secondary mt-4" disabled>
+                                    Already have a pending plan
+                                </button>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'select_plan' plan.name %}" class="btn {{ plan.button_class }} mt-4">
+                                    {{ plan.button_text }}
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'signup' %}?plan={{ plan.name }}" class="btn {{ plan.button_class }} mt-4">
+                                {{ plan.button_text }}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Pricing plans coming soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if not user.is_authenticated %}
+        <div class="text-center mt-5">
+            <p class="text-muted">
+                Already have an account? <a href="{% url 'signin' %}">Login to select a plan</a>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ========== COMPLIANCE COVERAGE ========== -->
+<section class="section" id="compliance-coverage">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">What We Cover</span>
+            <h2 class="section-title">Compliance Coverage</h2>
+            <p class="section-desc">
+                Our system helps businesses manage the key compliance
+                areas required for heavy vehicle safety, operational
+                control, and documented risk management.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="coverage-card">
+                    <div class="coverage-num">01</div>
+                    <div class="service-icon mb-3">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">HVNL Alignment</h4>
+                    <p class="text-muted mb-0">
+                        Support for Heavy Vehicle National Law
+                        obligations, policies, and documented
+                        procedures.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="coverage-card">
+                    <div class="coverage-num">02</div>
+                    <div class="service-icon mb-3">
+                        <i class="bi bi-diagram-3"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">
+                        Chain of Responsibility
+                    </h4>
+                    <p class="text-muted mb-0">
+                        Capture responsibilities across schedulers,
+                        operators, drivers, and subcontractors.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="coverage-card">
+                    <div class="coverage-num">03</div>
+                    <div class="service-icon mb-3">
+                        <i class="bi bi-clipboard-data"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Risk Assessments</h4>
+                    <p class="text-muted mb-0">
+                        Identify hazards, assess risks, and maintain
+                        mitigation records in one system.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="coverage-card">
+                    <div class="coverage-num">04</div>
+                    <div class="service-icon mb-3">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">
+                        Driver &amp; Staff Records
+                    </h4>
+                    <p class="text-muted mb-0">
+                        Maintain licence details, inductions, training,
+                        and competency records for all staff.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="coverage-card">
+                    <div class="coverage-num">05</div>
+                    <div class="service-icon mb-3">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">
+                        Maintenance &amp; Inspections
+                    </h4>
+                    <p class="text-muted mb-0">
+                        Track vehicle inspections, maintenance
+                        activities, and safety check documentation.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="coverage-card">
+                    <div class="coverage-num">06</div>
+                    <div class="service-icon mb-3">
+                        <i class="bi bi-file-earmark-check"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Audit Readiness</h4>
+                    <p class="text-muted mb-0">
+                        Prepare evidence, reports, and document sets to
+                        support internal and external audits.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== WHY US ========== -->
+<!-- ========== WHY US ========== -->
+<section class="section bg-white" id="why-us">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-eyebrow">{{ why_us.eyebrow|default:"Why PRODRIVE" }}</span>
+                <h2 class="section-title">{{ why_us.title|default:"Built for the Road Ahead" }}</h2>
+                <p class="text-muted mb-4" style="line-height: 1.8">
+                    {{ why_us.description|default:"Our system is designed for usability, compliance support, and efficient document workflows. It helps transport businesses reduce manual work and improve visibility across safety operations." }}
+                </p>
+                <div class="d-grid gap-3">
+                    {% for feature in features %}
+                    <div class="feature-item">
+                        <i class="bi {{ feature.icon }}"></i>
+                        <span>{{ feature.text }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Modern responsive design — works on any device</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Intuitive navigation designed for non-technical users</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Role-based dashboard access for your whole team</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Scalable system that grows with your fleet</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Australian compliance standards built in</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-video-wrap">
+                    <div class="ratio ratio-16x9">
+                        <iframe 
+                            src="{{ why_us_video_url }}"
+                            title="PRODRIVE – Why Us"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== REVIEWS ========== -->
+<section class="section" id="reviews">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">Testimonials</span>
+            <h2 class="section-title">Client Reviews</h2>
+            <p class="section-desc">
+                Trusted by transport and compliance-focused businesses
+                across Australia.
+            </p>
+        </div>
+        
+        {% if reviews %}
+        <div class="row g-4">
+            {% for review in reviews %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card custom-card h-100 review-card border-0">
+                    <div class="card-body p-4">
+                        <div class="stars mb-3">{{ review.star_display }}</div>
+                        <p class="mb-4" style="color: #374151; line-height: 1.7">
+                            "{{ review.review_text|truncatewords:30 }}"
+                        </p>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="review-avatar">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0">{{ review.reviewer_name }}</h6>
+                                {% if review.reviewer_role %}
+                                <small class="text-muted">{{ review.reviewer_role }}</small>
+                                {% endif %}
+                                {% if review.reviewer_company %}
+                                <br>
+                                <small class="text-muted">{{ review.reviewer_company }}</small>
+                                {% elif review.company %}
+                                <br>
+                                <small class="text-muted">{{ review.company.company_name }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if review.company_response %}
+                        <div class="mt-3 pt-3 border-top">
+                            <small class="text-muted">
+                                <i class="bi bi-reply-fill"></i> Response from {{ review.company.company_name }}:
+                                "{{ review.company_response|truncatewords:20 }}"
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Optional: Show message if less than 3 reviews -->
+        {% if reviews|length < 3 %}
+        <div class="text-center mt-4">
+            <small class="text-muted">More reviews coming soon...</small>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- No approved reviews yet -->
+        <div class="text-center py-5">
+            <i class="bi bi-chat-dots" style="font-size: 3rem; color: #dee2e6;"></i>
+            <h5 class="mt-3 text-muted">No reviews yet</h5>
+            <p class="text-muted">Be the first to leave a review!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock content %}

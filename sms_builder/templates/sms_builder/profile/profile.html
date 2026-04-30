@@ -1,0 +1,1907 @@
+{% extends "sms_builder/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --soft: #eef4ff;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --dark: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --light-bg: #f8fafc;
+  --accent: #06b6d4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--light-bg); color: #1e293b; }
+
+.topbar { background: var(--dark); color: rgba(255,255,255,0.8); font-size: 13px; padding: 8px 0; }
+.topbar a { color: rgba(255,255,255,0.7); text-decoration: none; }
+.topbar a:hover { color: white; }
+
+.navbar { background: white; box-shadow: 0 2px 20px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 200; }
+.brand-title { font-size: 26px; font-weight: 800; color: var(--primary); line-height: 1; }
+.brand-subtitle { font-size: 11px; color: #94a3b8; }
+.nav-link { font-weight: 500; color: #374151 !important; font-size: 14px; border-radius: 8px; transition: all .2s; }
+.nav-link:hover { color: var(--primary) !important; background: var(--soft); }
+.nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
+
+.profile-header {
+  background: linear-gradient(140deg, #06142e 0%, #0f3d91 60%, #0c2461 100%);
+  color: white; padding: 32px 0 0; position: relative; overflow: hidden;
+}
+.profile-header::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.profile-avatar-wrap { position: relative; display: inline-block; }
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; color: white; font-weight: 800;
+  border: 3px solid rgba(255,255,255,0.25);
+}
+.avatar-dot { position: absolute; bottom: -3px; right: -3px; width: 20px; height: 20px; border-radius: 50%; background: var(--success); border: 3px solid white; }
+.profile-meta h2 { font-size: 22px; font-weight: 800; margin-bottom: 3px; }
+.profile-meta .sub { color: #cbd5e1; font-size: 13px; }
+.plan-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(96,165,250,0.2); border: 1px solid rgba(96,165,250,0.3); color: #93c5fd; font-size: 11px; font-weight: 700; padding: 3px 11px; border-radius: 40px; margin-top: 7px; }
+.active-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; font-size: 11px; font-weight: 700; padding: 3px 11px; border-radius: 40px; margin-top: 7px; margin-left: 6px; }
+.active-badge span { width: 6px; height: 6px; border-radius: 50%; background: #6ee7b7; display: inline-block; }
+
+.profile-tabs { display: flex; gap: 2px; margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); overflow-x: auto; scrollbar-width: none; }
+.profile-tabs::-webkit-scrollbar { display: none; }
+.tab-btn { background: none; border: none; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 600; padding: 13px 18px; cursor: pointer; border-bottom: 3px solid transparent; transition: all .2s; white-space: nowrap; font-family: inherit; display: flex; align-items: center; gap: 7px; }
+.tab-btn:hover { color: rgba(255,255,255,0.85); }
+.tab-btn.active { color: white; border-bottom-color: #60a5fa; }
+
+.page-body { padding: 28px 0 56px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; animation: fadeUp .2s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.card-box { background: white; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+.card-box:hover { box-shadow: 0 6px 24px rgba(37,99,235,0.07); }
+.card-top { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-top-title { font-size: 14px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+.card-top-title i { color: var(--primary); }
+.card-pad { padding: 4px 20px 8px; }
+
+.info-row { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid #f8fafc; }
+.info-row:last-child { border-bottom: none; }
+.info-key { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; min-width: 130px; flex-shrink: 0; padding-top: 1px; }
+.info-val { font-size: 13px; font-weight: 500; color: #1e293b; flex: 1; }
+
+.stat-card { background: white; border-radius: 14px; padding: 18px 20px; border: 1px solid var(--border); height: 100%; }
+.stat-card:hover { border-color: #bfdbfe; box-shadow: 0 4px 16px rgba(37,99,235,0.07); }
+.stat-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+.stat-num { font-size: 26px; font-weight: 800; color: #1e293b; line-height: 1; margin-bottom: 3px; }
+.stat-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+.score-wrap { display: flex; align-items: center; gap: 20px; padding: 8px 0 4px; }
+.score-ring { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+.score-ring svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #e2e8f0; stroke-width: 7; }
+.ring-fill { fill: none; stroke: var(--success); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset .9s ease; }
+.ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: var(--success); }
+.score-info h5 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.score-info p { font-size: 13px; color: var(--muted); margin: 0; }
+
+.prog { margin-bottom: 12px; }
+.prog:last-child { margin-bottom: 0; }
+.prog-lbl { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; font-weight: 500; color: #374151; }
+.prog-lbl span:last-child { color: var(--muted); font-weight: 600; }
+.prog-track { height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 99px; transition: width 1s ease .3s; }
+
+.sbadge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 40px; font-size: 12px; font-weight: 700; }
+.s-green { background: #dcfce7; color: #166534; }
+.s-amber { background: #fef3c7; color: #92400e; }
+.sdot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+.act-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f8fafc; }
+.act-item:last-child { border-bottom: none; }
+.act-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.act-text { font-size: 13px; color: #374151; line-height: 1.5; }
+.act-text strong { color: #1e293b; }
+.act-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.doc-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid #f8fafc; }
+.doc-item:last-child { border-bottom: none; }
+.doc-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.doc-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+.doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.btn-edit { background: var(--soft); color: var(--primary); border: 1.5px solid #bfdbfe; border-radius: 8px; font-size: 12px; font-weight: 600; padding: 5px 13px; cursor: pointer; font-family: inherit; transition: all .15s; display: inline-flex; align-items: center; gap: 5px; }
+.btn-edit:hover { background: #dbeafe; }
+.btn-sm-primary { background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; padding: 6px 14px; cursor: pointer; font-family: inherit; transition: background .15s; display: inline-flex; align-items: center; gap: 5px; }
+.btn-sm-primary:hover { background: var(--primary-dark); }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1050; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(2px); }
+.modal-overlay.show { display: flex; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-box { background: white; border-radius: 20px; max-width: 550px; width: 100%; padding: 32px; box-shadow: 0 25px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1) inset; animation: slideUp .3s cubic-bezier(0.16, 1, 0.3, 1); max-height: 90vh; overflow-y: auto; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 18px; font-weight: 700; color: #1e293b; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+.modal-title button { background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
+.modal-title button:hover { color: #1e293b; transform: rotate(90deg); }
+.form-group { margin-bottom: 18px; }
+.form-group:last-child { margin-bottom: 0; }
+.modal-label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-bottom: 8px; text-transform: capitalize; }
+.modal-input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; background: #f8fafc; outline: none; transition: all .2s; }
+.modal-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.modal-input::placeholder { color: #cbd5e1; }
+.d-flex.gap-2 { display: flex; gap: 12px; margin-top: 28px; }
+.btn { border-radius: 10px; font-weight: 600; font-size: 14px; padding: 10px 18px; border: none; cursor: pointer; transition: all .2s; font-family: inherit; }
+.btn-ghost { background: var(--light-bg); color: #374151; border: 1.5px solid var(--border); }
+.btn-ghost:hover { background: #e2e8f0; border-color: #cbd5e1; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.btn-outline-danger { background: transparent; color: #dc2626; border: 1.5px solid #dc2626; }
+.btn-outline-danger:hover { background: #dc2626; color: white; }
+.btn-danger { background: #dc2626; color: white; border: none; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-sm { padding: 4px 8px; font-size: 12px; }
+
+.review-item { 
+  padding: 20px; 
+  margin-bottom: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  transition: all .25s ease;
+}
+.review-item:hover { 
+  border-color: #bfdbfe;
+  background: white;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.08);
+  transform: translateY(-2px);
+}
+.review-item:last-child { margin-bottom: 0; }
+.stars { color: #fbbf24; font-size: 16px; letter-spacing: 3px; display: inline-block; margin-bottom: 10px; }
+.review-item h6 { font-size: 15px; font-weight: 700; color: #1e293b; margin: 12px 0 8px !important; line-height: 1.4; }
+.review-item p { font-size: 13px; color: #475569; line-height: 1.6; margin: 8px 0 14px !important; }
+.review-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 12px; }
+.review-meta strong { color: #1e293b; font-weight: 600; }
+.review-meta .dot { width: 3px; height: 3px; background: #cbd5e1; border-radius: 50%; }
+.review-delete { margin-top: 12px; }
+.rating-select span { cursor: pointer; transition: all 0.2s; }
+.rating-select span:hover { transform: scale(1.15); color: #fbbf24; }
+.star-rating { font-size: 28px; cursor: pointer; transition: all 0.2s; }
+.star-rating:hover { transform: scale(1.15); }
+
+.table-container { overflow-x: auto; margin-top: 16px; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.data-table th { background: #f8fafc; font-weight: 600; color: #475569; }
+.status-pending { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
+.status-approved { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
+.action-buttons { display: flex; gap: 8px; }
+
+/* DataTables Custom Styling */
+.dataTables_wrapper {
+    padding: 10px 0;
+}
+.dataTables_length select,
+.dataTables_filter input {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    margin-left: 5px;
+}
+.dataTables_info {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+}
+.dataTables_paginate {
+    margin-top: 15px;
+}
+.paginate_button {
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    margin: 0 2px !important;
+    border: 1px solid var(--border) !important;
+    background: white !important;
+    color: var(--dark) !important;
+    font-size: 12px !important;
+}
+.paginate_button.current {
+    background: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary) !important;
+}
+.paginate_button:hover {
+    background: var(--soft) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+.dataTables_processing {
+    position: absolute;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Custom modal styles starts */
+.custom-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-content {
+    width: 380px;
+    padding: 30px;
+    border-radius: 18px;
+    text-align: center;
+    color: white;
+    background: linear-gradient(140deg, #06142e 0%, #0f3d91 60%, #0c2461 100%);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.loading-box h3,
+.success-box h3 {
+    margin-top: 15px;
+    font-size: 20px;
+}
+
+.loading-box p,
+.success-box p {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    margin: auto;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.check-icon {
+    font-size: 40px;
+    color: #4ade80;
+}
+
+.btn-ok {
+    margin-top: 15px;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    color: #0f3d91;
+    cursor: pointer;
+    font-weight: bold;
+}
+/* Custom modal styles end */
+
+@media (max-width: 767px) {
+  .profile-avatar { width: 64px; height: 64px; font-size: 24px; }
+  .profile-meta h2 { font-size: 18px; }
+  .info-key { min-width: 100px; font-size: 11px; }
+  .stat-num { font-size: 22px; }
+  .d-md-flex { display: none !important; }
+  .action-buttons { flex-direction: column; gap: 4px; }
+  .btn-sm { padding: 2px 6px; font-size: 10px; }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container position-relative">
+        <div class="d-flex align-items-start gap-3 mb-4">
+            <div class="profile-avatar-wrap">
+                <div class="profile-avatar">{{ company_name_initials }}</div>
+                <div class="avatar-dot"></div>
+            </div>
+            <div class="profile-meta">
+                <h2>{{ company.company_name }}</h2>
+                <div class="sub">
+                    <i class="bi bi-geo-alt me-1"></i>{{ company.address|default:"Sydney, NSW" }} &nbsp;·&nbsp; 
+                    ABN {{ company.abn|slice:":2" }} {{ company.abn|slice:"2:5" }} {{ company.abn|slice:"5:8" }} {{ company.abn|slice:"8:11" }}
+                </div>
+                <div>
+                    <span class="plan-badge"><i class="bi bi-star-fill"></i>{{ current_plan }} Plan</span>
+                    <span class="active-badge"><span></span>{{ subscription_status|title }}</span>
+                </div>
+            </div>
+            <div class="ms-auto d-none d-md-flex gap-2 pt-1">
+                <button class="btn-edit" onclick="openEditModal()"><i class="bi bi-pencil"></i>Edit</button>
+                <button class="btn-sm-primary" onclick="window.location.href='{% url "dashboard" %}'"><i class="bi bi-plus"></i>New SMS</button>
+            </div>
+        </div>
+
+        <nav class="profile-tabs">
+            <button class="tab-btn active" onclick="goTab('overview', this)"><i class="bi bi-grid-1x2"></i>Overview</button>
+            <button class="tab-btn" onclick="goTab('vehicles', this)"><i class="bi bi-truck"></i>Vehicles</button>
+            <button class="tab-btn" onclick="goTab('drivers', this)"><i class="bi bi-people"></i>Drivers</button>
+            <button class="tab-btn" onclick="goTab('company', this)"><i class="bi bi-building"></i>Company</button>
+            <button class="tab-btn" onclick="goTab('documents', this)"><i class="bi bi-folder2"></i>Documents</button>
+            <button class="tab-btn" onclick="goTab('activity', this)"><i class="bi bi-clock-history"></i>Activity</button>
+            <button class="tab-btn" onclick="goTab('reviews', this)"><i class="bi bi-star-fill"></i>Reviews</button>
+        </nav>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container">
+
+        <!-- OVERVIEW TAB -->
+        <div id="tab-overview" class="tab-pane active">
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#eff6ff;color:#2563eb"><i class="bi bi-truck"></i></div>
+                        <div class="stat-num">{{ total_vehicles }}</div>
+                        <div class="stat-label">Fleet Vehicles</div>
+                        {% if pending_vehicles > 0 %}
+                        <small style="color: #f59e0b;">{{ pending_vehicles }} pending</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#f0fdf4;color:#10b981"><i class="bi bi-people"></i></div>
+                        <div class="stat-num">{{ num_drivers }}</div>
+                        <div class="stat-label">Active Drivers</div>
+                        {% if pending_drivers > 0 %}
+                        <small style="color: #f59e0b;">{{ pending_drivers }} pending</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fefce8;color:#b45309"><i class="bi bi-exclamation-triangle"></i></div>
+                        <div class="stat-num">{{ total_incidents }}</div>
+                        <div class="stat-label">Total Incidents</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#f0fdf4;color:#10b981"><i class="bi bi-file-earmark-check"></i></div>
+                        <div class="stat-num">{{ total_reviews }}</div>
+                        <div class="stat-label">Reviews</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="card-box">
+                        <div class="card-top"><div class="card-top-title"><i class="bi bi-shield-check"></i>Compliance Score</div></div>
+                        <div class="card-pad" style="padding-top:16px">
+                            <div class="score-wrap mb-4">
+                                <div class="score-ring">
+                                    <svg viewBox="0 0 80 80" width="80" height="80">
+                                        <circle class="ring-bg" cx="40" cy="40" r="33"/>
+                                        <circle class="ring-fill" id="scoreRing" cx="40" cy="40" r="33" stroke-dasharray="207" stroke-dashoffset="207"/>
+                                    </svg>
+                                    <div class="ring-num" id="scoreNum">{{ compliance_score }}%</div>
+                                </div>
+                                <div class="score-info">
+                                    <h5>Compliance Status</h5>
+                                    <p>Overall compliance score based on vehicles, drivers, and incidents.</p>
+                                </div>
+                            </div>
+                            <div class="prog"><div class="prog-lbl"><span>Fatigue Management</span><span>100%</span></div><div class="prog-track"><div class="prog-fill" data-w="100" style="background:#10b981;width:0"></div></div></div>
+                            <div class="prog"><div class="prog-lbl"><span>Vehicle Maintenance</span><span>{{ compliance_score }}%</span></div><div class="prog-track"><div class="prog-fill" data-w="{{ compliance_score }}" style="background:#2563eb;width:0"></div></div></div>
+                            <div class="prog"><div class="prog-lbl"><span>Driver Records</span><span>78%</span></div><div class="prog-track"><div class="prog-fill" data-w="78" style="background:#06b6d4;width:0"></div></div></div>
+                            <div class="prog"><div class="prog-lbl"><span>Incident Reporting</span><span>60%</span></div><div class="prog-track"><div class="prog-fill" data-w="60" style="background:#f59e0b;width:0"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card-box mb-4">
+                        <div class="card-top">
+                            <div class="card-top-title"><i class="bi bi-person-badge"></i>Contact Person</div>
+                            <button class="btn-edit" onclick="openEditModal()"><i class="bi bi-pencil"></i>Edit</button>
+                        </div>
+                        <div class="card-pad">
+                            <div class="info-row"><div class="info-key">Name</div><div class="info-val">{{ user.full_name|default:"Not set" }}</div></div>
+                            <div class="info-row"><div class="info-key">Role</div><div class="info-val">{{ user.role|default:"Fleet Manager" }}</div></div>
+                            <div class="info-row"><div class="info-key">Email</div><div class="info-val">{{ user.email }}</div></div>
+                            <div class="info-row"><div class="info-key">Phone</div><div class="info-val">{{ user.phone|default:"Not set" }}</div></div>
+                            <div class="info-row"><div class="info-key">Member Since</div><div class="info-val">{{ company.registration_date|date:"F Y" }}</div></div>
+                        </div>
+                    </div>
+                    
+                    <!-- SUBSCRIPTION DETAILS CARD -->
+                    <div class="card-box">
+                        <div class="card-top">
+                            <div class="card-top-title"><i class="bi bi-credit-card"></i>Subscription Details</div>
+                            <button class="btn-edit" onclick="openPlanChangeModal()">
+                                <i class="bi bi-arrow-repeat"></i> Change Plan
+                            </button>
+                        </div>
+                        <div class="card-pad">
+                            <div class="info-row">
+                                <div class="info-key">Current Plan</div>
+                                <div class="info-val">
+                                    <strong>{{ current_plan }}</strong>
+                                    {% if subscription and subscription.end_date %}
+                                    <span class="sbadge s-green" style="margin-left: 10px;">
+                                        <span class="sdot"></span> Active until {{ subscription.end_date|date:"M d, Y" }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-key">Status</div>
+                                <div class="info-val">
+                                    {% if subscription_status == 'active' %}
+                                    <span class="sbadge s-green"><span class="sdot"></span> Active</span>
+                                    {% elif subscription_status == 'pending_change' %}
+                                    <span class="sbadge s-amber"><span class="sdot"></span> Pending Change</span>
+                                    {% elif subscription_status == 'cancelled' %}
+                                    <span class="sbadge" style="background:#fee2e2;color:#991b1b;"><span class="sdot"></span> Cancelled</span>
+                                    {% else %}
+                                    <span class="sbadge s-amber"><span class="sdot"></span> {{ subscription_status|title }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if subscription and subscription.plan %}
+                            <div class="info-row">
+                                <div class="info-key">Features Included</div>
+                                <div class="info-val">
+                                    <ul style="margin: 0; padding-left: 20px;">
+                                        {% for feature in subscription.plan.get_features_list|slice:":3" %}
+                                        <li style="font-size: 12px; margin-bottom: 4px;">{{ feature }}</li>
+                                        {% endfor %}
+                                        {% if subscription.plan.get_features_list|length > 3 %}
+                                        <li style="font-size: 12px; color: #64748b;">+{{ subscription.plan.get_features_list|length|add:"-3" }} more features</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if subscription_status == 'pending_change' %}
+                            <div class="alert alert-warning mt-3" style="background: #fef3c7; padding: 12px; border-radius: 12px; font-size: 13px;">
+                                <i class="bi bi-clock-history"></i>
+                                <strong>Plan change pending!</strong> Your request to change plans is being reviewed.
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-danger" onclick="cancelPlanChange()">
+                                        Cancel Request
+                                    </button>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if subscription_history %}
+                            <div class="mt-3 pt-2">
+                                <div class="info-key mb-2">Recent Changes</div>
+                                {% for history in subscription_history|slice:":3" %}
+                                <div class="act-item" style="padding: 8px 0;">
+                                    <div class="act-icon" style="width: 28px; height: 28px; font-size: 12px;">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </div>
+                                    <div>
+                                        <div class="act-text" style="font-size: 12px;">
+                                            {{ history.get_action_display }} 
+                                            {% if history.new_plan %}to {{ history.new_plan.display_name }}{% endif %}
+                                        </div>
+                                        <div class="act-time">{{ history.changed_at|date:"M d, Y" }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            {% if subscription_status == 'active' %}
+                            <div class="mt-3 pt-2">
+                                  <button id="manageSubscriptionBtn" class="btn btn-sm btn-primary" style="background: #6b7280;">
+                                    <i class="bi bi-credit-card"></i> Manage Payment Method
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="cancelCurrentSubscription()">
+                                    Cancel Subscription
+                                </button>
+                                <small class="text-muted d-block mt-2" style="font-size: 11px;">
+                                    Cancelling will stop auto-renewal. You'll retain access until the end of your billing period.
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-box mt-4">
+                        <div class="card-top"><div class="card-top-title"><i class="bi bi-clock-history"></i>Recent Activity</div></div>
+                        <div class="card-pad">
+                            <div class="act-item">
+                                <div class="act-icon" style="background:#f0fdf4;color:#10b981"><i class="bi bi-check-circle"></i></div>
+                                <div><div class="act-text"><strong>Profile updated</strong> — Company information revised</div><div class="act-time">Recently</div></div>
+                            </div>
+                            <div class="act-item">
+                                <div class="act-icon" style="background:#eff6ff;color:#2563eb"><i class="bi bi-file-earmark-text"></i></div>
+                                <div><div class="act-text"><strong>Account created</strong> — Company registered on PRODRIVE</div><div class="act-time">{{ company.registration_date|date:"M d, Y" }}</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VEHICLES TAB -->
+        <div id="tab-vehicles" class="tab-pane">
+            <div class="card-box">
+                <div class="card-top">
+                    <div class="card-top-title"><i class="bi bi-truck"></i>All Vehicles</div>
+                    <button class="btn btn-primary btn-sm" onclick="openVehicleModal()">+ Add Vehicle</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="vehiclesTable">
+                        <thead>
+                            </td>
+                                <th>Make/Model</th>
+                                <th>Year</th>
+                                <th>Rego</th>
+                                <th>VIN</th>
+                                <th>Type</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehiclesTableBody">
+                            {% for vehicle in vehicles %}
+                            <tr id="vehicle-row-{{ vehicle.id }}">
+                                <td>{{ vehicle.make }} {{ vehicle.model }}</td>
+                                <td>{{ vehicle.year }}</td>
+                                <td>{{ vehicle.registration_number }}</td>
+                                <td>{{ vehicle.vin|slice:":10" }}...</td>
+                                <td>{{ vehicle.get_vehicle_type_display }}</td>
+                                <td>{{ vehicle.registration_expiry|date:"M d, Y" }}</td>
+                                <td><span class="status-{{ vehicle.approval_status }}">{{ vehicle.approval_status|title }}</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-ghost btn-sm" onclick="editVehicle({{ vehicle.id }})">Edit</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteVehicle({{ vehicle.id }})">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRIVERS TAB -->
+        <div id="tab-drivers" class="tab-pane">
+            <div class="card-box">
+                <div class="card-top">
+                    <div class="card-top-title"><i class="bi bi-people"></i>All Drivers</div>
+                    <button class="btn btn-primary btn-sm" onclick="openDriverModal()">+ Add Driver</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="driversTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Licence Class</th>
+                                <th>Licence No.</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driversTableBody">
+                            {% for driver in drivers %}
+                            <tr id="driver-row-{{ driver.id }}">
+                                <td>{{ driver.first_name }} {{ driver.last_name }}</td>
+                                <td>{{ driver.email|default:"-" }}</td>
+                                <td>{{ driver.get_licence_class_display }}</td>
+                                <td>{{ driver.licence_number }}</td>
+                                <td>{{ driver.licence_expiry|date:"M d, Y" }}</td>
+                                <td><span class="status-{{ driver.approval_status }}">{{ driver.approval_status|title }}</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-ghost btn-sm" onclick="editDriver({{ driver.id }})">Edit</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteDriver({{ driver.id }})">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPANY TAB -->
+        <div id="tab-company" class="tab-pane">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <div class="card-top">
+                            <div class="card-top-title"><i class="bi bi-building"></i>Business Details</div>
+                            <button class="btn-edit" onclick="openPasswordModal()" style="background: #fef3c7; color: #92400e; border-color: #fde68a;">
+                                <i class="bi bi-key"></i>Change Password
+                            </button>
+                            <button class="btn-edit" onclick="openEditModal()"><i class="bi bi-pencil"></i>Edit</button>
+                        </div>
+                        <div class="card-pad">
+                            <div class="info-row"><div class="info-key">Company Name</div><div class="info-val">{{ company.company_name }}</div></div>
+                            <div class="info-row"><div class="info-key">ABN</div><div class="info-val">{{ company.abn|slice:":2" }} {{ company.abn|slice:"2:5" }} {{ company.abn|slice:"5:8" }} {{ company.abn|slice:"8:11" }}</div></div>
+                            <div class="info-row"><div class="info-key">Street Address</div><div class="info-val">{{ company.address_street|default:company.address|default:"Not provided" }}</div></div>
+                            <div class="info-row"><div class="info-key">City</div><div class="info-val">{{ company.city|default:"—" }}</div></div>
+                            <div class="info-row"><div class="info-key">State / Postcode</div><div class="info-val">{{ company.state|default:"—" }} {{ company.postcode|default:"—" }}</div></div>
+                            <div class="info-row"><div class="info-key">Phone</div><div class="info-val">{{ user.phone|default:"Not set" }}</div></div>
+                            <div class="info-row"><div class="info-key">Email</div><div class="info-val">{{ user.email }}</div></div>
+                            <div class="info-row"><div class="info-key">Contact Person</div><div class="info-val">{{ user.full_name|default:"Not set" }}</div></div>
+                            <div class="info-row"><div class="info-key">Role</div><div class="info-val">{{ user.role|default:"Fleet Manager" }}</div></div>
+                            <div class="info-row"><div class="info-key">Plan</div><div class="info-val">{{ current_plan }}</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <div class="card-top"><div class="card-top-title"><i class="bi bi-award"></i>Accreditations</div></div>
+                        <div class="card-pad">
+                            <div class="info-row"><div class="info-key">Mass Management</div><div class="info-val"><span class="sbadge s-green"><span class="sdot"></span>Current</span></div></div>
+                            <div class="info-row"><div class="info-key">Fatigue Mgmt</div><div class="info-val"><span class="sbadge s-green"><span class="sdot"></span>Current</span></div></div>
+                            <div class="info-row"><div class="info-key">TruckSafe</div><div class="info-val"><span class="sbadge s-green"><span class="sdot"></span>Current</span></div></div>
+                            <div class="info-row"><div class="info-key">WAHVA</div><div class="info-val"><span class="sbadge s-amber"><span class="sdot"></span>Due for Renewal</span></div></div>
+                        </div>
+                    </div>
+                    {% if vehicle_types %}
+                    <div class="card-box mt-4">
+                        <div class="card-top"><div class="card-top-title"><i class="bi bi-truck"></i>Fleet Composition</div></div>
+                        <div class="card-pad">
+                            {% for type, count in vehicle_types.items %}
+                            <div class="info-row"><div class="info-key">{{ type }}</div><div class="info-val">{{ count }} vehicles</div></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- DOCUMENTS TAB -->
+        <div id="tab-documents" class="tab-pane">
+            <div class="card-box">
+                <div class="card-top d-flex justify-content-between align-items-center">
+                    <div class="card-top-title">
+                        <i class="bi bi-folder2-open"></i>Document Library
+                    </div>
+
+                    <button class="btn-sm-primary" onclick="generateDocuments()" type="button">
+                        <i class="bi bi-plus"></i>Generate Documents
+                    </button>
+                </div>
+
+                <div class="card-pad">
+                    <div class="doc-item">
+                        <div class="doc-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+                        <div>
+                            <div class="doc-name">Safety Management System.pdf</div>
+                            <div class="doc-meta">Uploaded on {{ company.registration_date|date:"M d, Y" }}</div>
+                        </div>
+                        <span class="sbadge s-green"><span class="sdot"></span>Current</span>
+                    </div>
+
+                    <div class="doc-item">
+                        <div class="doc-icon"><i class="bi bi-file-earmark-word"></i></div>
+                        <div>
+                            <div class="doc-name">Chain of Responsibility Policy.docx</div>
+                            <div class="doc-meta">Standard template</div>
+                        </div>
+                        <span class="sbadge s-green"><span class="sdot"></span>Current</span>
+                    </div>
+
+                    {% for doc in generated_documents %}
+
+                        <div class="doc-item">
+
+                            <div class="doc-icon">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </div>
+
+                            <div>
+
+                                <!-- CLICKABLE NAME -->
+                                <a href="{{ doc.file.url }}" target="_blank" style="text-decoration:none; color:inherit;">
+
+                                    <div class="doc-name">
+                                        {{ doc.name }}
+                                    </div>
+
+                                </a>
+
+                                <div class="doc-meta">
+                                    Uploaded on {{ doc.created_at|date:"M d, Y" }}
+                                </div>
+
+                            </div>
+
+                            <!-- DOWNLOAD BUTTON -->
+                            <a href="{{ doc.file.url }}" download class="sbadge s-green" style="text-decoration:none;">
+                                <span class="sdot"></span>Download
+                            </a>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="doc-item" style="opacity:0.75;">
+                            <div class="doc-icon">
+                                <i class="bi bi-exclamation-circle"></i>
+                            </div>
+
+                            <div>
+                                <div class="doc-name">No generated documents yet</div>
+                                <div class="doc-meta">Click "Generate Documents" to create SMS document</div>
+                            </div>
+
+                            <span class="sbadge" style="background:#ccc;color:#333;">
+                                <span class="sdot"></span>Not Generated
+                            </span>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVITY TAB -->
+        <div id="tab-activity" class="tab-pane">
+            <div class="card-box">
+                <div class="card-top"><div class="card-top-title"><i class="bi bi-clock-history"></i>Activity Log</div></div>
+                <div class="card-pad">
+                    <div class="act-item">
+                        <div class="act-icon" style="background:#f0fdf4;color:#10b981"><i class="bi bi-check-circle"></i></div>
+                        <div><div class="act-text"><strong>Account created</strong> — Company registered on PRODRIVE</div><div class="act-time">{{ company.registration_date|date:"M d, Y" }}</div></div>
+                    </div>
+                    {% for incident in recent_incidents|slice:":3" %}
+                    <div class="act-item">
+                        <div class="act-icon" style="background:#fefce8;color:#b45309"><i class="bi bi-exclamation-triangle"></i></div>
+                        <div><div class="act-text"><strong>{{ incident.incident_type|default:"Incident" }}</strong> — {{ incident.description|truncatechars:50 }}</div><div class="act-time">{{ incident.incident_date|date:"M d, Y" }}</div></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- REVIEWS TAB -->
+        <div id="tab-reviews" class="tab-pane">
+            <div class="card-box">
+                <div class="card-top">
+                    <div class="card-top-title"><i class="bi bi-star-fill"></i>Client Reviews</div>
+                    <button class="btn-edit" id="writeReviewBtn">Write a Review</button>
+                </div>
+                <div class="card-pad">
+                    {% if total_reviews > 0 %}
+                    <div style="background:linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);border:1.5px solid #bfdbfe;border-radius:14px;padding:20px;margin-bottom:20px">
+                        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+                            <div style="display:flex;flex-direction:column;align-items:center">
+                                <div style="font-size:48px;font-weight:800;color:#fbbf24;line-height:1">{{ avg_rating }}</div>
+                                <div style="font-size:12px;color:#64748b;font-weight:500;margin-top:6px">out of 5</div>
+                            </div>
+                            <div>
+                                <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:6px">{{ total_reviews }} verified {% if total_reviews == 1 %}review{% else %}reviews{% endif %}</div>
+                                <div class="stars" style="font-size:18px">{% for i in "12345"|make_list %}{% if forloop.counter <= avg_rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% for review in reviews %}
+                    <div class="review-item">
+                        <div class="stars">{% for i in "12345"|make_list %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                        {% if review.title %}<h6>{{ review.title }}</h6>{% endif %}
+                        <p>{{ review.review_text }}</p>
+                        <div class="review-meta">
+                            <strong>{{ review.reviewer_name }}</strong>
+                            {% if review.reviewer_role %}<span class="dot"></span><span>{{ review.reviewer_role }}</span>{% endif %}
+                            <span class="dot" style="margin-left:auto"></span>
+                            <span>{{ review.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        {% if review.user == user %}<button class="btn btn-danger btn-sm review-delete" onclick="deleteReview({{ review.id }})">Delete Review</button>{% endif %}
+                    </div>
+                    {% empty %}
+                    <div style="text-align:center;padding:32px 20px;color:#94a3b8">
+                        <i class="bi bi-star" style="font-size:32px;margin-bottom:12px;display:block;opacity:.5"></i>
+                        <p style="font-size:14px;margin:0">No reviews yet</p>
+                        <p style="font-size:12px;margin:8px 0 0;color:#cbd5e1">Be the first to share your experience!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VEHICLE MODAL -->
+<div class="modal-overlay" id="vehicleModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="vehicleModalTitle">Add Vehicle</span>
+            <button onclick="closeVehicleModal()">&times;</button>
+        </div>
+        <input type="hidden" id="vehicleId">
+        <div class="form-group"><label class="modal-label">Make *</label><input type="text" id="vehicleMake" class="modal-input" placeholder="e.g., Volvo"></div>
+        <div class="form-group"><label class="modal-label">Model *</label><input type="text" id="vehicleModel" class="modal-input" placeholder="e.g., FH16"></div>
+        <div class="form-group"><label class="modal-label">Year</label><input type="number" id="vehicleYear" class="modal-input" placeholder="e.g., 2023"></div>
+        <div class="form-group"><label class="modal-label">VIN *</label><input type="text" id="vehicleVin" class="modal-input" maxlength="17" placeholder="17-character VIN"></div>
+        <div class="form-group"><label class="modal-label">Registration Number *</label><input type="text" id="vehicleRego" class="modal-input" placeholder="e.g., ABC123"></div>
+        <div class="form-group"><label class="modal-label">Vehicle Type</label><select id="vehicleType" class="modal-input"><option value="rigid_lt_4_5t">Rigid Truck (&lt;4.5t)</option><option value="rigid_4_5_12t">Rigid Truck (4.5t-12t)</option><option value="rigid_gt_12t">Rigid Truck (&gt;12t)</option><option value="prime_movers">Prime Mover</option><option value="b_doubles">B-Double</option></select></div>
+        <div class="form-group"><label class="modal-label">Registration Expiry</label><input type="date" id="vehicleRegoExpiry" class="modal-input"></div>
+        <div class="d-flex gap-2"><button class="btn btn-ghost" onclick="closeVehicleModal()">Cancel</button><button class="btn btn-primary" onclick="saveVehicle()">Save Vehicle</button></div>
+    </div>
+</div>
+
+<!-- DRIVER MODAL -->
+<div class="modal-overlay" id="driverModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="driverModalTitle">Add Driver</span>
+            <button onclick="closeDriverModal()">&times;</button>
+        </div>
+        <input type="hidden" id="driverId">
+        <div class="form-group"><label class="modal-label">First Name *</label><input type="text" id="driverFirstName" class="modal-input" placeholder="First name"></div>
+        <div class="form-group"><label class="modal-label">Last Name *</label><input type="text" id="driverLastName" class="modal-input" placeholder="Last name"></div>
+        <div class="form-group"><label class="modal-label">Email</label><input type="email" id="driverEmail" class="modal-input" placeholder="email@example.com"></div>
+        <div class="form-group"><label class="modal-label">Phone</label><input type="text" id="driverPhone" class="modal-input" placeholder="+61 2 XXXX XXXX"></div>
+        <div class="form-group"><label class="modal-label">Licence Number *</label><input type="text" id="driverLicenceNumber" class="modal-input" placeholder="e.g., ABC123"></div>
+        <div class="form-group"><label class="modal-label">Licence Class</label><select id="driverLicenceClass" class="modal-input"><option value="LR">Light Rigid (LR)</option><option value="MR">Medium Rigid (MR)</option><option value="HR">Heavy Rigid (HR)</option><option value="HC">Heavy Combination (HC)</option><option value="MC">Multi Combination (MC)</option></select></div>
+        <div class="form-group"><label class="modal-label">Licence Expiry *</label><input type="date" id="driverLicenceExpiry" class="modal-input"></div>
+        <div class="d-flex gap-2"><button class="btn btn-ghost" onclick="closeDriverModal()">Cancel</button><button class="btn btn-primary" onclick="saveDriver()">Save Driver</button></div>
+    </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span>Edit Profile</span>
+            <button onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="form-group"><label class="modal-label">Company Name</label><input id="editCompanyName" class="modal-input" value="{{ company.company_name }}" placeholder="Your company name"></div>
+        <div class="form-group"><label class="modal-label">Contact Person</label><input id="editContactPerson" class="modal-input" value="{{ user.full_name|default:'' }}" placeholder="Full name"></div>
+        <div class="form-group"><label class="modal-label">Email</label><input id="editEmail" class="modal-input" type="email" value="{{ user.email }}" placeholder="email@example.com"></div>
+        <div class="form-group"><label class="modal-label">Phone</label><input id="editPhone" class="modal-input" value="{{ user.phone|default:'' }}" placeholder="+61 2 XXXX XXXX"></div>
+        <div class="form-group"><label class="modal-label">Address</label><input id="editAddress" class="modal-input" value="{{ company.address|default:'' }}" placeholder="Street address"></div>
+        <div class="d-flex gap-2"><button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Save Changes</button></div>
+    </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span>Write a Review</span>
+            <button onclick="closeReviewModal()">&times;</button>
+        </div>
+        <form method="POST" action="{% url 'add_review' %}">{% csrf_token %}
+            <input type="hidden" name="company_id" value="{{ company.id }}">
+            <div class="form-group">
+                <label class="modal-label">Rating *</label>
+                <div class="rating-select" style="display:flex;gap:8px;font-size:32px">
+                    {% for i in "12345"|make_list %}
+                    <span class="star-rating" data-rating="{{ forloop.counter }}" style="cursor:pointer;transition:all 0.2s;color:#cbd5e1">☆</span>
+                    {% endfor %}
+                    <input type="hidden" name="rating" id="selectedRating" value="5">
+                </div>
+            </div>
+            <div class="form-group"><label class="modal-label">Title</label><input type="text" name="title" class="modal-input" placeholder="Summary of your experience"></div>
+            <div class="form-group"><label class="modal-label">Review *</label><textarea name="review_text" rows="4" class="modal-input" placeholder="Share your detailed experience..." style="resize:vertical;min-height:100px"></textarea></div>
+            <div class="form-group"><label class="modal-label">Your Name</label><input type="text" name="reviewer_name" class="modal-input" value="{{ user.full_name|default:user.email }}" placeholder="Your name"></div>
+            <div class="d-flex gap-2"><button type="button" class="btn btn-ghost" onclick="closeReviewModal()">Cancel</button><button type="submit" class="btn btn-primary">Submit Review</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- PLAN CHANGE MODAL -->
+<div class="modal-overlay" id="planChangeModal">
+    <div class="modal-box" style="max-width: 500px;">
+        <div class="modal-title">
+            <span>Change Subscription Plan</span>
+            <button onclick="closePlanChangeModal()">&times;</button>
+        </div>
+        <div class="card-pad">
+            <div class="info-row mb-3">
+                <div class="info-key">Current Plan</div>
+                <div class="info-val"><strong>{{ current_plan }}</strong></div>
+            </div>
+            <div class="form-group">
+                <label class="modal-label">Select New Plan *</label>
+                <select id="newPlanSelect" class="modal-input">
+                    <option value="">-- Select a plan --</option>
+                    {% for plan in available_plans %}
+                    <option value="{{ plan.name }}" data-price="{{ plan.price }}" data-period="{{ plan.price_period }}">
+                        {{ plan.display_name }} - ${{ plan.price }}/{{ plan.price_period }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="modal-label">Reason for Change</label>
+                <textarea id="changeReason" rows="3" class="modal-input" placeholder="Please tell us why you want to change your plan..."></textarea>
+            </div>
+            <div class="alert alert-info" style="background: #eff6ff; padding: 12px; border-radius: 12px; margin: 16px 0; font-size: 12px;">
+                <i class="bi bi-info-circle-fill" style="color: #2563eb;"></i>
+                <strong>Note:</strong> Plan change requests will be reviewed by our team. You'll be notified once approved.
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-ghost" onclick="closePlanChangeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitPlanChange()">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loadingModal" class="custom-modal hidden">
+    <div class="modal-content loading-box">
+        <div class="spinner"></div>
+        <h3>Generating Documents</h3>
+        <p>Please wait while we prepare your company documents...</p>
+    </div>
+</div>
+
+<div id="successModal" class="custom-modal hidden">
+    <div class="modal-content success-box">
+        <div class="check-icon">✔</div>
+        <h3>Document Generated</h3>
+        <p>Your SMS document has been successfully created.</p>
+        <button onclick="closeSuccess()" class="btn-ok">OK</button>
+    </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay" id="passwordModal">
+    <div class="modal-box" style="max-width: 480px;">
+        <div class="modal-title">
+            <span>Change Password</span>
+            <button onclick="closePasswordModal()">&times;</button>
+        </div>
+        <div class="card-pad">
+            <div class="alert alert-info" style="background: #eff6ff; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 13px;">
+                <i class="bi bi-info-circle-fill" style="color: #2563eb;"></i>
+                <strong>Password Requirements:</strong>
+                <ul style="margin: 8px 0 0 20px; color: #475569;">
+                    <li>Minimum 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one lowercase letter</li>
+                    <li>At least one number</li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <label class="modal-label">Current Password *</label>
+                <input type="password" id="currentPassword" class="modal-input" placeholder="Enter your current password">
+            </div>
+            <div class="form-group">
+                <label class="modal-label">New Password *</label>
+                <input type="password" id="newPassword" class="modal-input" placeholder="Enter new password">
+                <div id="passwordStrength" style="font-size: 11px; margin-top: 5px;"></div>
+            </div>
+            <div class="form-group">
+                <label class="modal-label">Confirm New Password *</label>
+                <input type="password" id="confirmPassword" class="modal-input" placeholder="Confirm new password">
+                <div id="passwordMatch" style="font-size: 11px; margin-top: 5px;"></div>
+            </div>
+            <div class="d-flex gap-2" style="margin-top: 24px;">
+                <button class="btn btn-ghost" onclick="closePasswordModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<!-- jQuery (required for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function goTab(name, btn) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    if (btn) btn.classList.add('active');
+    
+    // Refresh DataTables when switching tabs to ensure proper rendering
+    setTimeout(function() {
+        if (name === 'vehicles' && $.fn.DataTable.isDataTable('#vehiclesTable')) {
+            $('#vehiclesTable').DataTable().columns.adjust().draw();
+        }
+        if (name === 'drivers' && $.fn.DataTable.isDataTable('#driversTable')) {
+            $('#driversTable').DataTable().columns.adjust().draw();
+        }
+    }, 100);
+}
+
+// ============================================
+// PROFILE EDIT FUNCTIONS
+// ============================================
+function openEditModal() { 
+    const modal = document.getElementById('editModal');
+    modal.classList.add('show');
+}
+
+function closeEditModal() { 
+    document.getElementById('editModal').classList.remove('show'); 
+}
+
+function saveProfile() {
+    const data = {
+        company_name: document.getElementById('editCompanyName').value,
+        contact_person: document.getElementById('editContactPerson').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        address: document.getElementById('editAddress').value
+    };
+    
+    fetch('/profile/update/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => { 
+        if (data.success) { 
+            alert('Profile updated successfully!'); 
+            location.reload(); 
+        } else { 
+            alert('Error: ' + data.error); 
+        } 
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+
+// ============================================
+// VEHICLE MANAGEMENT FUNCTIONS
+// ============================================
+function openVehicleModal(id = null) {
+    const modal = document.getElementById('vehicleModal');
+    modal.classList.add('show');
+    
+    if (id) {
+        fetch(`/vehicles/get/${id}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('vehicleModalTitle').innerText = 'Edit Vehicle';
+                    document.getElementById('vehicleId').value = data.vehicle.id;
+                    document.getElementById('vehicleMake').value = data.vehicle.make;
+                    document.getElementById('vehicleModel').value = data.vehicle.model;
+                    document.getElementById('vehicleYear').value = data.vehicle.year;
+                    document.getElementById('vehicleVin').value = data.vehicle.vin;
+                    document.getElementById('vehicleRego').value = data.vehicle.registration_number;
+                    document.getElementById('vehicleType').value = data.vehicle.vehicle_type;
+                    if (data.vehicle.registration_expiry) {
+                        document.getElementById('vehicleRegoExpiry').value = data.vehicle.registration_expiry;
+                    }
+                } else {
+                    alert('Error loading vehicle data: ' + data.error);
+                    closeVehicleModal();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error loading vehicle data');
+                closeVehicleModal();
+            });
+    } else {
+        document.getElementById('vehicleModalTitle').innerText = 'Add Vehicle';
+        document.getElementById('vehicleId').value = '';
+        document.getElementById('vehicleMake').value = '';
+        document.getElementById('vehicleModel').value = '';
+        document.getElementById('vehicleYear').value = '';
+        document.getElementById('vehicleVin').value = '';
+        document.getElementById('vehicleRego').value = '';
+        document.getElementById('vehicleType').value = 'rigid_lt_4_5t';
+        document.getElementById('vehicleRegoExpiry').value = '';
+    }
+}
+
+function closeVehicleModal() { 
+    document.getElementById('vehicleModal').classList.remove('show'); 
+}
+
+function saveVehicle() {
+    const id = document.getElementById('vehicleId').value;
+    const vehicleData = {
+        make: document.getElementById('vehicleMake').value,
+        model: document.getElementById('vehicleModel').value,
+        year: document.getElementById('vehicleYear').value,
+        vin: document.getElementById('vehicleVin').value,
+        registration_number: document.getElementById('vehicleRego').value,
+        vehicle_type: document.getElementById('vehicleType').value,
+        registration_expiry: document.getElementById('vehicleRegoExpiry').value
+    };
+    
+    if (!vehicleData.make) {
+        alert('Make is required');
+        return;
+    }
+    if (!vehicleData.model) {
+        alert('Model is required');
+        return;
+    }
+    if (!vehicleData.vin) {
+        alert('VIN is required');
+        return;
+    }
+    
+    const url = id ? `/vehicles/edit/${id}/` : '/vehicles/add/';
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(vehicleData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            closeVehicleModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+
+function editVehicle(id) {
+    openVehicleModal(id);
+}
+
+function deleteVehicle(id) { 
+    if (confirm('Are you sure you want to delete this vehicle?')) { 
+        fetch(`/vehicles/delete/${id}/`, {
+            method: 'POST', 
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => { 
+            if (data.success) { 
+                alert(data.message); 
+                location.reload(); 
+            } else { 
+                alert('Error: ' + data.error); 
+            } 
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    } 
+}
+
+// ============================================
+// DRIVER MANAGEMENT FUNCTIONS
+// ============================================
+function openDriverModal(id = null) {
+    const modal = document.getElementById('driverModal');
+    modal.classList.add('show');
+    
+    if (id) {
+        fetch(`/drivers/get/${id}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('driverModalTitle').innerText = 'Edit Driver';
+                    document.getElementById('driverId').value = data.driver.id;
+                    document.getElementById('driverFirstName').value = data.driver.first_name;
+                    document.getElementById('driverLastName').value = data.driver.last_name;
+                    document.getElementById('driverEmail').value = data.driver.email || '';
+                    document.getElementById('driverPhone').value = data.driver.phone || '';
+                    document.getElementById('driverLicenceNumber').value = data.driver.licence_number;
+                    document.getElementById('driverLicenceClass').value = data.driver.licence_class;
+                    if (data.driver.licence_expiry) {
+                        document.getElementById('driverLicenceExpiry').value = data.driver.licence_expiry;
+                    }
+                } else {
+                    alert('Error loading driver data: ' + data.error);
+                    closeDriverModal();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error loading driver data');
+                closeDriverModal();
+            });
+    } else {
+        document.getElementById('driverModalTitle').innerText = 'Add Driver';
+        document.getElementById('driverId').value = '';
+        document.getElementById('driverFirstName').value = '';
+        document.getElementById('driverLastName').value = '';
+        document.getElementById('driverEmail').value = '';
+        document.getElementById('driverPhone').value = '';
+        document.getElementById('driverLicenceNumber').value = '';
+        document.getElementById('driverLicenceClass').value = 'LR';
+        document.getElementById('driverLicenceExpiry').value = '';
+    }
+}
+
+function closeDriverModal() { 
+    document.getElementById('driverModal').classList.remove('show'); 
+}
+
+function saveDriver() {
+    const id = document.getElementById('driverId').value;
+    const driverData = {
+        first_name: document.getElementById('driverFirstName').value,
+        last_name: document.getElementById('driverLastName').value,
+        email: document.getElementById('driverEmail').value,
+        phone: document.getElementById('driverPhone').value,
+        licence_number: document.getElementById('driverLicenceNumber').value,
+        licence_class: document.getElementById('driverLicenceClass').value,
+        licence_expiry: document.getElementById('driverLicenceExpiry').value
+    };
+    
+    if (!driverData.first_name) {
+        alert('First name is required');
+        return;
+    }
+    if (!driverData.last_name) {
+        alert('Last name is required');
+        return;
+    }
+    if (!driverData.licence_number) {
+        alert('Licence number is required');
+        return;
+    }
+    if (!driverData.licence_expiry) {
+        alert('Licence expiry date is required');
+        return;
+    }
+    
+    const url = id ? `/drivers/edit/${id}/` : '/drivers/add/';
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(driverData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            closeDriverModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+
+function editDriver(id) {
+    openDriverModal(id);
+}
+
+// ============================================
+// PASSWORD MANAGEMENT FUNCTIONS
+// ============================================
+
+function openPasswordModal() {
+    document.getElementById('passwordModal').classList.add('show');
+    // Clear form fields
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('passwordStrength').innerHTML = '';
+    document.getElementById('passwordMatch').innerHTML = '';
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').classList.remove('show');
+}
+
+function checkPasswordStrength(password) {
+    let strength = 0;
+    let feedback = [];
+
+    if (password.length >= 8) strength++;
+    else feedback.push('• Minimum 8 characters');
+
+    if (/[A-Z]/.test(password)) strength++;
+    else feedback.push('• At least one uppercase letter');
+
+    if (/[a-z]/.test(password)) strength++;
+    else feedback.push('• At least one lowercase letter');
+
+    if (/[0-9]/.test(password)) strength++;
+    else feedback.push('• At least one number');
+
+    let strengthText = '';
+    let strengthColor = '';
+
+    if (password.length === 0) {
+        strengthText = '';
+        strengthColor = '';
+    } else if (strength <= 2) {
+        strengthText = 'Weak';
+        strengthColor = '#dc2626';
+    } else if (strength === 3) {
+        strengthText = 'Medium';
+        strengthColor = '#f59e0b';
+    } else if (strength >= 4) {
+        strengthText = 'Strong';
+        strengthColor = '#10b981';
+    }
+
+    if (feedback.length > 0 && password.length > 0) {
+        return `<span style="color: ${strengthColor}; font-weight: 600;">${strengthText}</span><br><span style="color: #64748b; font-size: 10px;">${feedback.join('<br>')}</span>`;
+    }
+
+    return strengthText ? `<span style="color: ${strengthColor}; font-weight: 600;">${strengthText}</span>` : '';
+}
+
+function checkPasswordMatch() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const matchDiv = document.getElementById('passwordMatch');
+
+    if (confirmPassword.length === 0) {
+        matchDiv.innerHTML = '';
+        return false;
+    }
+
+    if (newPassword === confirmPassword) {
+        matchDiv.innerHTML = '<span style="color: #10b981;">✓ Passwords match</span>';
+        return true;
+    } else {
+        matchDiv.innerHTML = '<span style="color: #dc2626;">✗ Passwords do not match</span>';
+        return false;
+    }
+}
+
+// Add event listeners for password fields
+document.addEventListener('DOMContentLoaded', function() {
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            const strength = checkPasswordStrength(this.value);
+            document.getElementById('passwordStrength').innerHTML = strength;
+            if (confirmPasswordInput.value) {
+                checkPasswordMatch();
+            }
+        });
+    }
+
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    }
+});
+
+function changePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Validation
+    if (!currentPassword) {
+        alert('Please enter your current password');
+        return;
+    }
+
+    if (!newPassword) {
+        alert('Please enter a new password');
+        return;
+    }
+
+    if (newPassword.length < 8) {
+        alert('New password must be at least 8 characters long');
+        return;
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+        alert('New password must contain at least one uppercase letter');
+        return;
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+        alert('New password must contain at least one lowercase letter');
+        return;
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+        alert('New password must contain at least one number');
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match');
+        return;
+    }
+
+    if (currentPassword === newPassword) {
+        alert('New password must be different from your current password');
+        return;
+    }
+
+    // Submit password change
+    fetch('/change-password/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Password changed successfully! Please login again with your new password.');
+            closePasswordModal();
+            // Optional: Redirect to login page
+            setTimeout(() => {
+                window.location.href = '/signin/';
+            }, 2000);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+
+function deleteDriver(id) { 
+    if (confirm('Are you sure you want to delete this driver?')) { 
+        fetch(`/drivers/delete/${id}/`, {
+            method: 'POST', 
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => { 
+            if (data.success) { 
+                alert(data.message); 
+                location.reload(); 
+            } else { 
+                alert('Error: ' + data.error); 
+            } 
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    } 
+}
+
+// ============================================
+// REVIEW FUNCTIONS
+// ============================================
+function openReviewModal() { 
+    const modal = document.getElementById('reviewModal');
+    modal.classList.add('show');
+    setRating(5);
+}
+
+function closeReviewModal() { 
+    document.getElementById('reviewModal').classList.remove('show'); 
+}
+
+function setRating(rating) { 
+    document.getElementById('selectedRating').value = rating; 
+    document.querySelectorAll('.star-rating').forEach((star, index) => { 
+        star.textContent = index < rating ? '★' : '☆'; 
+        star.style.color = index < rating ? '#fbbf24' : '#cbd5e1'; 
+    }); 
+}
+
+function deleteReview(id) { 
+    if (confirm('Are you sure you want to delete this review?')) { 
+        fetch(`/delete-review/${id}/`, {
+            method: 'POST', 
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => { 
+            if (data.success) {
+                alert('Review deleted successfully');
+                location.reload(); 
+            } else { 
+                alert('Error: ' + (data.error || 'Could not delete review')); 
+            } 
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    } 
+}
+
+// ============================================
+// PLAN CHANGE FUNCTIONS
+// ============================================
+function openPlanChangeModal() {
+    document.getElementById('planChangeModal').classList.add('show');
+}
+
+function closePlanChangeModal() {
+    document.getElementById('planChangeModal').classList.remove('show');
+    document.getElementById('newPlanSelect').value = '';
+    document.getElementById('changeReason').value = '';
+}
+
+function submitPlanChange() {
+    const planSelect = document.getElementById('newPlanSelect');
+    const planName = planSelect.value;
+    const reason = document.getElementById('changeReason').value;
+
+    if (!planName) {
+        alert('Please select a plan');
+        return;
+    }
+
+    // Show loading state
+    const submitBtn = document.querySelector('#planChangeModal .btn-primary');
+    const originalText = submitBtn.innerText;
+    submitBtn.innerText = 'Processing...';
+    submitBtn.disabled = true;
+
+    fetch('/request-plan-change/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            plan_name: planName,
+            reason: reason
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.checkout_url) {
+            // Close modal
+            closePlanChangeModal();
+
+            // Redirect to Stripe Checkout
+            window.location.href = data.checkout_url;
+        } else if (data.success) {
+            alert(data.message);
+            closePlanChangeModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// Handle return from Stripe checkout
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const action = urlParams.get('action');
+
+    if (paymentStatus === 'success') {
+        if (action === 'upgrade') {
+            alert('Success! Your plan has been upgraded.');
+        } else if (action === 'downgrade') {
+            alert('Success! Your plan has been changed.');
+        } else {
+            alert('Success! You have successfully subscribed.');
+        }
+        // Remove query params from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        location.reload();
+    } else if (paymentStatus === 'cancelled') {
+        alert('Payment was cancelled. No changes were made to your subscription.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Add "Manage Subscription" button
+    const manageBtn = document.getElementById('manageSubscriptionBtn');
+    if (manageBtn) {
+        manageBtn.addEventListener('click', function() {
+            fetch('/create-portal-session/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        });
+    }
+});
+
+function cancelPlanChange() {
+    if (confirm('Are you sure you want to cancel the pending plan change request?')) {
+        fetch('/cancel-plan-change/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+}
+
+function cancelCurrentSubscription() {
+    if (confirm('Are you sure you want to cancel your subscription? This will stop auto-renewal. You will retain access until the end of your billing period.')) {
+        fetch('/cancel-subscription/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+}
+
+// ============================================
+// EVENT LISTENERS AND INITIALIZATION
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DataTables for Vehicles
+    if (document.getElementById('vehiclesTable') && typeof $.fn.DataTable !== 'undefined') {
+        if ($.fn.DataTable.isDataTable('#vehiclesTable')) {
+            $('#vehiclesTable').DataTable().destroy();
+        }
+        window.vehiclesTable = $('#vehiclesTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            order: [[0, 'asc']],
+            columnDefs: [
+                { orderable: false, targets: -1 }
+            ],
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                emptyTable: "No vehicles added yet. Click 'Add Vehicle' to get started.",
+                zeroRecords: "No matching vehicles found.",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            responsive: true
+        });
+    }
+    
+    // Initialize DataTables for Drivers
+    if (document.getElementById('driversTable') && typeof $.fn.DataTable !== 'undefined') {
+        if ($.fn.DataTable.isDataTable('#driversTable')) {
+            $('#driversTable').DataTable().destroy();
+        }
+        window.driversTable = $('#driversTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            order: [[0, 'asc']],
+            columnDefs: [
+                { orderable: false, targets: -1 }
+            ],
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                emptyTable: "No drivers added yet. Click 'Add Driver' to get started.",
+                zeroRecords: "No matching drivers found.",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            responsive: true
+        });
+    }
+    
+    // Close modals when clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(modal => { 
+        modal.addEventListener('click', function(e) { 
+            if (e.target === this) {
+                this.classList.remove('show'); 
+            }
+        }); 
+    });
+    
+    // Star rating click handlers
+    document.querySelectorAll('.star-rating').forEach(star => { 
+        star.addEventListener('click', function() { 
+            setRating(parseInt(this.dataset.rating)); 
+        }); 
+    });
+    
+    // Write review button
+    const writeReviewBtn = document.getElementById('writeReviewBtn');
+    if (writeReviewBtn) {
+        writeReviewBtn.addEventListener('click', () => openReviewModal());
+    }
+    
+    // Animate progress bars
+    document.querySelectorAll('.prog-fill[data-w]').forEach(el => { 
+        setTimeout(() => { 
+            el.style.width = el.dataset.w + '%'; 
+        }, 300); 
+    });
+    
+    // Animate compliance score ring
+    const target = {{ compliance_score }};
+    const circ = 207;
+    const ring = document.getElementById('scoreRing');
+    const num = document.getElementById('scoreNum');
+    let cur = 0;
+    
+    const tick = () => { 
+        cur = Math.min(cur + 2, target); 
+        if (ring) ring.style.strokeDashoffset = circ - (cur / 100) * circ; 
+        if (num) num.textContent = cur + '%'; 
+        if (cur < target) requestAnimationFrame(tick); 
+    };
+    
+    setTimeout(tick, 400);
+});
+
+// generate document
+function generateDocuments() {
+
+    document.getElementById("loadingModal").classList.remove("hidden");
+
+    fetch("{% url 'generate_company_documents' %}", {
+        method: "GET",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.status === "success") {
+            document.getElementById("loadingModal").classList.add("hidden");
+            document.getElementById("successModal").classList.remove("hidden");
+
+            setTimeout(() => {
+                location.reload();
+            }, 1200);
+        }
+
+    })
+    .catch(() => {
+        alert("Error generating document");
+    });
+}
+
+function closeSuccess() {
+    document.getElementById("successModal").classList.add("hidden");
+    location.reload();
+}
+
+// Export functions to global scope for onclick handlers
+window.goTab = goTab;
+window.openEditModal = openEditModal;
+window.closeEditModal = closeEditModal;
+window.saveProfile = saveProfile;
+window.openVehicleModal = openVehicleModal;
+window.closeVehicleModal = closeVehicleModal;
+window.saveVehicle = saveVehicle;
+window.editVehicle = editVehicle;
+window.deleteVehicle = deleteVehicle;
+window.openDriverModal = openDriverModal;
+window.closeDriverModal = closeDriverModal;
+window.saveDriver = saveDriver;
+window.editDriver = editDriver;
+window.deleteDriver = deleteDriver;
+window.openReviewModal = openReviewModal;
+window.closeReviewModal = closeReviewModal;
+window.setRating = setRating;
+window.deleteReview = deleteReview;
+window.openPlanChangeModal = openPlanChangeModal;
+window.closePlanChangeModal = closePlanChangeModal;
+window.submitPlanChange = submitPlanChange;
+window.cancelPlanChange = cancelPlanChange;
+window.cancelCurrentSubscription = cancelCurrentSubscription;
+</script>
+{% endblock %}

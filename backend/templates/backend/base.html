@@ -1,0 +1,156 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    {% include "backend/partials/head.html" %}
+    <link rel="stylesheet" href="{% static 'backend/assets/css/style.css' %}" />
+    {% block custom_css %}{% endblock custom_css %}
+</head>
+<body>
+    <!-- SIDEBAR -->
+    {% include "backend/partials/sidebar.html" %}
+
+    <!-- MAIN -->
+    <div class="main">
+        {% include "backend/partials/navbar.html" %}
+
+        <div class="body">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+
+    <div id="sb-overlay" onclick="toggleSidebar()" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 399; backdrop-filter: blur(2px);"></div>
+    <div id="toast">
+        <i class="bi bi-check-circle-fill"></i>
+        <span id="toastMsg">Done!</span>
+    </div>
+
+    <script>
+        // Clock function
+        function tick() {
+            const n = new Date();
+            const clockElement = document.getElementById("clock");
+            if (clockElement) {
+                clockElement.textContent = n.toLocaleTimeString("en-AU", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                }) + " AEST";
+            }
+        }
+        tick();
+        setInterval(tick, 1000);
+
+        // Navigation function - direct URL navigation
+        function nav(url, btn) {
+            // Update sidebar active state
+            document.querySelectorAll(".sb-link").forEach((b) => b.classList.remove("active"));
+            if (btn) btn.classList.add("active");
+
+            // Navigate to the URL
+            window.location.href = url;
+        }
+
+        // Toggle sidebar function
+        function toggleSidebar(force) {
+            const s = document.getElementById("sidebar");
+            const o = document.getElementById("sb-overlay");
+            if (!s) return;
+            
+            const open = force !== undefined ? force : !s.classList.contains("open");
+            s.classList.toggle("open", open);
+            if (o) o.style.display = open ? "block" : "none";
+        }
+
+        // Modal functions
+        function openModal(companyName, abn) {
+            const modalHeading = document.getElementById("modalHeading");
+            const mName = document.getElementById("mName");
+            const mABN = document.getElementById("mABN");
+            const editModal = document.getElementById("editModal");
+            
+            if (modalHeading) modalHeading.textContent = "Edit — " + companyName;
+            if (mName) mName.value = companyName;
+            if (mABN) mABN.value = abn || "";
+            if (editModal) editModal.classList.add("show");
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove("show");
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll(".modal-bg").forEach((m) =>
+            m.addEventListener("click", (e) => {
+                if (e.target === m) m.classList.remove("show");
+            })
+        );
+
+        // Approve company function
+        function approveCo(btn) {
+            const row = btn.closest("tr");
+            if (row) {
+                const cells = row.querySelectorAll("td");
+                if (cells[6]) {
+                    cells[6].innerHTML = '<span class="badge b-green"><span class="dot"></span>Active</span>';
+                }
+                if (cells[7]) {
+                    cells[7].innerHTML = '<div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm"><i class="bi bi-pencil"></i></button><button class="btn btn-danger btn-sm"><i class="bi bi-ban"></i></button></div>';
+                }
+                showToast("Company approved!");
+            }
+        }
+
+        // Filter table function
+        function filterTbl(searchValue, tableBodyId) {
+            const tbody = document.getElementById(tableBodyId);
+            if (!tbody) return;
+            
+            const rows = tbody.querySelectorAll("tr");
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue.toLowerCase()) ? "" : "none";
+            });
+        }
+
+        // Toast notification
+        let toastTimeout;
+        function showToast(message) {
+            clearTimeout(toastTimeout);
+            const toastMsg = document.getElementById("toastMsg");
+            const toast = document.getElementById("toast");
+            
+            if (toastMsg) toastMsg.textContent = message;
+            if (toast) {
+                toast.classList.add("show");
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 2800);
+            }
+        }
+
+        // Set active sidebar link based on current URL
+        function setActiveSidebarLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll(".sb-link");
+            
+            links.forEach(link => {
+                const href = link.getAttribute("href");
+                if (href && currentPath === href) {
+                    link.classList.add("active");
+                } else if (href && currentPath.startsWith(href) && href !== '/') {
+                    link.classList.add("active");
+                }
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            setActiveSidebarLink();
+        });
+    </script>
+    {% block custom_js %}{% endblock custom_js %}
+</body>
+</html>

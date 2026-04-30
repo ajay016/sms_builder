@@ -1,0 +1,318 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<style>
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    .stat-card {
+        background: #141c2e;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #2a2a2a;
+    }
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        font-size: 24px;
+    }
+    .si-cyan { background: #164e63; color: #22d3ee; }
+    .si-blue { background: #1e3a5f; color: #60a5fa; }
+    .si-green { background: #064e3b; color: #34d399; }
+    .si-purple { background: #4c1d95; color: #a78bfa; }
+    .stat-val {
+        font-size: 32px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+    .stat-lbl {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-bottom: 8px;
+    }
+    .stat-delta {
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+    .delta-up { color: #34d399; }
+    .delta-down { color: #f87171; }
+    .delta-flat { color: #9ca3af; }
+    .grid-2-eq {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    .card {
+        background: #141c2e;
+        border-radius: 20px;
+        border: 1px solid #2a2a2a;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .card-head {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .prog {
+        margin-bottom: 16px;
+    }
+    .prog:last-child {
+        margin-bottom: 0;
+    }
+    .prog-head {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+    .prog-lbl {
+        color: #e5e7eb;
+        font-weight: 500;
+    }
+    .prog-val {
+        font-weight: 600;
+    }
+    .prog-track {
+        height: 8px;
+        background: #2a2a2a;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .prog-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+    .chart-bar-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 120px;
+        margin-bottom: 8px;
+    }
+    .chart-bar-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        height: 100%;
+    }
+    .chart-bar {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .chart-bar-fill {
+        width: 100%;
+        background: #60a5fa;
+        border-radius: 4px 4px 0 0;
+        transition: height 0.5s ease;
+        opacity: 0.7;
+    }
+    .chart-bar-fill.highlight {
+        background: #22d3ee;
+        opacity: 1;
+    }
+    .chart-bar-wrapper:hover .chart-bar-fill {
+        opacity: 1;
+        transform: scaleX(1.05);
+    }
+    .chart-label {
+        font-size: 10px;
+        color: #9ca3af;
+        font-family: monospace;
+        margin-top: 8px;
+        text-align: center;
+    }
+    .chart-value {
+        font-size: 11px;
+        font-weight: 600;
+        color: #60a5fa;
+        margin-bottom: 4px;
+        text-align: center;
+    }
+    @media (max-width: 992px) {
+        .stats-row { grid-template-columns: repeat(2, 1fr); }
+        .grid-2-eq { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+        .stats-row { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="stats-row" style="margin-bottom: 20px">
+        <div class="stat-card sc-cyan">
+            <div class="stat-icon si-cyan">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="stat-val">
+                {% if mom_growth > 0 %}+{% endif %}{{ mom_growth }}%
+            </div>
+            <div class="stat-lbl">MoM Revenue Growth</div>
+            <div class="stat-delta delta-up">
+                <i class="bi bi-arrow-up-short"></i>vs last month
+            </div>
+        </div>
+        <div class="stat-card sc-blue">
+            <div class="stat-icon si-blue">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-val">{{ avg_onboarding_time }}d</div>
+            <div class="stat-lbl">Avg Onboarding Time</div>
+            <div class="stat-delta delta-down">
+                <i class="bi bi-arrow-down-short"></i>−0.8d improved
+            </div>
+        </div>
+        <div class="stat-card sc-green">
+            <div class="stat-icon si-green">
+                <i class="bi bi-patch-check-fill"></i>
+            </div>
+            <div class="stat-val">{{ avg_compliance }}%</div>
+            <div class="stat-lbl">Avg Compliance Score</div>
+            <div class="stat-delta delta-up">
+                <i class="bi bi-arrow-up-short"></i>+2% vs last qtr
+            </div>
+        </div>
+        <div class="stat-card sc-purple">
+            <div class="stat-icon si-purple">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-val">{{ retention_rate }}%</div>
+            <div class="stat-lbl">Client Retention Rate</div>
+            <div class="stat-delta delta-flat">
+                <i class="bi bi-dash"></i>Stable
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid-2-eq">
+        <div class="card">
+            <div class="card-head">
+                <div class="card-title">
+                    <i class="bi bi-bar-chart-fill"></i>Signups by Month
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-bar-container">
+                    {% for month in months %}
+                    <div class="chart-bar-wrapper">
+                        {% with signups_data|slice:forloop.counter0|first as signup_count %}
+                        <div class="chart-value">{{ signup_count }}</div>
+                        <div class="chart-bar">
+                            <div class="chart-bar-fill" 
+                                 style="height: {% if signups_data %}{% widthratio signup_count signups_data|length 90 %}%{% else %}0%{% endif %}; 
+                                        {% if forloop.counter > 3 %}background: #22d3ee; opacity: 1;{% endif %}">
+                            </div>
+                        </div>
+                        {% endwith %}
+                        <div class="chart-label">{{ month }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-head">
+                <div class="card-title">
+                    <i class="bi bi-pie-chart-fill"></i>Compliance Scores
+                </div>
+            </div>
+            <div class="card-body">
+                {% for company in compliance_scores %}
+                <div class="prog">
+                    <div class="prog-head">
+                        <div class="prog-lbl">{{ company.company_name }}</div>
+                        <div class="prog-val" style="color: 
+                            {% if company.status == 'green' %}#34d399
+                            {% elif company.status == 'amber' %}#fbbf24
+                            {% else %}#f87171{% endif %}">
+                            {{ company.score }}%
+                        </div>
+                    </div>
+                    <div class="prog-track">
+                        <div class="prog-fill" style="width: {{ company.score }}%; background: 
+                            {% if company.status == 'green' %}#34d399
+                            {% elif company.status == 'amber' %}#fbbf24
+                            {% else %}#f87171{% endif %};">
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: 40px; color: #9ca3af;">
+                    No compliance data available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add animation for progress bars on load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate progress bars
+        const progressBars = document.querySelectorAll('.prog-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+        
+        // Animate chart bars
+        const chartBars = document.querySelectorAll('.chart-bar-fill');
+        chartBars.forEach(bar => {
+            const height = bar.style.height;
+            bar.style.height = '0%';
+            setTimeout(() => {
+                bar.style.height = height;
+            }, 100);
+        });
+    });
+</script>
+
+<style>
+    /* Additional styles for chart */
+    .chart-bar-fill {
+        transition: height 0.5s ease-out;
+    }
+    .prog-fill {
+        transition: width 0.5s ease-out;
+    }
+</style>
+{% endblock %}

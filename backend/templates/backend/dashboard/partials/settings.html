@@ -1,0 +1,318 @@
+<div class="view" id="view-settings">
+    <div class="grid-2-eq">
+        <div>
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-person-gear"></i>Admin
+                        Profile
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Full Name</label
+                            ><input value="Super Admin" />
+                        </div>
+                        <div class="field">
+                            <label>Role</label
+                            ><input
+                                value="Super Administrator"
+                            />
+                        </div>
+                    </div>
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Email Address</label
+                            ><input
+                                type="email"
+                                value="admin@prodrivecompliance.com"
+                            />
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Phone</label
+                            ><input value="+61 4XX XXX XXX" />
+                        </div>
+                        <div class="field">
+                            <label>Location</label
+                            ><input value="Sydney, NSW" />
+                        </div>
+                    </div>
+                    <button
+                        class="btn btn-primary"
+                        style="margin-top: 8px"
+                        onclick="showToast('Profile saved!')"
+                    >
+                        <i class="bi bi-check"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-shield-lock-fill"></i
+                        >Security
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Current Password</label
+                            ><input
+                                type="password"
+                                placeholder="••••••••"
+                            />
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>New Password</label
+                            ><input
+                                type="password"
+                                placeholder="••••••••"
+                            />
+                        </div>
+                        <div class="field">
+                            <label>Confirm Password</label
+                            ><input
+                                type="password"
+                                placeholder="••••••••"
+                            />
+                        </div>
+                    </div>
+                    <button
+                        class="btn btn-ghost"
+                        style="margin-top: 8px"
+                        onclick="showToast('Password updated!')"
+                    >
+                        <i class="bi bi-lock"></i>Update
+                        Password
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-toggles"></i
+                        >Notifications
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Email Notifications</strong
+                            ><span
+                                >Receive system alerts by
+                                email</span
+                            >
+                        </div>
+                        <label class="toggle"
+                            ><input type="checkbox" checked />
+                            <div class="toggle-slider"></div
+                        ></label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong
+                                >New Registration Alerts</strong
+                            ><span
+                                >Alert when a company
+                                registers</span
+                            >
+                        </div>
+                        <label class="toggle"
+                            ><input type="checkbox" checked />
+                            <div class="toggle-slider"></div
+                        ></label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong
+                                >Incident Notifications</strong
+                            ><span
+                                >Alert on new incident
+                                reports</span
+                            >
+                        </div>
+                        <label class="toggle"
+                            ><input type="checkbox" checked />
+                            <div class="toggle-slider"></div
+                        ></label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Compliance Reminders</strong
+                            ><span
+                                >Warn on accreditation
+                                expiry</span
+                            >
+                        </div>
+                        <label class="toggle"
+                            ><input type="checkbox" checked />
+                            <div class="toggle-slider"></div
+                        ></label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Maintenance Mode</strong
+                            ><span
+                                >Disable public site
+                                access</span
+                            >
+                        </div>
+                        <label class="toggle"
+                            ><input type="checkbox" />
+                            <div class="toggle-slider"></div
+                        ></label>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-info-circle-fill"></i
+                        >System Info
+                    </div>
+                </div>
+                <div style="padding: 0">
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 18px;
+                            border-bottom: 1px solid
+                                var(--border);
+                        "
+                    >
+                        <span
+                            style="
+                                font-size: 12px;
+                                font-weight: 600;
+                                color: var(--text2);
+                            "
+                            >Version</span
+                        ><span
+                            style="
+                                font-size: 12px;
+                                font-family:
+                                    &quot;DM Mono&quot;,
+                                    monospace;
+                                color: var(--text);
+                            "
+                            >v2.4.1</span
+                        >
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 18px;
+                            border-bottom: 1px solid
+                                var(--border);
+                        "
+                    >
+                        <span
+                            style="
+                                font-size: 12px;
+                                font-weight: 600;
+                                color: var(--text2);
+                            "
+                            >Environment</span
+                        ><span class="badge b-green"
+                            ><span class="dot"></span
+                            >Production</span
+                        >
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 18px;
+                            border-bottom: 1px solid
+                                var(--border);
+                        "
+                    >
+                        <span
+                            style="
+                                font-size: 12px;
+                                font-weight: 600;
+                                color: var(--text2);
+                            "
+                            >Last Backup</span
+                        ><span
+                            style="
+                                font-size: 12px;
+                                font-family:
+                                    &quot;DM Mono&quot;,
+                                    monospace;
+                                color: var(--text3);
+                            "
+                            >Today, 3:00 AM</span
+                        >
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 18px;
+                            border-bottom: 1px solid
+                                var(--border);
+                        "
+                    >
+                        <span
+                            style="
+                                font-size: 12px;
+                                font-weight: 600;
+                                color: var(--text2);
+                            "
+                            >Database</span
+                        ><span
+                            style="
+                                font-size: 12px;
+                                font-family:
+                                    &quot;DM Mono&quot;,
+                                    monospace;
+                                color: var(--green);
+                            "
+                            >Healthy</span
+                        >
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 18px;
+                        "
+                    >
+                        <span
+                            style="
+                                font-size: 12px;
+                                font-weight: 600;
+                                color: var(--text2);
+                            "
+                            >Uptime</span
+                        ><span
+                            style="
+                                font-size: 12px;
+                                font-family:
+                                    &quot;DM Mono&quot;,
+                                    monospace;
+                                color: var(--green);
+                            "
+                            >99.97%</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

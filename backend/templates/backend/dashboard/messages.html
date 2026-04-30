@@ -1,0 +1,647 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<style>
+    /* Dark Theme */
+    body {
+        background: #0a0a0a;
+    }
+    
+    .card {
+        background: #141c2e;
+        border-radius: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        overflow: hidden;
+        border: 1px solid #2a2a2a;
+        margin-bottom: 24px;
+    }
+    .card-head {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Stats Cards */
+    .stats-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    .stats-card {
+        background: #141c2e;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #2a2a2a;
+        text-align: center;
+        flex: 1;
+    }
+    .stats-number {
+        font-size: 32px;
+        font-weight: 700;
+        color: #60a5fa;
+    }
+    .stats-label {
+        font-size: 13px;
+        color: #9ca3af;
+        margin-top: 5px;
+    }
+    
+    /* DataTables */
+    .dataTables_wrapper {
+        padding: 0 20px 20px 20px;
+    }
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        margin-bottom: 15px;
+        color: #9ca3af;
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        padding: 5px 10px;
+        color: #ffffff;
+        font-size: 12px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 8px;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 6px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        color: #9ca3af !important;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+        text-decoration: none;
+        line-height: 1;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        transform: translateY(-1px);
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        font-weight: 600;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        background: #0d0d0d;
+        border-color: #1a1a1a;
+        color: #4a4a4a !important;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    .dataTables_wrapper .dataTables_info {
+        padding-top: 10px;
+        font-size: 12px;
+    }
+    
+    /* Table */
+    .tbl-wrap {
+        overflow-x: auto;
+    }
+    .dt {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .dt thead th {
+        text-align: left;
+        padding: 16px 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 1px solid #2a2a2a;
+        background: #0d0d0d;
+    }
+    .dt tbody td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 13px;
+        vertical-align: middle;
+        color: #e5e7eb;
+    }
+    .dt tbody tr:hover {
+        background: #1a1a1a;
+    }
+    
+    /* Status Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .status-new {
+        background: #1e3a5f;
+        color: #60a5fa;
+    }
+    .status-read {
+        background: #064e3b;
+        color: #34d399;
+    }
+    .status-replied {
+        background: #4c1d95;
+        color: #a78bfa;
+    }
+    .status-archived {
+        background: #1f2937;
+        color: #9ca3af;
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-ghost { background: transparent; border: 1px solid #2a2a2a; color: #9ca3af; }
+    .btn-ghost:hover { background: #1a1a1a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    
+    /* Modal */
+    .modal-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+    .modal-bg.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-box {
+        background: #141c2e;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid #2a2a2a;
+    }
+    .modal-title {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        background: #0d0d0d;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #9ca3af;
+    }
+    .modal-close:hover {
+        color: #ef4444;
+    }
+    .modal-body {
+        padding: 24px;
+    }
+    .modal-actions {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1px solid #2a2a2a;
+    }
+    
+    .message-detail {
+        margin-bottom: 16px;
+    }
+    .message-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .message-value {
+        font-size: 14px;
+        color: #e5e7eb;
+        background: #1a1a1a;
+        padding: 12px;
+        border-radius: 10px;
+        word-wrap: break-word;
+    }
+    .message-message {
+        background: #1a1a1a;
+        padding: 16px;
+        border-radius: 10px;
+        line-height: 1.6;
+        color: #e5e7eb;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #6b7280;
+    }
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #4a4a4a;
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .toast-message {
+        background: #1a1a1a;
+        padding: 12px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        border-left: 4px solid;
+        color: white;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-row">
+    <div class="stats-card">
+        <div class="stats-number">{{ total_messages }}</div>
+        <div class="stats-label">Total Messages</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">{{ new_messages }}</div>
+        <div class="stats-label">New</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">{{ read_messages }}</div>
+        <div class="stats-label">Read</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number">{{ replied_messages }}</div>
+        <div class="stats-label">Replied</div>
+    </div>
+</div>
+
+<!-- Messages List Card -->
+<div class="card">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="bi bi-envelope-fill"></i> Contact Messages
+        </div>
+    </div>
+    
+    <div class="tbl-wrap">
+        <table class="dt" id="messagesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Received</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in messages %}
+                <tr data-id="{{ msg.id }}" data-status="{{ msg.status }}">
+                    <td>{{ msg.id }}</td>
+                    <td><strong>{{ msg.name }}</strong></td>
+                    <td>{{ msg.email }}</td>
+                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ msg.message|truncatechars:50 }}
+                    </td>
+                    <td>
+                        {% if msg.status == 'new' %}
+                        <span class="status-badge status-new"><i class="bi bi-envelope-fill me-1"></i> New</span>
+                        {% elif msg.status == 'read' %}
+                        <span class="status-badge status-read"><i class="bi bi-eye-fill me-1"></i> Read</span>
+                        {% elif msg.status == 'replied' %}
+                        <span class="status-badge status-replied"><i class="bi bi-reply-fill me-1"></i> Replied</span>
+                        {% else %}
+                        <span class="status-badge status-archived"><i class="bi bi-archive-fill me-1"></i> Archived</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 11px; font-family: monospace;">{{ msg.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        <div class="btn-group" style="display: flex; gap: 6px;">
+                            <button class="btn btn-ghost btn-sm" onclick="viewMessage({{ msg.id }})" title="View">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteMessage({{ msg.id }})" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>No messages yet.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- View Message Modal -->
+<div class="modal-bg" id="messageModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span><i class="bi bi-envelope-open-fill me-2"></i> Message Details</span>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="messageContent">
+            <div class="message-detail">
+                <div class="message-label">From</div>
+                <div class="message-value" id="msgName">-</div>
+            </div>
+            <div class="message-detail">
+                <div class="message-label">Email</div>
+                <div class="message-value" id="msgEmail">-</div>
+            </div>
+            <div class="message-detail">
+                <div class="message-label">Received</div>
+                <div class="message-value" id="msgDate">-</div>
+            </div>
+            <div class="message-detail">
+                <div class="message-label">Status</div>
+                <div class="message-value" id="msgStatus">-</div>
+            </div>
+            <div class="message-detail">
+                <div class="message-label">IP Address</div>
+                <div class="message-value" id="msgIP">-</div>
+            </div>
+            <div class="message-detail">
+                <div class="message-label">Message</div>
+                <div class="message-message" id="msgMessage">-</div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <select id="statusSelect" class="sel" style="margin-right: auto; width: auto;">
+                <option value="new">Mark as New</option>
+                <option value="read">Mark as Read</option>
+                <option value="replied">Mark as Replied</option>
+                <option value="archived">Archive</option>
+            </select>
+            <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+            <button class="btn btn-primary" onclick="updateMessageStatus()">
+                <i class="bi bi-check-lg"></i> Update Status
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+let messagesTable;
+let currentMessageId = null;
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.style.borderLeftColor = type === 'success' ? '#10b981' : '#ef4444';
+    toast.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'}" style="color: ${type === 'success' ? '#10b981' : '#ef4444'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function getStatusBadge(status) {
+    if (status === 'new') {
+        return '<span class="status-badge status-new"><i class="bi bi-envelope-fill me-1"></i> New</span>';
+    } else if (status === 'read') {
+        return '<span class="status-badge status-read"><i class="bi bi-eye-fill me-1"></i> Read</span>';
+    } else if (status === 'replied') {
+        return '<span class="status-badge status-replied"><i class="bi bi-reply-fill me-1"></i> Replied</span>';
+    } else {
+        return '<span class="status-badge status-archived"><i class="bi bi-archive-fill me-1"></i> Archived</span>';
+    }
+}
+
+function updateTableStatus(messageId, status) {
+    const row = $(`#messagesTable tr[data-id="${messageId}"]`);
+    if (row.length) {
+        row.attr('data-status', status);
+        const statusCell = row.find('td:eq(4)');
+        statusCell.html(getStatusBadge(status));
+    }
+}
+
+// Initialize DataTable
+$(document).ready(function() {
+    messagesTable = $('#messagesTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'desc']],
+        paging: true,
+        pagingType: 'full_numbers',
+        language: {
+            search: "Search:",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ messages",
+            emptyTable: "No messages found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        },
+        columnDefs: [
+            { orderable: false, targets: [6] }
+        ]
+    });
+});
+
+function viewMessage(messageId) {
+    currentMessageId = messageId;
+    
+    fetch(`/admin/contact-messages/view/${messageId}/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const msg = data.message;
+            document.getElementById('msgName').textContent = msg.name;
+            document.getElementById('msgEmail').textContent = msg.email;
+            document.getElementById('msgDate').textContent = msg.created_at;
+            document.getElementById('msgStatus').innerHTML = getStatusBadge(msg.status);
+            document.getElementById('msgIP').textContent = msg.ip_address || 'Not recorded';
+            document.getElementById('msgMessage').textContent = msg.message;
+            document.getElementById('statusSelect').value = msg.status;
+            
+            // Update status in table if it was new
+            if (msg.status === 'new') {
+                updateTableStatus(messageId, 'read');
+            }
+            
+            document.getElementById('messageModal').classList.add('show');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateMessageStatus() {
+    const newStatus = document.getElementById('statusSelect').value;
+    
+    fetch(`/admin/contact-messages/update/${currentMessageId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `status=${newStatus}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Status updated successfully!', 'success');
+            updateTableStatus(currentMessageId, newStatus);
+            closeModal();
+        } else {
+            showToast(data.error, 'error');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        fetch(`/admin/contact-messages/delete/${messageId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Message deleted successfully!', 'success');
+                // Remove row from DataTable
+                const row = $(`#messagesTable tr[data-id="${messageId}"]`);
+                if (row.length) {
+                    messagesTable.row(row).remove().draw();
+                }
+                // Update stats
+                location.reload();
+            } else {
+                showToast(data.error, 'error');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+function closeModal() {
+    document.getElementById('messageModal').classList.remove('show');
+    currentMessageId = null;
+}
+
+// Close modal on outside click
+document.querySelectorAll('.modal-bg').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('show');
+        }
+    });
+});
+</script>
+{% endblock %}

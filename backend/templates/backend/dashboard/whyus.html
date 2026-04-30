@@ -1,0 +1,791 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<style>
+    body {
+        background: #0a0a0a;
+    }
+    
+    .preview-card {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        color: white;
+        border: 1px solid #2a2a2a;
+    }
+    .preview-card small {
+        color: rgba(255,255,255,0.6);
+    }
+    .preview-card h4 {
+        color: white;
+    }
+    .preview-card p {
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .card {
+        background: #141c2e;
+        border-radius: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        overflow: hidden;
+        border: 1px solid #2a2a2a;
+    }
+    .card-head {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .field-row {
+        display: flex;
+        gap: 16px;
+        padding: 16px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        background: #141c2e;
+    }
+    .field {
+        flex: 1;
+    }
+    .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #9ca3af;
+        margin-bottom: 6px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        font-size: 13px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .form-control::placeholder {
+        color: #4a4a4a;
+    }
+    textarea.form-control {
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .modal-actions {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        background: #141c2e;
+        border-top: 1px solid #2a2a2a;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-primary { 
+        background: #2563eb; 
+        color: white; 
+    }
+    .btn-primary:hover { 
+        background: #1d4ed8; 
+    }
+    .btn-ghost { 
+        background: transparent; 
+        border: 1px solid #2a2a2a; 
+        color: #9ca3af; 
+    }
+    .btn-ghost:hover { 
+        background: #1a1a1a; 
+        color: white;
+    }
+    .btn-danger { 
+        background: #dc2626; 
+        color: white; 
+    }
+    .btn-danger:hover { 
+        background: #b91c1c; 
+    }
+    .btn-sm { 
+        padding: 6px 12px; 
+        font-size: 12px; 
+    }
+    
+    .tbl-wrap {
+        overflow-x: auto;
+        background: #141c2e;
+    }
+    .dt {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .dt thead th {
+        text-align: left;
+        padding: 16px 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 1px solid #2a2a2a;
+        background: #0d0d0d;
+    }
+    .dt tbody td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 13px;
+        vertical-align: middle;
+        color: #e5e7eb;
+    }
+    .dt tbody tr:hover {
+        background: #1a1a1a;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .status-active {
+        background: #064e3b;
+        color: #34d399;
+    }
+    .status-inactive {
+        background: #7f1d1d;
+        color: #f87171;
+    }
+    .badge-blue {
+        background: #1e3a5f;
+        color: #60a5fa;
+    }
+    
+    .icon-selector {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+    }
+    .icon-option {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #1a1a1a;
+        color: #9ca3af;
+    }
+    .icon-option:hover {
+        border-color: #2563eb;
+        background: #1e3a5f;
+        color: #60a5fa;
+    }
+    .icon-option.selected {
+        border-color: #2563eb;
+        background: #1e3a5f;
+        color: #60a5fa;
+    }
+    .icon-option i {
+        font-size: 20px;
+    }
+    
+    .modal-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+    .modal-bg.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-box {
+        background: #141c2e;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid #2a2a2a;
+    }
+    .modal-title {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        background: #0d0d0d;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #9ca3af;
+    }
+    .modal-close:hover {
+        color: #ef4444;
+    }
+    
+    .row {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    .col-md-7 {
+        flex: 7;
+    }
+    .col-md-5 {
+        flex: 5;
+    }
+    .mt-4 {
+        margin-top: 24px;
+    }
+    .mt-1 {
+        margin-top: 4px;
+    }
+    .mt-3 {
+        margin-top: 12px;
+    }
+    .mb-4 {
+        margin-bottom: 16px;
+    }
+    .ms-2 {
+        margin-left: 8px;
+    }
+    .text-muted {
+        color: #6b7280;
+    }
+    .text-white-50 {
+        color: rgba(255,255,255,0.6);
+    }
+    .d-block {
+        display: block;
+    }
+    .d-flex {
+        display: flex;
+    }
+    .align-items-center {
+        align-items: center;
+    }
+    .gap-2 {
+        gap: 8px;
+    }
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .drag-handle {
+        cursor: move;
+        color: #6b7280;
+    }
+    .btn-group {
+        display: flex;
+        gap: 6px;
+    }
+    .btn-icon {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .toast-message {
+        background: #1a1a1a;
+        padding: 12px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        border-left: 4px solid;
+        color: white;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    
+    small.text-muted {
+        color: #6b7280 !important;
+        font-size: 11px;
+    }
+    
+    input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #2563eb;
+    }
+    
+    select.form-control {
+        background: #1a1a1a;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    select.form-control option {
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Toast Container for messages -->
+<div id="toastContainer"></div>
+
+<div class="row">
+    <div class="col-md-7">
+        <!-- Section Settings Card -->
+        <div class="card">
+            <div class="card-head">
+                <div class="card-title">
+                    <i class="bi bi-gear-fill"></i> Section Settings
+                </div>
+            </div>
+            
+            <form method="POST" action="{% url 'update_why_us' %}" id="whyUsForm">
+                {% csrf_token %}
+                <div class="field-row">
+                    <div class="field">
+                        <label>Eyebrow Text</label>
+                        <input type="text" name="eyebrow" value="{{ why_us.eyebrow|default:'Why PRODRIVE' }}" class="form-control">
+                        <small class="text-muted">Small text above title</small>
+                    </div>
+                    <div class="field">
+                        <label>Title</label>
+                        <input type="text" name="title" value="{{ why_us.title|default:'Built for the Road Ahead' }}" class="form-control">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>Description</label>
+                        <textarea name="description" rows="4" class="form-control">{{ why_us.description|default:'' }}</textarea>
+                        <small class="text-muted">Section description</small>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>YouTube Video ID</label>
+                        <input type="text" name="video_url" value="{{ why_us.video_url|default:'Cm6eMeOg-KU' }}" class="form-control">
+                        <small class="text-muted">Enter only the video ID from YouTube URL</small>
+                    </div>
+                    <div class="field">
+                        <label class="d-block">&nbsp;</label>
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox" name="is_active" {% if why_us.is_active %}checked{% endif %}> 
+                            <i class="bi bi-eye-fill"></i> <span style="color: #e5e7eb;">Active</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-5">
+        <!-- Live Preview Card -->
+        <div class="card">
+            <div class="card-head">
+                <div class="card-title">
+                    <i class="bi bi-eye-fill"></i> Live Preview
+                </div>
+            </div>
+            <div class="preview-card">
+                <small>{{ why_us.eyebrow|default:'Why PRODRIVE' }}</small>
+                <h4 class="mt-1 mb-2">{{ why_us.title|default:'Built for the Road Ahead' }}</h4>
+                <p class="small mb-3">{{ why_us.description|default:'Our system is designed for usability, compliance support, and efficient document workflows.'|truncatechars:100 }}</p>
+                <div class="mt-3">
+                    <i class="bi bi-youtube"></i> Video ID: {{ why_us.video_url|default:'Cm6eMeOg-KU' }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Card -->
+<div class="card mt-4">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="bi bi-list-check"></i> Features
+            <span class="badge badge-blue ms-2">{{ features|length }}</span>
+        </div>
+        <button class="btn btn-primary" onclick="openAddFeatureModal()">
+            <i class="bi bi-plus-lg"></i> Add Feature
+        </button>
+    </div>
+    <div class="tbl-wrap">
+        <table class="dt">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Order</th>
+                    <th style="width: 80px;">Icon</th>
+                    <th>Feature Text</th>
+                    <th style="width: 100px;">Status</th>
+                    <th style="width: 120px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature in features %}
+                <tr class="sortable-row" data-id="{{ feature.id }}">
+                    <td class="drag-handle">
+                        <i class="bi bi-grip-vertical"></i> {{ feature.order }}
+                    </td>
+                    <td><i class="bi {{ feature.icon }}" style="font-size: 20px; color: #60a5fa;"></i></td>
+                    <td><strong>{{ feature.text }}</strong></td>
+                    <td>
+                        {% if feature.is_active %}
+                        <span class="status-badge status-active">
+                            <i class="bi bi-check-circle-fill me-1"></i> Active
+                        </span>
+                        {% else %}
+                        <span class="status-badge status-inactive">
+                            <i class="bi bi-x-circle-fill me-1"></i> Inactive
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-ghost btn-sm btn-icon" onclick="openEditFeatureModal({{ feature.id }})" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-icon" onclick="deleteFeature({{ feature.id }})" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 60px;">
+                        <i class="bi bi-inbox" style="font-size: 48px; color: #4a4a4a;"></i>
+                        <p class="mt-3 text-muted">No features added yet. Click "Add Feature" to create one.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Feature Modal -->
+<div class="modal-bg" id="featureModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="modalTitle">
+                <i class="bi bi-plus-circle"></i> Add New Feature
+            </span>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <input type="hidden" id="featureId">
+        
+        <div class="field-row">
+            <div class="field">
+                <label>Order Position</label>
+                <input type="number" id="featureOrder" value="0" class="form-control">
+                <small class="text-muted">Lower numbers appear first</small>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field">
+                <label>Icon</label>
+                <select id="featureIcon" class="form-control">
+                    <option value="bi-check-circle-fill">✓ Check Circle</option>
+                    <option value="bi-star-fill">★ Star</option>
+                    <option value="bi-heart-fill">❤ Heart</option>
+                    <option value="bi-shield-check">🛡 Shield Check</option>
+                    <option value="bi-graph-up">📈 Graph Up</option>
+                    <option value="bi-people-fill">👥 People</option>
+                    <option value="bi-truck">🚚 Truck</option>
+                    <option value="bi-building">🏢 Building</option>
+                    <option value="bi-clock-history">⏰ Clock</option>
+                    <option value="bi-headset">🎧 Support</option>
+                    <option value="bi-cpu">💻 CPU</option>
+                    <option value="bi-cloud-check">☁️ Cloud</option>
+                </select>
+                <div class="icon-selector" id="iconSelector"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field">
+                <label>Feature Text</label>
+                <input type="text" id="featureText" class="form-control" placeholder="e.g., Modern responsive design — works on any device">
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field">
+                <label class="d-flex align-items-center gap-2">
+                    <input type="checkbox" id="featureActive" checked>
+                    <span style="color: #e5e7eb;"><i class="bi bi-eye-fill"></i> Active (show on website)</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal()">
+                <i class="bi bi-x-lg"></i> Cancel
+            </button>
+            <button class="btn btn-primary" onclick="saveFeature()">
+                <i class="bi bi-check-lg"></i> Save Feature
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.style.borderLeftColor = type === 'success' ? '#10b981' : '#ef4444';
+    toast.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'}" style="color: ${type === 'success' ? '#10b981' : '#ef4444'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function populateIconSelector() {
+    const icons = [
+        'bi-check-circle-fill', 'bi-star-fill', 'bi-heart-fill', 'bi-shield-check',
+        'bi-graph-up', 'bi-people-fill', 'bi-truck', 'bi-building', 
+        'bi-clock-history', 'bi-headset', 'bi-cpu', 'bi-cloud-check'
+    ];
+    const container = document.getElementById('iconSelector');
+    if (container) {
+        container.innerHTML = icons.map(icon => `
+            <div class="icon-option" data-icon="${icon}">
+                <i class="bi ${icon}"></i>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.icon-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('featureIcon').value = this.dataset.icon;
+            });
+        });
+    }
+}
+
+function openAddFeatureModal() {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-plus-circle"></i> Add New Feature';
+    document.getElementById('featureId').value = '';
+    document.getElementById('featureText').value = '';
+    document.getElementById('featureIcon').value = 'bi-check-circle-fill';
+    document.getElementById('featureOrder').value = '0';
+    document.getElementById('featureActive').checked = true;
+    document.getElementById('featureModal').classList.add('show');
+    
+    document.querySelectorAll('.icon-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.icon === 'bi-check-circle-fill') {
+            opt.classList.add('selected');
+        }
+    });
+}
+
+function openEditFeatureModal(featureId) {
+    fetch('/admin/why-us/feature/get-details/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ feature_id: featureId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const feature = data.feature;
+            document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil-square"></i> Edit Feature';
+            document.getElementById('featureId').value = feature.id;
+            document.getElementById('featureText').value = feature.text;
+            document.getElementById('featureIcon').value = feature.icon;
+            document.getElementById('featureOrder').value = feature.order;
+            document.getElementById('featureActive').checked = feature.is_active;
+            document.getElementById('featureModal').classList.add('show');
+            
+            document.querySelectorAll('.icon-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.icon === feature.icon) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+    });
+}
+
+function saveFeature() {
+    const featureId = document.getElementById('featureId').value;
+    const formData = new FormData();
+    formData.append('text', document.getElementById('featureText').value);
+    formData.append('icon', document.getElementById('featureIcon').value);
+    formData.append('order', document.getElementById('featureOrder').value);
+    formData.append('is_active', document.getElementById('featureActive').checked ? 'on' : 'off');
+    
+    let url = '/admin/why-us/feature/add/';
+    if (featureId) {
+        url = `/admin/why-us/feature/edit/${featureId}/`;
+    }
+    
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            closeModal();
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showToast(data.error, 'error');
+        }
+    });
+}
+
+function deleteFeature(featureId) {
+    if (confirm('Are you sure you want to delete this feature?')) {
+        fetch(`/admin/why-us/feature/delete/${featureId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.error, 'error');
+            }
+        });
+    }
+}
+
+function closeModal() {
+    document.getElementById('featureModal').classList.remove('show');
+}
+
+// Handle Why Us form submission with AJAX to show toast message
+document.addEventListener('DOMContentLoaded', function() {
+    populateIconSelector();
+    
+    const whyUsForm = document.getElementById('whyUsForm');
+    if (whyUsForm) {
+        whyUsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred', 'error');
+            });
+        });
+    }
+});
+
+document.querySelectorAll('.modal-bg').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('show');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,704 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<style>
+    body {
+        background: #0a0a0a;
+    }
+    
+    /* Stats Cards */
+    .stats-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    
+    .stats-card {
+        background: #141c2e;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid #2a2a2a;
+        transition: all 0.3s;
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-2px);
+        border-color: #2563eb;
+    }
+    
+    .stats-number {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    
+    .stats-number.success { color: #10b981; }
+    .stats-number.danger { color: #ef4444; }
+    .stats-number.warning { color: #f59e0b; }
+    .stats-number.info { color: #60a5fa; }
+    
+    .stats-label {
+        font-size: 12px;
+        color: #9ca3af;
+        font-weight: 500;
+    }
+    
+    /* Main Card */
+    .card {
+        background: #141c2e;
+        border-radius: 20px;
+        border: 1px solid #2a2a2a;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    
+    .card-head {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0d0d0d;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .filter-bar {
+        padding: 16px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        background: #111111;
+    }
+    
+    .search-field {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+    
+    .search-field i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+    }
+    
+    .search-field input {
+        width: 100%;
+        padding: 9px 12px 9px 36px;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        font-size: 13px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .search-field input:focus {
+        border-color: #2563eb;
+    }
+    
+    .sel {
+        padding: 9px 12px;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        font-size: 13px;
+        background: #1a1a1a;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+    
+    .btn-ghost {
+        background: transparent;
+        border: 1px solid #2a2a2a;
+        color: #9ca3af;
+    }
+    
+    .btn-ghost:hover {
+        background: #1a1a1a;
+        color: white;
+    }
+    
+    .btn-sm {
+        padding: 4px 12px;
+        font-size: 11px;
+    }
+    
+    .tbl-wrap {
+        overflow-x: auto;
+        background: #141c2e;
+    }
+    
+    .dt {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .dt thead th {
+        text-align: left;
+        padding: 16px 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 1px solid #2a2a2a;
+        background: #0d0d0d;
+    }
+    
+    .dt tbody td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 13px;
+        vertical-align: middle;
+        color: #e5e7eb;
+    }
+    
+    .dt tbody tr:hover {
+        background: #1a1a1a;
+    }
+    
+    .action-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .action-payment_succeeded, .action-invoice_paid { background: #064e3b; color: #34d399; }
+    .action-payment_failed, .action-invoice_payment_failed { background: #7f1d1d; color: #f87171; }
+    .action-payment_refunded { background: #451a03; color: #fbbf24; }
+    
+    .amount {
+        font-weight: 700;
+        font-size: 14px;
+    }
+    
+    .amount.success { color: #10b981; }
+    .amount.danger { color: #ef4444; }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #6b7280;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #4a4a4a;
+    }
+    
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+    
+    .modal-box {
+        background: #141c2e;
+        border-radius: 16px;
+        border: 1px solid #2a2a2a;
+        max-width: 600px;
+        width: 90%;
+        animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+        from {
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .modal-title {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .modal-title button {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #9ca3af;
+        cursor: pointer;
+    }
+    
+    .modal-title button:hover {
+        color: white;
+    }
+    
+    .card-pad {
+        padding: 20px 24px;
+    }
+    
+    .info-row {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    
+    .info-key {
+        width: 120px;
+        font-weight: 600;
+        color: #9ca3af;
+        font-size: 12px;
+    }
+    
+    .info-val {
+        flex: 1;
+        color: #e5e7eb;
+        font-size: 13px;
+    }
+    
+    .json-viewer {
+        background: #0a0a0a;
+        padding: 10px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 11px;
+        overflow-x: auto;
+        max-height: 300px;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-row {
+            flex-direction: column;
+        }
+        
+        .filter-bar {
+            flex-direction: column;
+        }
+        
+        .search-field {
+            width: 100%;
+        }
+        
+        .sel {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Stats Row -->
+<div class="stats-row">
+    <div class="stats-card">
+        <div class="stats-number success">${{ stats.total_amount|floatformat:2 }}</div>
+        <div class="stats-label">Total Revenue</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number success">{{ stats.successful }}</div>
+        <div class="stats-label">Successful Payments</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number danger">{{ stats.failed }}</div>
+        <div class="stats-label">Failed Payments</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number warning">{{ stats.refunded }}</div>
+        <div class="stats-label">Refunded</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-number info">{{ stats.total_payments }}</div>
+        <div class="stats-label">Total Transactions</div>
+    </div>
+</div>
+
+<!-- Payments Card -->
+<div class="card">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="bi bi-credit-card"></i> Payment Transactions
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-ghost" onclick="exportToCSV()">
+                <i class="bi bi-download"></i> Export CSV
+            </button>
+        </div>
+    </div>
+    
+    <div class="filter-bar">
+        <div class="search-field">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by company name..." />
+        </div>
+        <select class="sel" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="payment_succeeded">Successful</option>
+            <option value="payment_failed">Failed</option>
+            <option value="payment_refunded">Refunded</option>
+            <option value="invoice_paid">Invoice Paid</option>
+            <option value="invoice_payment_failed">Invoice Failed</option>
+        </select>
+    </div>
+    
+    <div class="tbl-wrap">
+        <table class="dt" id="paymentsTable">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Company</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                    <th>Plan</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr data-status="{{ payment.action }}" data-company="{{ payment.subscription.company.company_name|lower }}">
+                    <td style="font-family: monospace; font-size: 12px;">
+                        {{ payment.changed_at|date:"M d, Y H:i:s" }}
+                    </td>
+                    <td>
+                        <strong>{{ payment.subscription.company.company_name }}</strong><br>
+                        <small style="color: #6b7280;">{{ payment.subscription.company.email|default:'' }}</small>
+                    </td>
+                    <td>
+                        <span class="action-badge action-{{ payment.action }}">
+                            <i class="bi 
+                                {% if payment.action == 'payment_succeeded' or payment.action == 'invoice_paid' %}bi-check-circle
+                                {% elif payment.action == 'payment_failed' or payment.action == 'invoice_payment_failed' %}bi-x-circle
+                                {% elif payment.action == 'payment_refunded' %}bi-arrow-return-left
+                                {% else %}bi-question-circle{% endif %}"></i>
+                            {{ payment.get_action_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="amount {% if payment.action == 'payment_succeeded' %}success{% elif payment.action == 'payment_failed' %}danger{% endif %}">
+                            ${{ payment.amount|default:'0.00'|floatformat:2 }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if payment.new_plan %}
+                        <span class="plan-badge plan-{{ payment.new_plan.name }}">
+                            {{ payment.new_plan.display_name }}
+                        </span>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ payment.notes|default:'—'|truncatechars:50 }}
+                    </td>
+                    <td>
+                        <button class="btn btn-ghost btn-sm" onclick="viewPaymentDetails({{ payment.id }})">
+                            <i class="bi bi-eye"></i> Details
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>No payment transactions found.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if payments.has_other_pages %}
+    <div style="padding: 20px; text-align: center;">
+        <div class="pagination">
+            {% if payments.has_previous %}
+                <a href="?page=1{% if current_status %}&status={{ current_status }}{% endif %}{% if current_company %}&company={{ current_company }}{% endif %}" class="btn btn-ghost btn-sm">First</a>
+                <a href="?page={{ payments.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_company %}&company={{ current_company }}{% endif %}" class="btn btn-ghost btn-sm">Previous</a>
+            {% endif %}
+            
+            <span class="btn btn-ghost btn-sm" style="background: #2563eb; border-color: #2563eb;">
+                Page {{ payments.number }} of {{ payments.paginator.num_pages }}
+            </span>
+            
+            {% if payments.has_next %}
+                <a href="?page={{ payments.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_company %}&company={{ current_company }}{% endif %}" class="btn btn-ghost btn-sm">Next</a>
+                <a href="?page={{ payments.paginator.num_pages }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_company %}&company={{ current_company }}{% endif %}" class="btn btn-ghost btn-sm">Last</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Payment Details Modal -->
+<div class="modal-overlay" id="paymentModal" style="display: none;">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span>Payment Details</span>
+            <button onclick="closePaymentModal()">&times;</button>
+        </div>
+        <div class="card-pad" id="paymentDetailsContent">
+            Loading...
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script>
+let paymentsTable;
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.background = '#1e293b';
+    toast.style.borderLeft = `4px solid ${type === 'success' ? '#10b981' : '#ef4444'}`;
+    toast.style.padding = '12px 20px';
+    toast.style.borderRadius = '8px';
+    toast.style.color = 'white';
+    toast.style.zIndex = '1000';
+    toast.style.animation = 'slideIn 0.3s ease';
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}" style="color: ${type === 'success' ? '#10b981' : '#ef4444'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+$(document).ready(function() {
+    paymentsTable = $('#paymentsTable').DataTable({
+        pageLength: 25,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        order: [[0, 'desc']],
+        paging: true,
+        pagingType: 'full_numbers',
+        language: {
+            search: "Search:",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            emptyTable: "No payment transactions found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        },
+        columnDefs: [
+            { orderable: false, targets: [6] }
+        ]
+    });
+    
+    $('#searchInput').on('keyup', function() {
+        paymentsTable.search(this.value).draw();
+    });
+    
+    $('#statusFilter').on('change', function() {
+        const status = this.value;
+        if (status) {
+            paymentsTable.column(2).search(status).draw();
+        } else {
+            paymentsTable.column(2).search('').draw();
+        }
+    });
+});
+
+function viewPaymentDetails(paymentId) {
+    const modal = document.getElementById('paymentModal');
+    const content = document.getElementById('paymentDetailsContent');
+    content.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bi bi-hourglass-split"></i> Loading...</div>';
+    modal.style.display = 'flex';
+    
+    fetch(`/admin/get-payment-details/${paymentId}/`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            content.innerHTML = `
+                <div class="info-row">
+                    <div class="info-key">Transaction ID:</div>
+                    <div class="info-val">${data.payment.id}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Date:</div>
+                    <div class="info-val">${data.payment.date}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Company:</div>
+                    <div class="info-val">${data.payment.company}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Status:</div>
+                    <div class="info-val">${data.payment.action}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Amount:</div>
+                    <div class="info-val amount success">$${data.payment.amount}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Plan:</div>
+                    <div class="info-val">${data.payment.plan}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Notes:</div>
+                    <div class="info-val">${data.payment.notes || '—'}</div>
+                </div>
+                ${data.payment.stripe_details ? `
+                <div class="info-row">
+                    <div class="info-key">Stripe Event:</div>
+                    <div class="info-val">
+                        <div class="json-viewer">
+                            <pre style="margin: 0; color: #e5e7eb;">${JSON.stringify(data.payment.stripe_details, null, 2)}</pre>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+        } else {
+            content.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <p>${data.error || 'Failed to load payment details'}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        content.innerHTML = `
+            <div class="empty-state">
+                <i class="bi bi-exclamation-triangle"></i>
+                <p>Error loading payment details</p>
+            </div>
+        `;
+        console.error('Error:', error);
+    });
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+}
+
+function exportToCSV() {
+    const table = document.getElementById('paymentsTable');
+    const rows = table.querySelectorAll('tbody tr');
+    let csv = [];
+    
+    const headers = ['Date & Time', 'Company', 'Status', 'Amount', 'Plan', 'Notes'];
+    csv.push(headers.join(','));
+    
+    rows.forEach(row => {
+        if (row.querySelector('.empty-state')) return;
+        const rowData = [];
+        const cells = row.querySelectorAll('td');
+        for (let i = 0; i < cells.length - 1; i++) {
+            let text = cells[i].innerText.replace(/,/g, ';').replace(/\n/g, ' ');
+            rowData.push(`"${text}"`);
+        }
+        csv.push(rowData.join(','));
+    });
+    
+    const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `payments_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    showToast('Export complete!', 'success');
+}
+
+// Close modal on outside click
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

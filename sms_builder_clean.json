@@ -1,0 +1,1308 @@
+[
+{
+    "model": "sms_builder.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$RxAGyKMiakuNUjBzySC91C$fe0zcTP/F9/ythosZS7yOxdfiZ4vIuvsFN5kD98hGBo=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "rabbi",
+        "last_name": "",
+        "date_joined": "2026-04-15T05:07:27.696Z",
+        "email": "rabbi@gmail.com",
+        "user_type": "company",
+        "full_name": "rabbi",
+        "phone": "01958666961",
+        "role": "tes",
+        "is_active": true,
+        "is_staff": false,
+        "is_verified": false,
+        "terms_accepted": true,
+        "terms_accepted_at": "2026-04-15T05:07:27.696Z",
+        "created_at": "2026-04-15T05:07:28.781Z",
+        "updated_at": "2026-04-15T08:37:48.045Z",
+        "last_login_ip": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sms_builder.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$ByRokwo4t4cMTS81HVP04B$6rIqT6QgrxepRCh6S6IQ4jHb19X1ivzKCrZgJ9MWAhM=",
+        "last_login": "2026-04-20T16:04:08.233Z",
+        "is_superuser": true,
+        "first_name": "Super",
+        "last_name": "Admin",
+        "date_joined": "2026-04-15T05:07:59.421Z",
+        "email": "admin@gmail.com",
+        "user_type": "admin",
+        "full_name": "Super Admin",
+        "phone": null,
+        "role": null,
+        "is_active": true,
+        "is_staff": true,
+        "is_verified": true,
+        "terms_accepted": false,
+        "terms_accepted_at": null,
+        "created_at": "2026-04-15T05:08:00.495Z",
+        "updated_at": "2026-04-15T14:33:31.146Z",
+        "last_login_ip": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sms_builder.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$iYXhckmmkOtNfpZFexwEXq$HayQkCvzHNtHaPQ+CX/1yBuF5Pt1GMBYPyvodgSzYUY=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "sdfa",
+        "last_name": "",
+        "date_joined": "2026-04-15T09:42:33.713Z",
+        "email": "sad@gmailc.com",
+        "user_type": "company",
+        "full_name": "sdfa",
+        "phone": "5454545445",
+        "role": null,
+        "is_active": true,
+        "is_staff": false,
+        "is_verified": false,
+        "terms_accepted": true,
+        "terms_accepted_at": "2026-04-15T09:42:33.713Z",
+        "created_at": "2026-04-15T09:42:34.892Z",
+        "updated_at": "2026-04-15T15:41:53.255Z",
+        "last_login_ip": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sms_builder.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$Kl6bA1KyWIbH3mvrtUwNYW$O/x9NrHm89HVDGsmWJMK4ChRe3WyaAz1ekIjhIHWrgM=",
+        "last_login": "2026-04-15T13:57:26.268Z",
+        "is_superuser": false,
+        "first_name": "safd",
+        "last_name": "",
+        "date_joined": "2026-04-15T13:50:53.350Z",
+        "email": "sajal@gmail.com",
+        "user_type": "company",
+        "full_name": "safd",
+        "phone": "",
+        "role": "dsa",
+        "is_active": true,
+        "is_staff": false,
+        "is_verified": false,
+        "terms_accepted": true,
+        "terms_accepted_at": "2026-04-15T13:50:53.318Z",
+        "created_at": "2026-04-15T13:50:57.725Z",
+        "updated_at": "2026-04-15T19:12:14.399Z",
+        "last_login_ip": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sms_builder.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$Oqm1kSmeB08xgKYhvPJCFd$m0Qvy7/QsBrOn5ozHNOFFMCDwVGETT3TBx+Sw2Sfks4=",
+        "last_login": "2026-04-15T22:11:46.635Z",
+        "is_superuser": false,
+        "first_name": "rabbi",
+        "last_name": "",
+        "date_joined": "2026-04-16T07:22:09.507Z",
+        "email": "abc@gmail.com",
+        "user_type": "company",
+        "full_name": "rabbi",
+        "phone": "5154454",
+        "role": "",
+        "is_active": true,
+        "is_staff": false,
+        "is_verified": false,
+        "terms_accepted": true,
+        "terms_accepted_at": "2026-04-16T07:22:09.506Z",
+        "created_at": "2026-04-16T07:22:10.865Z",
+        "updated_at": "2026-04-17T15:13:27.326Z",
+        "last_login_ip": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sms_builder.user",
+    "pk": 6,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$n7tUGIMPtBxcKVHVoKsVUs$0BTMzCg7HSiJJb5CBYoEn+ZP+xOrJMRvwnh/8GFSzqU=",
+        "last_login": "2026-04-16T11:21:41.834Z",
+        "is_superuser": false,
+        "first_name": "Ajay",
+        "last_name": "Ghosh",
+        "date_joined": "2026-04-16T11:21:40.670Z",
+        "email": "test_company@gmail.com",
+        "user_type": "company",
+        "full_name": "Ajay Ghosh",
+        "phone": "1234567895",
+        "role": "CEO",
+        "is_active": true,
+        "is_staff": false,
+        "is_verified": false,
+        "terms_accepted": true,
+        "terms_accepted_at": "2026-04-16T11:21:41.832Z",
+        "created_at": "2026-04-16T11:21:41.796Z",
+        "updated_at": "2026-04-16T11:21:41.832Z",
+        "last_login_ip": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sms_builder.company",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "status": "approved",
+        "registration_date": "2026-04-15T05:07:28.809Z",
+        "last_updated": "2026-04-15T08:37:48.032Z",
+        "approved_at": null,
+        "approved_by": null,
+        "declaration_accepted": false,
+        "company_name": "test-3",
+        "abn": "11111111111",
+        "address_street": null,
+        "city": null,
+        "state": null,
+        "postcode": null,
+        "address": "test",
+        "contact_phone": null,
+        "contact_email": null,
+        "contact_person": null,
+        "contact_role": null,
+        "subscription_plan": "starter",
+        "subscription_status": "pending",
+        "subscription_end_date": null,
+        "trial_ends_at": null
+    }
+},
+{
+    "model": "sms_builder.company",
+    "pk": 2,
+    "fields": {
+        "user": 3,
+        "status": "approved",
+        "registration_date": "2026-04-15T09:42:34.917Z",
+        "last_updated": "2026-04-15T15:41:53.234Z",
+        "approved_at": null,
+        "approved_by": null,
+        "declaration_accepted": false,
+        "company_name": "dsfa",
+        "abn": "54545454545",
+        "address_street": null,
+        "city": null,
+        "state": null,
+        "postcode": null,
+        "address": "sfa",
+        "contact_phone": null,
+        "contact_email": null,
+        "contact_person": null,
+        "contact_role": null,
+        "subscription_plan": "starter",
+        "subscription_status": "pending",
+        "subscription_end_date": null,
+        "trial_ends_at": null
+    }
+},
+{
+    "model": "sms_builder.company",
+    "pk": 3,
+    "fields": {
+        "user": 4,
+        "status": "approved",
+        "registration_date": "2026-04-15T13:50:57.811Z",
+        "last_updated": "2026-04-15T19:12:14.372Z",
+        "approved_at": null,
+        "approved_by": null,
+        "declaration_accepted": false,
+        "company_name": "sdfa",
+        "abn": "12356478952",
+        "address_street": null,
+        "city": null,
+        "state": null,
+        "postcode": null,
+        "address": "sydney",
+        "contact_phone": null,
+        "contact_email": null,
+        "contact_person": null,
+        "contact_role": null,
+        "subscription_plan": "professional",
+        "subscription_status": "pending",
+        "subscription_end_date": null,
+        "trial_ends_at": null
+    }
+},
+{
+    "model": "sms_builder.company",
+    "pk": 4,
+    "fields": {
+        "user": 2,
+        "status": "pending",
+        "registration_date": "2026-04-16T06:37:30.246Z",
+        "last_updated": "2026-04-16T06:37:30.246Z",
+        "approved_at": null,
+        "approved_by": null,
+        "declaration_accepted": true,
+        "company_name": "Dhaka Freight Ltd.",
+        "abn": "12345678910",
+        "address_street": "dhanmondi",
+        "city": "Dhaka",
+        "state": "VIC",
+        "postcode": "1000",
+        "address": null,
+        "contact_phone": "+8801674325960",
+        "contact_email": "dhaka@gmail.com",
+        "contact_person": "Super Admin",
+        "contact_role": "CEO",
+        "subscription_plan": "starter",
+        "subscription_status": "pending",
+        "subscription_end_date": null,
+        "trial_ends_at": null
+    }
+},
+{
+    "model": "sms_builder.company",
+    "pk": 5,
+    "fields": {
+        "user": 5,
+        "status": "approved",
+        "registration_date": "2026-04-16T07:22:10.921Z",
+        "last_updated": "2026-04-17T17:18:45.161Z",
+        "approved_at": null,
+        "approved_by": null,
+        "declaration_accepted": false,
+        "company_name": "abc",
+        "abn": "15155151515",
+        "address_street": null,
+        "city": null,
+        "state": null,
+        "postcode": null,
+        "address": "sydney",
+        "contact_phone": null,
+        "contact_email": null,
+        "contact_person": null,
+        "contact_role": null,
+        "subscription_plan": "professional",
+        "subscription_status": "active",
+        "subscription_end_date": "2026-05-19T00:00:00Z",
+        "trial_ends_at": null
+    }
+},
+{
+    "model": "sms_builder.company",
+    "pk": 6,
+    "fields": {
+        "user": 6,
+        "status": "pending",
+        "registration_date": "2026-04-16T11:21:41.836Z",
+        "last_updated": "2026-04-16T11:21:41.836Z",
+        "approved_at": null,
+        "approved_by": null,
+        "declaration_accepted": true,
+        "company_name": "Test Company Ltd.",
+        "abn": "45612379887",
+        "address_street": "Dhaka",
+        "city": "Dhaka",
+        "state": "SA",
+        "postcode": "1000",
+        "address": null,
+        "contact_phone": "1234567895",
+        "contact_email": "test_company@gmail.com",
+        "contact_person": "Ajay Ghosh",
+        "contact_role": "CEO",
+        "subscription_plan": "starter",
+        "subscription_status": "pending",
+        "subscription_end_date": null,
+        "trial_ends_at": null
+    }
+},
+{
+    "model": "sms_builder.companyfleet",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "total_vehicles": 30,
+        "max_gvm": "Over 12t",
+        "average_vehicle_age": "5 – 10 years",
+        "vehicle_types": [
+            "Rigid Trucks (<4.5t)",
+            "B-Doubles",
+            "Prime Movers",
+            "Flatbeds"
+        ],
+        "special_cargo": [
+            "Dangerous Goods",
+            "Oversize / Overmass"
+        ],
+        "nhvr_configurations": {
+            "1. Common Rigid Trucks – General Access": [
+                "2 Axle Rigid"
+            ],
+            "2. Common Semitrailer Combinations – General Access": [
+                "4 Axle Semi",
+                "5 Axle Semi"
+            ],
+            "3. Common Rigid Truck and Trailer Combinations": [
+                "Rigid + Dog",
+                "Rigid + Pig"
+            ],
+            "4. Common B-Double Combinations – Class 2": [
+                "B-Double 7 Axle",
+                "B-Double 8 Axle"
+            ],
+            "5. Common Type 1 Road Trains – Class 2": [
+                "Type 1 A-Train",
+                "Type 1 B-Train"
+            ],
+            "6. Common Type 2 Road Trains – Class 2": [
+                "Type 2 A-Triple"
+            ]
+        }
+    }
+},
+{
+    "model": "sms_builder.companyfleet",
+    "pk": 2,
+    "fields": {
+        "company": 6,
+        "total_vehicles": 22,
+        "max_gvm": "Over 12t",
+        "average_vehicle_age": "5 – 10 years",
+        "vehicle_types": [
+            "Rigid Trucks (<4.5t)",
+            "Prime Movers",
+            "Road Trains",
+            "Refrigerated Vehicles"
+        ],
+        "special_cargo": [
+            "Dangerous Goods",
+            "Oversize / Overmass"
+        ],
+        "nhvr_configurations": {
+            "1. Common Rigid Trucks – General Access": [
+                "4 Axle Rigid"
+            ],
+            "3. Common Rigid Truck and Trailer Combinations": [
+                "Rigid + Dog"
+            ],
+            "4. Common B-Double Combinations – Class 2": [
+                "B-Double 8 Axle"
+            ],
+            "5. Common Type 1 Road Trains – Class 2": [
+                "Type 1 A-Train",
+                "Type 1 B-Train"
+            ],
+            "6. Common Type 2 Road Trains – Class 2": [
+                "Type 2 A-Triple"
+            ]
+        }
+    }
+},
+{
+    "model": "sms_builder.driver",
+    "pk": 1,
+    "fields": {
+        "first_name": "rabbi",
+        "last_name": "sajal",
+        "email": "sajal@gmail.com",
+        "phone": "01958666962",
+        "role": null,
+        "licence_number": "test",
+        "licence_class": "MR",
+        "licence_expiry": "2026-04-15",
+        "address": "test",
+        "city": "test",
+        "state": "test",
+        "postcode": "545454",
+        "medical_expiry": null,
+        "has_medical_certificate": false,
+        "induction_date": null,
+        "last_training_date": null,
+        "next_training_due": null,
+        "status": "active",
+        "approval_status": "approved",
+        "rejection_reason": null,
+        "approved_at": "2026-04-15T22:37:30.806Z",
+        "approved_by": 2,
+        "company": 1,
+        "licence_document": "",
+        "medical_document": "",
+        "created_at": "2026-04-15T08:45:09.820Z",
+        "updated_at": "2026-04-15T22:37:30.806Z",
+        "created_by": 2
+    }
+},
+{
+    "model": "sms_builder.driver",
+    "pk": 2,
+    "fields": {
+        "first_name": "test",
+        "last_name": "fdsa",
+        "email": "fdsa",
+        "phone": "+8801958666961",
+        "role": "dsfa",
+        "licence_number": "8888444874",
+        "licence_class": "HR",
+        "licence_expiry": "2026-04-23",
+        "address": "Dhaka Dhanmondi 4\r\nMithali Road",
+        "city": "Dhaka",
+        "state": null,
+        "postcode": "1209",
+        "medical_expiry": null,
+        "has_medical_certificate": false,
+        "induction_date": null,
+        "last_training_date": null,
+        "next_training_due": null,
+        "status": "active",
+        "approval_status": "pending",
+        "rejection_reason": null,
+        "approved_at": null,
+        "approved_by": null,
+        "company": 5,
+        "licence_document": "",
+        "medical_document": "",
+        "created_at": "2026-04-17T15:12:54.068Z",
+        "updated_at": "2026-04-17T15:13:46.361Z",
+        "created_by": 2
+    }
+},
+{
+    "model": "sms_builder.vehicle",
+    "pk": 2,
+    "fields": {
+        "make": "fsda",
+        "model": "fsdadfsa",
+        "year": 2022,
+        "vin": "FSD54545454545454",
+        "registration_number": "656565655",
+        "vehicle_type": "rigid_gt_12t",
+        "registration_expiry": "2026-04-16",
+        "inspection_due_date": null,
+        "cof_expiry": null,
+        "insurance_company": null,
+        "insurance_policy_number": null,
+        "insurance_expiry": null,
+        "gross_vehicle_mass": null,
+        "tare_weight": null,
+        "load_capacity": null,
+        "fuel_type": null,
+        "status": "current",
+        "approval_status": "pending",
+        "rejection_reason": null,
+        "approved_at": null,
+        "approved_by": null,
+        "company": 1,
+        "rego_document": "",
+        "cof_document": "",
+        "insurance_document": "",
+        "created_at": "2026-04-15T09:03:44.995Z",
+        "updated_at": "2026-04-17T15:34:17.018Z",
+        "created_by": 2
+    }
+},
+{
+    "model": "sms_builder.vehicle",
+    "pk": 3,
+    "fields": {
+        "make": "test",
+        "model": "test",
+        "year": 2025,
+        "vin": "12345678912345678",
+        "registration_number": "555545454545454545454",
+        "vehicle_type": "rigid_lt_4_5t",
+        "registration_expiry": "2026-04-17",
+        "inspection_due_date": null,
+        "cof_expiry": null,
+        "insurance_company": null,
+        "insurance_policy_number": null,
+        "insurance_expiry": null,
+        "gross_vehicle_mass": null,
+        "tare_weight": null,
+        "load_capacity": null,
+        "fuel_type": null,
+        "status": "current",
+        "approval_status": "approved",
+        "rejection_reason": null,
+        "approved_at": null,
+        "approved_by": null,
+        "company": 5,
+        "rego_document": "",
+        "cof_document": "",
+        "insurance_document": "",
+        "created_at": "2026-04-15T22:05:10.404Z",
+        "updated_at": "2026-04-17T15:37:55.616Z",
+        "created_by": 5
+    }
+},
+{
+    "model": "sms_builder.vehicle",
+    "pk": 4,
+    "fields": {
+        "make": "test",
+        "model": "test",
+        "year": 2025,
+        "vin": "12345678912345679",
+        "registration_number": "555545454545484545454",
+        "vehicle_type": "rigid_gt_12t",
+        "registration_expiry": "2026-04-17",
+        "inspection_due_date": null,
+        "cof_expiry": null,
+        "insurance_company": null,
+        "insurance_policy_number": null,
+        "insurance_expiry": null,
+        "gross_vehicle_mass": null,
+        "tare_weight": null,
+        "load_capacity": null,
+        "fuel_type": null,
+        "status": "current",
+        "approval_status": "approved",
+        "rejection_reason": null,
+        "approved_at": null,
+        "approved_by": null,
+        "company": 2,
+        "rego_document": "",
+        "cof_document": "",
+        "insurance_document": "",
+        "created_at": "2026-04-17T15:38:53.238Z",
+        "updated_at": "2026-04-17T15:38:53.238Z",
+        "created_by": 2
+    }
+},
+{
+    "model": "sms_builder.companyoperation",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "work_types": [
+            "Local Delivery",
+            "Cross-Border Operations",
+            "Contract Carriage",
+            "Metropolitan Distribution",
+            "Interstate Freight",
+            "Linehaul",
+            "Bulk Haulage",
+            "Subcontracting"
+        ],
+        "accreditations": [
+            "Mass Management",
+            "Fatigue Management",
+            "Maintenance Management",
+            "TruckSafe",
+            "WAHVA"
+        ],
+        "audit_date_none": null,
+        "audit_date_trucksafe": "2026-04-12",
+        "audit_date_wahva": "2026-03-31",
+        "operating_areas": [
+            "Local",
+            "International"
+        ],
+        "operating_hours": "24/7 Operations",
+        "num_drivers": 15
+    }
+},
+{
+    "model": "sms_builder.companyoperation",
+    "pk": 2,
+    "fields": {
+        "company": 6,
+        "work_types": [
+            "Local Delivery",
+            "Express / Courier",
+            "Metropolitan Distribution"
+        ],
+        "accreditations": [
+            "Mass Management"
+        ],
+        "audit_date_none": null,
+        "audit_date_trucksafe": null,
+        "audit_date_wahva": null,
+        "operating_areas": [
+            "Local"
+        ],
+        "operating_hours": "Day Shift (6am–6pm)",
+        "num_drivers": 30
+    }
+},
+{
+    "model": "sms_builder.companyriskprofile",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "safety_policies": [
+            "Fatigue Management Policy",
+            "Load Restraint Policy",
+            "Emergency Response Plan",
+            "Chain of Responsibility Policy"
+        ],
+        "additional_notes": "There won't be any risk"
+    }
+},
+{
+    "model": "sms_builder.companyriskprofile",
+    "pk": 2,
+    "fields": {
+        "company": 6,
+        "safety_policies": [
+            "Fatigue Management Policy",
+            "Load Restraint Policy",
+            "Vehicle Maintenance Policy",
+            "Incident Reporting Policy"
+        ],
+        "additional_notes": ""
+    }
+},
+{
+    "model": "sms_builder.riskhazard",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "hazard_description": "Driver fatigue",
+        "likelihood": "Possible",
+        "consequence": "Major",
+        "control_measures": "Fatigue management policy, logbook checks"
+    }
+},
+{
+    "model": "sms_builder.riskhazard",
+    "pk": 2,
+    "fields": {
+        "company": 4,
+        "hazard_description": "Vehicle brake failure",
+        "likelihood": "Unlikely",
+        "consequence": "Catastrophic",
+        "control_measures": "Scheduled maintenance, pre-start checks"
+    }
+},
+{
+    "model": "sms_builder.riskhazard",
+    "pk": 3,
+    "fields": {
+        "company": 4,
+        "hazard_description": "Load shifting/falling",
+        "likelihood": "Possible",
+        "consequence": "Major",
+        "control_measures": "Load restraint training, inspections"
+    }
+},
+{
+    "model": "sms_builder.riskhazard",
+    "pk": 4,
+    "fields": {
+        "company": 6,
+        "hazard_description": "Driver fatigue",
+        "likelihood": "Possible",
+        "consequence": "Major",
+        "control_measures": "Fatigue management policy, logbook checks"
+    }
+},
+{
+    "model": "sms_builder.riskhazard",
+    "pk": 5,
+    "fields": {
+        "company": 6,
+        "hazard_description": "Vehicle brake failure",
+        "likelihood": "Unlikely",
+        "consequence": "Catastrophic",
+        "control_measures": "Scheduled maintenance, pre-start checks"
+    }
+},
+{
+    "model": "sms_builder.riskhazard",
+    "pk": 6,
+    "fields": {
+        "company": 6,
+        "hazard_description": "Load shifting/falling",
+        "likelihood": "Possible",
+        "consequence": "Major",
+        "control_measures": "Load restraint training, inspections"
+    }
+},
+{
+    "model": "sms_builder.companysubcontractorprofile",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "engages_subcontractors": true,
+        "compliance_practices": [
+            "Written agreements in place",
+            "Inducted into safety system",
+            "Regular performance reviews"
+        ],
+        "active_subcontractors": 2,
+        "primary_engagement_type": "Labour Hire",
+        "review_frequency": "Quarterly",
+        "cor_procedures": "Chain of Responsibility"
+    }
+},
+{
+    "model": "sms_builder.companysubcontractorprofile",
+    "pk": 2,
+    "fields": {
+        "company": 6,
+        "engages_subcontractors": true,
+        "compliance_practices": [
+            "Written agreements in place",
+            "Insurance certificates collected"
+        ],
+        "active_subcontractors": 2,
+        "primary_engagement_type": "Transport Company",
+        "review_frequency": "Monthly",
+        "cor_procedures": ""
+    }
+},
+{
+    "model": "sms_builder.subcontractorrecord",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "subcontractor_name": "Abc Company",
+        "abn": "12346578910",
+        "licence_type": "MR",
+        "contract_expiry": "2026-04-06"
+    }
+},
+{
+    "model": "sms_builder.subcontractorrecord",
+    "pk": 2,
+    "fields": {
+        "company": 4,
+        "subcontractor_name": "DEF",
+        "abn": "1233546876",
+        "licence_type": "HR",
+        "contract_expiry": "2026-03-29"
+    }
+},
+{
+    "model": "sms_builder.companyincidentprofile",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "reporting_process": [
+            "Formal incident reporting system in place",
+            "Staff informed of outcomes",
+            "Regulator notified when required"
+        ],
+        "incidents_last_12_months": 4,
+        "incidents_last_3_years": 10,
+        "injuries_resulting": 5,
+        "improvement_actions": "No nother incidents"
+    }
+},
+{
+    "model": "sms_builder.companyincidentprofile",
+    "pk": 2,
+    "fields": {
+        "company": 6,
+        "reporting_process": [
+            "Formal incident reporting system in place",
+            "Corrective actions tracked"
+        ],
+        "incidents_last_12_months": 2,
+        "incidents_last_3_years": 5,
+        "injuries_resulting": 1,
+        "improvement_actions": ""
+    }
+},
+{
+    "model": "sms_builder.incidentrecord",
+    "pk": 1,
+    "fields": {
+        "company": 4,
+        "incident_date": "2026-04-06",
+        "description": "Minor clash",
+        "incident_type": "Near-Miss",
+        "outcome": "0"
+    }
+},
+{
+    "model": "sms_builder.incidentrecord",
+    "pk": 2,
+    "fields": {
+        "company": 4,
+        "incident_date": "2026-04-05",
+        "description": "Accident",
+        "incident_type": "Accident",
+        "outcome": "2"
+    }
+},
+{
+    "model": "sms_builder.incidentrecord",
+    "pk": 3,
+    "fields": {
+        "company": 6,
+        "incident_date": "2026-04-06",
+        "description": "Minor",
+        "incident_type": "Near-Miss",
+        "outcome": "0"
+    }
+},
+{
+    "model": "sms_builder.incidentrecord",
+    "pk": 4,
+    "fields": {
+        "company": 6,
+        "incident_date": "2026-04-13",
+        "description": "Mini Minor",
+        "incident_type": "Accident",
+        "outcome": "1"
+    }
+},
+{
+    "model": "sms_builder.service",
+    "pk": 1,
+    "fields": {
+        "icon": "bi-truck",
+        "title": "Driver & Fleet Records",
+        "description": "Manage driver profiles, training status, incidents, and vehicle safety records across your entire fleet.",
+        "order": 1,
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-15T09:11:54.257Z",
+        "updated_at": "2026-04-15T18:40:06.702Z"
+    }
+},
+{
+    "model": "sms_builder.service",
+    "pk": 2,
+    "fields": {
+        "icon": "bi-exclamation-triangle",
+        "title": "Incident Reporting",
+        "description": "Submit and review incidents through a simple digital workflow with audit-ready documentation.",
+        "order": 2,
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-15T09:19:04.149Z",
+        "updated_at": "2026-04-15T18:42:11.421Z"
+    }
+},
+{
+    "model": "sms_builder.service",
+    "pk": 3,
+    "fields": {
+        "icon": "bi-bar-chart-line",
+        "title": "SMS Document Builder",
+        "description": "Create structured safety management documents with guided sections and practical templates tailored to heavy vehicle operations.",
+        "order": 0,
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-15T09:19:22.907Z",
+        "updated_at": "2026-04-15T18:38:56.216Z"
+    }
+},
+{
+    "model": "sms_builder.service",
+    "pk": 4,
+    "fields": {
+        "icon": "bi-shield-check",
+        "title": "Compliance Tracking",
+        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer t",
+        "order": 0,
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-15T09:19:38.871Z",
+        "updated_at": "2026-04-15T18:39:28.315Z"
+    }
+},
+{
+    "model": "sms_builder.service",
+    "pk": 5,
+    "fields": {
+        "icon": "bi-truck",
+        "title": "Analytics Dashboard",
+        "description": "Track compliance progress, alerts, and business performance with real-time visual summaries.",
+        "order": 0,
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-15T18:41:25.808Z",
+        "updated_at": "2026-04-15T18:41:25.808Z"
+    }
+},
+{
+    "model": "sms_builder.service",
+    "pk": 6,
+    "fields": {
+        "icon": "bi-gear",
+        "title": "Secure User Access",
+        "description": "Admin, staff, and company logins with role-based access control to protect sensitive safety data.",
+        "order": 0,
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-15T18:41:57.831Z",
+        "updated_at": "2026-04-15T18:41:57.831Z"
+    }
+},
+{
+    "model": "sms_builder.pricingplan",
+    "pk": 1,
+    "fields": {
+        "name": "starter",
+        "display_name": "Starter",
+        "description": "Perfect for small operators",
+        "price": "29.00",
+        "price_period": "month",
+        "features": [
+            "Basic dashboard",
+            "SMS templates",
+            "Email support",
+            "Incident reporting",
+            "Advanced analytics",
+            "Most Popular"
+        ],
+        "disabled_features": [
+            "Professional",
+            "For growing fleets"
+        ],
+        "is_popular": false,
+        "is_active": true,
+        "order": 0,
+        "button_text": "Get Started",
+        "button_class": "btn-outline-primary",
+        "created_at": "2026-04-15T09:45:07.010Z",
+        "updated_at": "2026-04-15T18:46:28.156Z"
+    }
+},
+{
+    "model": "sms_builder.pricingplan",
+    "pk": 2,
+    "fields": {
+        "name": "professional",
+        "display_name": "Professional",
+        "description": "",
+        "price": "59.00",
+        "price_period": "month",
+        "features": [
+            "All Starter features",
+            "Incident reports",
+            "Compliance tracking",
+            "Driver records"
+        ],
+        "disabled_features": [
+            "Priority support"
+        ],
+        "is_popular": true,
+        "is_active": true,
+        "order": 0,
+        "button_text": "Get Started",
+        "button_class": "btn-outline-primary",
+        "created_at": "2026-04-15T11:09:49.662Z",
+        "updated_at": "2026-04-20T16:41:22.550Z"
+    }
+},
+{
+    "model": "sms_builder.pricingplan",
+    "pk": 3,
+    "fields": {
+        "name": "enterprise",
+        "display_name": "Enterprise",
+        "description": "",
+        "price": "99.00",
+        "price_period": "month",
+        "features": [
+            "All Professional features",
+            "Advanced analytics",
+            "Priority support",
+            "Custom integrations",
+            "Dedicated account manager"
+        ],
+        "disabled_features": [],
+        "is_popular": false,
+        "is_active": true,
+        "order": 0,
+        "button_text": "Get Started",
+        "button_class": "btn-outline-primary",
+        "created_at": "2026-04-15T18:51:42.924Z",
+        "updated_at": "2026-04-15T18:51:42.924Z"
+    }
+},
+{
+    "model": "sms_builder.companysubscription",
+    "pk": 1,
+    "fields": {
+        "company": 2,
+        "plan": 1,
+        "start_date": "2026-04-15T15:41:53.248Z",
+        "end_date": null,
+        "last_renewal_date": null,
+        "next_renewal_date": null,
+        "amount_paid": "0.00",
+        "payment_method": null,
+        "transaction_id": null,
+        "status": "active",
+        "auto_renew": false,
+        "created_at": "2026-04-15T15:41:53.248Z",
+        "updated_at": "2026-04-15T15:41:53.248Z",
+        "created_by": null
+    }
+},
+{
+    "model": "sms_builder.companysubscription",
+    "pk": 2,
+    "fields": {
+        "company": 3,
+        "plan": 2,
+        "start_date": "2026-04-15T15:42:03.116Z",
+        "end_date": null,
+        "last_renewal_date": null,
+        "next_renewal_date": null,
+        "amount_paid": "0.00",
+        "payment_method": null,
+        "transaction_id": null,
+        "status": "active",
+        "auto_renew": false,
+        "created_at": "2026-04-15T15:42:03.116Z",
+        "updated_at": "2026-04-15T19:12:14.383Z",
+        "created_by": null
+    }
+},
+{
+    "model": "sms_builder.companysubscription",
+    "pk": 4,
+    "fields": {
+        "company": 5,
+        "plan": 2,
+        "start_date": "2026-04-17T17:03:20.677Z",
+        "end_date": "2026-05-19T00:00:00Z",
+        "last_renewal_date": "2026-04-17T17:07:19.930Z",
+        "next_renewal_date": "2026-05-19T00:00:00Z",
+        "amount_paid": "59.00",
+        "payment_method": null,
+        "transaction_id": null,
+        "status": "active",
+        "auto_renew": false,
+        "created_at": "2026-04-17T17:03:20.677Z",
+        "updated_at": "2026-04-17T17:18:45.125Z",
+        "created_by": 5
+    }
+},
+{
+    "model": "sms_builder.subscriptionhistory",
+    "pk": 1,
+    "fields": {
+        "subscription": 2,
+        "old_plan": 1,
+        "new_plan": 2,
+        "action": "upgraded",
+        "notes": "Plan changed from Starter to Professional",
+        "changed_by": 2,
+        "changed_at": "2026-04-15T19:12:14.390Z"
+    }
+},
+{
+    "model": "sms_builder.subscriptionhistory",
+    "pk": 5,
+    "fields": {
+        "subscription": 4,
+        "old_plan": null,
+        "new_plan": 2,
+        "action": "created",
+        "notes": "Pending subscription created for Professional plan",
+        "changed_by": 5,
+        "changed_at": "2026-04-17T17:03:20.691Z"
+    }
+},
+{
+    "model": "sms_builder.subscriptionhistory",
+    "pk": 6,
+    "fields": {
+        "subscription": 4,
+        "old_plan": 2,
+        "new_plan": 2,
+        "action": "renewed",
+        "notes": "Plan renewal approved by admin admin@gmail.com. User renewed Professional plan.",
+        "changed_by": 2,
+        "changed_at": "2026-04-17T17:07:19.941Z"
+    }
+},
+{
+    "model": "sms_builder.subscriptionhistory",
+    "pk": 7,
+    "fields": {
+        "subscription": 4,
+        "old_plan": null,
+        "new_plan": null,
+        "action": "renewed",
+        "notes": "Expiry date updated from 2026-05-17 to 2026-05-19 by admin admin@gmail.com. Reason: ",
+        "changed_by": 2,
+        "changed_at": "2026-04-17T17:18:45.208Z"
+    }
+},
+{
+    "model": "sms_builder.whyus",
+    "pk": 1,
+    "fields": {
+        "eyebrow": "Why PRODRIVE",
+        "title": "Built for the Road Ahead",
+        "description": "\r\nOur system is designed for usability, compliance support, and efficient document workflows. It helps transport businesses reduce manual work and improve visibility across safety operations.\r\n",
+        "video_url": "Cm6eMeOg-KU",
+        "is_active": true,
+        "order": 0,
+        "created_at": "2026-04-15T11:17:03.253Z",
+        "updated_at": "2026-04-15T18:55:54.328Z"
+    }
+},
+{
+    "model": "sms_builder.whyusfeature",
+    "pk": 2,
+    "fields": {
+        "why_us": 1,
+        "icon": "bi-heart-fill",
+        "text": "Modern responsive design — works on any device",
+        "order": 0,
+        "is_active": true
+    }
+},
+{
+    "model": "sms_builder.whyusfeature",
+    "pk": 3,
+    "fields": {
+        "why_us": 1,
+        "icon": "bi-check-circle-fill",
+        "text": "Intuitive navigation designed for non-technical users",
+        "order": 0,
+        "is_active": true
+    }
+},
+{
+    "model": "sms_builder.whyusfeature",
+    "pk": 4,
+    "fields": {
+        "why_us": 1,
+        "icon": "bi-heart-fill",
+        "text": "Role-based dashboard access for your whole team",
+        "order": 0,
+        "is_active": true
+    }
+},
+{
+    "model": "sms_builder.whyusfeature",
+    "pk": 5,
+    "fields": {
+        "why_us": 1,
+        "icon": "bi-check-circle-fill",
+        "text": "Scalable system that grows with your fleet",
+        "order": 0,
+        "is_active": true
+    }
+},
+{
+    "model": "sms_builder.whyusfeature",
+    "pk": 6,
+    "fields": {
+        "why_us": 1,
+        "icon": "bi-check-circle-fill",
+        "text": "Australian compliance standards built in",
+        "order": 0,
+        "is_active": true
+    }
+},
+{
+    "model": "sms_builder.contactmessage",
+    "pk": 1,
+    "fields": {
+        "name": "tes",
+        "email": "test@gmail.com",
+        "message": "dsfa dsfadfs fdsa fdsa fdasf fs dafdas",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0",
+        "status": "read",
+        "is_agreed": true,
+        "created_at": "2026-04-15T14:23:33.678Z",
+        "updated_at": "2026-04-15T14:23:59.553Z"
+    }
+},
+{
+    "model": "sms_builder.footersettings",
+    "pk": 1,
+    "fields": {
+        "email": "info@prodrivecompliance.com",
+        "phone": "+61 4XX XXX XXX",
+        "address": "Sydney, Australia",
+        "facebook_url": null,
+        "linkedin_url": null,
+        "instagram_url": null,
+        "twitter_url": null,
+        "tagline": "Let's build a safer and smarter compliance system for your business.",
+        "compliance_logos": [],
+        "membership_logos": [],
+        "copyright_text": "© 2026 PRODRIVE Compliance. All rights reserved.",
+        "is_active": true,
+        "updated_at": "2026-04-15T14:46:46.465Z"
+    }
+},
+{
+    "model": "sms_builder.systemsettings",
+    "pk": 1,
+    "fields": {
+        "hero_badge": "Web-Based Compliance Platform",
+        "hero_title": "Smarter Safety Management for Heavy Vehicle Operations",
+        "hero_description": "Build, manage, and monitor Safety Management System documents with a professional, responsive, and user-friendly web platform.",
+        "hero_button_text": "Get Started Free",
+        "hero_button_link": "/sms-builder-form/",
+        "hero_video_url": "https://www.youtube.com/embed/Cm6eMeOg-KU",
+        "trust_item_1": "No credit card required",
+        "trust_item_2": "NHVR aligned",
+        "trust_item_3": "Setup in 15 minutes",
+        "carousel_images": [
+            "/static/sms_builder/assets/images/c1.jpg",
+            "/static/sms_builder/assets/images/c2.jpeg"
+        ],
+        "site_name": "PRODRIVE",
+        "site_tagline": "SMS Builder",
+        "version": "v2.4.1",
+        "environment": "Production",
+        "email_notifications": false,
+        "new_registration_alerts": false,
+        "incident_notifications": false,
+        "compliance_reminders": false,
+        "maintenance_mode": false,
+        "last_backup": null,
+        "database_status": "Healthy",
+        "uptime": "99.97%",
+        "updated_at": "2026-04-16T07:24:58.039Z"
+    }
+},
+{
+    "model": "sms_builder.adminprofile",
+    "pk": 1,
+    "fields": {
+        "user": 2,
+        "role": "Super Administrator",
+        "phone": "+61 4XX XXX XXX",
+        "location": "Sydney, NSW"
+    }
+},
+{
+    "model": "sms_builder.review",
+    "pk": 1,
+    "fields": {
+        "company": 5,
+        "user": 5,
+        "rating": 5,
+        "title": "test",
+        "review_text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.\n\n",
+        "is_approved": true,
+        "is_featured": false,
+        "company_response": "",
+        "response_date": null,
+        "reviewer_name": "rabbi",
+        "reviewer_role": "",
+        "reviewer_company": "abc",
+        "created_at": "2026-04-15T21:51:29.232Z",
+        "updated_at": "2026-04-17T15:52:49.732Z"
+    }
+}
+]

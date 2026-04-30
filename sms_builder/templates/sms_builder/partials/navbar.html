@@ -1,0 +1,97 @@
+{% load static %}
+
+<!-- TOPBAR -->
+<div class="topbar py-2" style="background: #0f172a; color: white; font-size: 13px;">
+    <div class="container d-flex justify-content-between">
+        <div>
+            <span>
+                <i class="bi bi-telephone-fill me-2"></i>
+                <a href="tel:+61437064814" class="text-white text-decoration-none">
+                    
+0437064814
+                </a>
+            </span>
+
+            <span class="mx-2">|</span>
+
+            <span>
+                <i class="bi bi-envelope-fill me-2"></i>
+                <a href="mailto:info@prodrivecompliance.com" class="text-white text-decoration-none">
+                    info@prodrivecompliance.com
+                </a>
+            </span>
+        </div>
+<div>
+    <a href="https://www.facebook.com/prodrivecompliancegroup/" target="_blank" rel="noopener noreferrer" class="text-white me-2">
+        <i class="bi bi-facebook"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/bruce-gunter-3678a786/" target="_blank" rel="noopener noreferrer" class="text-white me-2">
+        <i class="bi bi-linkedin"></i>
+    </a>
+    <a href="https://www.instagram.com/prodrivecompliancegroup/?hl=en" target="_blank" rel="noopener noreferrer" class="text-white">
+        <i class="bi bi-instagram"></i>
+    </a>
+</div>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top" style="background: white; z-index: 1030; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <div class="container py-2">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'index' %}">
+            <img src="{% static 'sms_builder/assets/images/logo.png' %}" alt="ProDrive Logo" style="height: 50px">
+            <div>
+                <div class="brand-title mb-0" style="font-size: 24px; font-weight: 800; color: #2563eb;">PRODRIVE</div>
+                <small class="brand-subtitle" style="font-size: 10px; color: #94a3b8;">SMS Builder</small>
+            </div>
+        </a>
+        
+        <button class="navbar-toggler border-0" type="button" onclick="toggleNavbar()">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#pricing">Pricing</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#compliance-coverage">Coverage</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#why-us">Why Us</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#reviews">Reviews</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'index' %}#contact">Contact</a></li>
+
+                {% if user.is_authenticated %}
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown ms-2">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" 
+                       href="#" 
+                       role="button" 
+                       onclick="toggleDropdown(event)">
+                        <div class="profile-avatar">
+                            <div class="avatar-initials" style="background: linear-gradient(135deg, #2563eb, #06b6d4); color: white;">
+                                {{ user.full_name|slice:":1"|upper|default:"U" }}
+                            </div>
+                        </div>
+                        <span class="small d-none d-lg-inline">{{ user.full_name|default:user.email|truncatechars:15 }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" id="profileDropdown" style="display: none;">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person-circle me-2"></i> My Profile</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="alert('My Documents coming soon!'); return false;"><i class="bi bi-file-earmark-text me-2"></i> My Documents</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="alert('Settings coming soon!'); return false;"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <!-- Sign In/Up Buttons -->
+                <li class="nav-item">
+                    <a href="{% url 'signin' %}" class="btn btn-primary btn-sm px-3 ms-2" style="background: #2563eb; border: none;">Sign In</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'signup' %}" class="btn btn-outline-primary btn-sm px-3 ms-2" style="border: 1.5px solid #2563eb; color: #2563eb;">Sign Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

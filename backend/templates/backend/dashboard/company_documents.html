@@ -1,0 +1,315 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<style>
+.doc-table th,
+.doc-table td {
+    vertical-align: middle;
+}
+
+.doc-table thead th {
+    text-align: center;
+}
+
+.doc-table tbody td {
+    padding: 14px 12px;
+}
+
+.doc-name-input {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #ffffff;
+    font-weight: 600;
+    width: 100%;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    padding: 4px 6px;
+    border-radius: 4px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.tbl-wrap {
+    overflow-x: auto;
+}
+
+.doc-name-input.locked {
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.doc-name-input.editing {
+    border: 1px solid #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.doc-ext {
+    color: #9ca3af;
+    margin-left: 2px;
+}
+
+.status-msg {
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.status-success { color: #22c55e; }
+.status-error { color: #ef4444; }
+
+.modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+.modal-bg.active {
+    display: flex;
+}
+
+.modal-box {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="bi bi-folder2-open"></i>Company Documents
+        </div>
+    </div>
+
+    <div class="tbl-wrap">
+        <table class="dt doc-table">
+            <thead>
+                <tr>
+                    <th style="width:70px;">#</th>
+                    <th style="text-align:left;">Company</th>
+                    <th style="text-align:left;">Document Name</th>
+                    <th style="width:180px;">Created</th>
+                    <th style="width:160px;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for doc in documents %}
+                <tr id="row-{{ doc.id }}">
+
+                    <td style="text-align:center;">
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td>
+                        {{ doc.company.company_name }}
+                    </td>
+
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px; width:100%; min-width:0;">
+                            <i class="bi bi-file-earmark-pdf"></i>
+
+                            <input
+                                id="name-{{ doc.id }}"
+                                class="doc-name-input locked"
+                                value="{{ doc.name }}"
+                                data-full="{{ doc.name }}"
+                                readonly
+                                onclick="enableEdit({{ doc.id }})"
+                                onblur="saveOnBlur({{ doc.id }})"
+                            />
+                        </div>
+
+                        <div id="msg-{{ doc.id }}" class="status-msg"></div>
+                    </td>
+
+                    <td style="text-align:center;">
+                        {{ doc.created_at|date:"M d, Y" }}
+                    </td>
+
+                    <td style="text-align:center;">
+                        <div style="display:flex;gap:6px;justify-content:center;">
+
+                            <!-- DOWNLOAD -->
+                            <a href="{{ doc.file.url }}" download class="btn btn-ghost btn-sm">
+                                <i class="bi bi-download"></i>
+                            </a>
+
+                            <!-- RENAME -->
+                            <button class="btn btn-primary btn-sm"
+                                onclick="enableEdit({{ doc.id }})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                            <!-- DELETE -->
+                            <button class="btn btn-danger btn-sm"
+                                onclick="confirmDelete({{ doc.id }})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+
+                        </div>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-bg" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-title">Delete Document</div>
+
+        <p style="color:#fff;">Are you sure?</p>
+
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+            <button class="btn btn-danger" onclick="deleteDoc()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-bg" id="successModal">
+    <div class="modal-box">
+        <div class="modal-title">Success</div>
+        <p id="successText"></p>
+
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="location.reload()">OK</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_js %}
+<script>
+
+let deleteId = null;
+
+/* ENABLE EDIT */
+function enableEdit(id) {
+    const input = document.getElementById("name-" + id);
+
+    // store full name once (safe guard)
+    if (!input.dataset.full) {
+        input.dataset.full = input.value;
+    }
+
+    const fullName = input.dataset.full;
+
+    let parts = fullName.split('.');
+    let ext = parts.length > 1 ? '.' + parts.pop() : '';
+    let base = parts.join('.');
+
+    input.dataset.ext = ext;
+    input.dataset.base = base;
+
+    // show ONLY base in edit mode (temporary UI only)
+    input.value = base;
+
+    input.removeAttribute("readonly");
+    input.classList.remove("locked");
+    input.classList.add("editing");
+    input.focus();
+}
+
+/* AUTO SAVE */
+function saveOnBlur(id) {
+    const input = document.getElementById("name-" + id);
+
+    if (!input.classList.contains("editing")) return;
+
+    const baseName = input.value.trim();
+    const ext = input.dataset.ext || '';
+
+    if (!baseName) {
+        alert("Name cannot be empty");
+        return;
+    }
+
+    fetch(`/admin/documents/rename/${id}/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ name: baseName })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const msg = document.getElementById("msg-" + id);
+
+        if (data.status === "success") {
+            const fullName = data.new_name;
+
+            input.value = fullName;          // ✅ show FULL name again
+            input.dataset.full = fullName;
+
+            msg.innerText = "Saved ✔";
+            msg.className = "status-msg status-success";
+        } else {
+            msg.innerText = data.message;
+            msg.className = "status-msg status-error";
+
+            // restore previous full name
+            input.value = input.dataset.full;
+        }
+
+        input.setAttribute("readonly", true);
+        input.classList.remove("editing");
+        input.classList.add("locked");
+    });
+}
+
+/* DELETE (UNCHANGED) */
+function confirmDelete(id) {
+    deleteId = id;
+    document.getElementById("deleteModal").classList.add("active");
+}
+
+function deleteDoc() {
+    fetch(`/admin/documents/delete/${deleteId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("row-" + deleteId).remove();
+        closeModal("deleteModal");
+        showSuccess(data.message);
+    });
+}
+
+/* MODALS (UNCHANGED) */
+function showSuccess(msg) {
+    document.getElementById("successText").innerText = msg;
+    document.getElementById("successModal").classList.add("active");
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("active");
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,915 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+    /* Dark Theme */
+    body {
+        background: #0a0a0a;
+    }
+    
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .status-approved {
+        background: #064e3b;
+        color: #34d399;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .status-rejected {
+        background: #7f1d1d;
+        color: #f87171;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    
+    /* DataTables */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        margin-bottom: 15px;
+        color: #9ca3af;
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        padding: 5px 10px;
+        color: #ffffff;
+        font-size: 12px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 8px;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 6px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        color: #9ca3af !important;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+        text-decoration: none;
+        line-height: 1;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.4);
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    padding: 0;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #ffffff;
+}
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        background: #0d0d0d;
+        border-color: #1a1a1a;
+        color: #4a4a4a !important;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    
+    /* Select2 */
+    .select2-container--bootstrap-5 .select2-selection {
+        background: #1a1a1a;
+        border-color: #2a2a2a;
+        border-radius: 6px;
+        min-height: 32px;
+    }
+    .select2-container--bootstrap-5 .select2-selection__rendered {
+        color: #ffffff;
+        font-size: 12px;
+        line-height: 32px;
+    }
+    .select2-dropdown {
+        background: #1a1a1a;
+        border-color: #2a2a2a;
+    }
+    .select2-results__option {
+        color: #9ca3af;
+        font-size: 12px;
+    }
+    .select2-results__option--highlighted {
+        background: #2563eb !important;
+        color: white !important;
+    }
+    
+    /* Filter Bar - Compact */
+    .filter-bar {
+        padding: 12px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .filter-bar .select2-container {
+        width: 160px !important;
+    }
+    .search-field {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+    .search-field i {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 12px;
+    }
+    .search-field input {
+        width: 100%;
+        padding: 6px 10px 6px 32px;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 12px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    .search-field input:focus {
+        border-color: #2563eb;
+    }
+    .sel {
+        padding: 6px 10px;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 12px;
+        background: #1a1a1a;
+        color: #ffffff;
+        cursor: pointer;
+        width: 160px;
+    }
+    
+    /* Table - Compact */
+    .dt tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 12px;
+        vertical-align: middle;
+        color: #e5e7eb;
+    }
+    .dt thead th {
+        padding: 12px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 1px solid #2a2a2a;
+        background: #0d0d0d;
+    }
+    
+    /* Card */
+    .card {
+        background: #141c2e;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        overflow: hidden;
+        border: 1px solid #2a2a2a;
+        margin-bottom: 20px;
+    }
+    .card-head {
+        padding: 14px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0d0d0d;
+    }
+    .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Buttons - Compact */
+    .btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; border: 1px solid #2a2a2a; color: #9ca3af; }
+    .btn-ghost:hover { background: #1a1a1a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; }
+    
+    /* Badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+    .b-green { background: #064e3b; color: #34d399; }
+    .b-amber { background: #451a03; color: #fbbf24; }
+    .b-red { background: #7f1d1d; color: #f87171; }
+    .b-blue { background: #1e3a5f; color: #60a5fa; }
+    .b-gray { background: #1f2937; color: #9ca3af; }
+    .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        display: inline-block;
+    }
+    
+    .ent {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ent-av {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 12px;
+        color: white;
+    }
+    .ent-name {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 2px;
+        font-size: 13px;
+    }
+    .ent-sub {
+        font-size: 10px;
+        color: #9ca3af;
+    }
+    
+    /* Modal */
+    .modal-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+    .modal-bg.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-box {
+        background: #141c2e;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid #2a2a2a;
+    }
+    .modal-title {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        background: #0d0d0d;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #9ca3af;
+    }
+    .field-row {
+        display: flex;
+        gap: 12px;
+        padding: 12px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        background: #141c2e;
+    }
+    .field-row.full {
+        flex-direction: column;
+    }
+    .field {
+        flex: 1;
+    }
+    .field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+    .field input, .field select, .field textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 12px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    .modal-actions {
+        padding: 16px 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        background: #141c2e;
+        border-top: 1px solid #2a2a2a;
+    }
+    
+    /* Toast */
+    .toast-message {
+        background: #1a1a1a;
+        padding: 10px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: slideIn 0.3s ease;
+        border-left: 3px solid;
+        color: white;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        font-size: 12px;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .tbl-wrap {
+        overflow-x: auto;
+    }
+    .required {
+        color: #ef4444;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-head">
+        <div class="card-title">
+            <i class="bi bi-person-badge-fill"></i>All Drivers
+            <span class="badge" style="background: #1e3a5f; color: #60a5fa;">{{ total_drivers }}</span>
+        </div>
+        <button class="btn btn-primary" onclick="openAddDriverModal()">
+            <i class="bi bi-plus-lg"></i>Add Driver
+        </button>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-field">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Search drivers..." />
+        </div>
+        <select class="sel" id="licenceFilter">
+            <option value="">All Licences</option>
+            <option value="LR">LR</option>
+            <option value="MR">MR</option>
+            <option value="HR">HR</option>
+            <option value="HC">HC</option>
+            <option value="MC">MC</option>
+        </select>
+        <select class="sel" id="approvalFilter">
+            <option value="">All Approval</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="applyFilters()">Apply</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetFilters()">Reset</button>
+    </div>
+
+    <div class="tbl-wrap">
+        <table class="dt" id="driversTable">
+            <thead>
+                <tr>
+                    <th>Driver</th>
+                    <th>Company</th>
+                    <th>Licence</th>
+                    <th>Licence No.</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                    <th>Approval</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for driver in drivers %}
+                <tr data-id="{{ driver.id }}">
+                    <td>
+                        <div class="ent">
+                            <div class="ent-av" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+                                {{ driver.first_name|slice:":1" }}{{ driver.last_name|slice:":1" }}
+                            </div>
+                            <div>
+                                <div class="ent-name">{{ driver.full_name }}</div>
+                                <div class="ent-sub">{{ driver.role|default:"Driver" }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ driver.company_name }}</td>
+                    <td>
+                        <span class="badge b-blue"><span class="dot"></span>{{ driver.licence_class }}</span>
+                    </td>
+                    <td style="font-family: monospace;">{{ driver.licence_number }}</td>
+                    <td style="font-family: monospace;">{{ driver.licence_expiry|date:"M d, Y" }}</td>
+                    <td>
+                        {% if driver.status == 'active' %}
+                        <span class="badge b-green"><span class="dot"></span>Active</span>
+                        {% elif driver.status == 'review_due' %}
+                        <span class="badge b-amber"><span class="dot"></span>Review Due</span>
+                        {% elif driver.status == 'expired' %}
+                        <span class="badge b-red"><span class="dot"></span>Expired</span>
+                        {% else %}
+                        <span class="badge b-gray">{{ driver.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if driver.approval_status == 'approved' %}
+                        <span class="status-approved"><i class="bi bi-check-circle-fill"></i> Approved</span>
+                        {% elif driver.approval_status == 'pending' %}
+                        <span class="status-pending"><i class="bi bi-clock-history"></i> Pending</span>
+                        {% elif driver.approval_status == 'rejected' %}
+                        <span class="status-rejected"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                        {% else %}
+                        <span class="badge b-gray">{{ driver.approval_status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-ghost btn-sm" onclick="openEditDriverModal({{ driver.id }})" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            {% if driver.approval_status == 'pending' %}
+                            <button class="btn btn-success btn-sm" onclick="approveDriver({{ driver.id }})" title="Approve">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="rejectDriver({{ driver.id }})" title="Reject">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-danger btn-sm" onclick="deleteDriver({{ driver.id }})" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px;">
+                        <i class="bi bi-inbox" style="font-size: 36px; color: #4a4a4a;"></i>
+                        <p class="mt-2" style="color: #9ca3af;">No drivers found. Click "Add Driver" to create one.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        <tr>
+    </div>
+</div>
+
+<!-- ADD/EDIT DRIVER MODAL -->
+<div class="modal-bg" id="driverModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="modalTitle">Add New Driver</span>
+            <button class="modal-close" onclick="closeModal('driverModal')">&times;</button>
+        </div>
+        <input type="hidden" id="driverId">
+        <div class="field-row">
+            <div class="field">
+                <label>First Name <span class="required">*</span></label>
+                <input id="firstName" placeholder="First name">
+            </div>
+            <div class="field">
+                <label>Last Name <span class="required">*</span></label>
+                <input id="lastName" placeholder="Last name">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Email</label>
+                <input id="email" type="email" placeholder="email@example.com">
+            </div>
+            <div class="field">
+                <label>Phone</label>
+                <input id="phone" placeholder="+61 4XX XXX XXX">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Role</label>
+                <input id="role" placeholder="e.g., Fleet Manager">
+            </div>
+            <div class="field">
+                <label>Company <span class="required">*</span></label>
+                <select id="companyId" class="company-select">
+                    <option value="">Select Company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}">{{ company.company_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Licence Class <span class="required">*</span></label>
+                <select id="licenceClass" class="sel">
+                    <option value="LR">LR - Light Rigid</option>
+                    <option value="MR">MR - Medium Rigid</option>
+                    <option value="HR">HR - Heavy Rigid</option>
+                    <option value="HC">HC - Heavy Combination</option>
+                    <option value="MC">MC - Multi Combination</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Licence Number <span class="required">*</span></label>
+                <input id="licenceNumber" placeholder="Licence number">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Licence Expiry <span class="required">*</span></label>
+                <input id="licenceExpiry" type="date">
+            </div>
+            <div class="field">
+                <label>Status</label>
+                <select id="status" class="sel">
+                    <option value="active">Active</option>
+                    <option value="review_due">Review Due</option>
+                    <option value="expired">Expired</option>
+                    <option value="suspended">Suspended</option>
+                </select>
+            </div>
+        </div>
+        <div class="field-row full">
+            <div class="field">
+                <label>Address</label>
+                <textarea id="address" rows="2" placeholder="Street address"></textarea>
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>City</label>
+                <input id="city" placeholder="City">
+            </div>
+            <div class="field">
+                <label>State</label>
+                <input id="state" placeholder="State">
+            </div>
+            <div class="field">
+                <label>Postcode</label>
+                <input id="postcode" placeholder="Postcode">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('driverModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveDriver()">Save Driver</button>
+        </div>
+    </div>
+</div>
+
+<!-- REJECTION REASON MODAL -->
+<div class="modal-bg" id="rejectModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span>Reject Driver</span>
+            <button class="modal-close" onclick="closeModal('rejectModal')">&times;</button>
+        </div>
+        <input type="hidden" id="rejectDriverId">
+        <div class="field-row full">
+            <div class="field">
+                <label>Rejection Reason</label>
+                <textarea id="rejectionReason" rows="3" placeholder="Please provide a reason for rejection..."></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('rejectModal')">Cancel</button>
+            <button class="btn btn-danger" onclick="submitRejection()">Confirm Rejection</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+let driversTable;
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.style.borderLeftColor = type === 'success' ? '#10b981' : '#ef4444';
+    toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Initialize DataTable
+$(document).ready(function() {
+    driversTable = $('#driversTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'asc']],
+        paging: true,
+        pagingType: 'full_numbers',
+        language: {
+            search: "",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ drivers",
+            emptyTable: "No drivers found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        },
+        columnDefs: [{ orderable: false, targets: [7] }],
+        initComplete: function() {
+            // Hide default search box since we have custom search
+            $('.dataTables_filter').hide();
+        }
+    });
+    
+    $('#searchInput').on('keyup', function() {
+        driversTable.search(this.value).draw();
+    });
+});
+
+function applyFilters() {
+    const licence = $('#licenceFilter').val();
+    const approval = $('#approvalFilter').val();
+    
+    if (licence) driversTable.column(2).search(licence, true, false).draw();
+    else driversTable.column(2).search('').draw();
+    
+    if (approval) driversTable.column(6).search(approval, true, false).draw();
+    else driversTable.column(6).search('').draw();
+}
+
+function resetFilters() {
+    $('#licenceFilter').val('');
+    $('#approvalFilter').val('');
+    $('#searchInput').val('');
+    driversTable.search('').draw();
+    driversTable.columns().search('').draw();
+}
+
+function openAddDriverModal() {
+    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-plus-circle"></i> Add New Driver';
+    document.getElementById('driverId').value = '';
+    document.getElementById('firstName').value = '';
+    document.getElementById('lastName').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('role').value = '';
+    document.getElementById('companyId').value = '';
+    document.getElementById('licenceClass').value = 'HR';
+    document.getElementById('licenceNumber').value = '';
+    document.getElementById('licenceExpiry').value = '';
+    document.getElementById('status').value = 'active';
+    document.getElementById('address').value = '';
+    document.getElementById('city').value = '';
+    document.getElementById('state').value = '';
+    document.getElementById('postcode').value = '';
+    
+    // Initialize Select2 for company select
+    $('#companyId').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Select Company',
+        allowClear: true,
+        dropdownParent: $('#driverModal')
+    });
+    
+    document.getElementById('driverModal').classList.add('show');
+}
+
+function openEditDriverModal(id) {
+    fetch('/admin/drivers/get-details/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json'},
+        body: JSON.stringify({ driver_id: id })
+    }).then(r=>r.json()).then(data => {
+        if(data.success){
+            const d = data.driver;
+            document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil-square"></i> Edit Driver';
+            document.getElementById('driverId').value = d.id;
+            document.getElementById('firstName').value = d.first_name;
+            document.getElementById('lastName').value = d.last_name;
+            document.getElementById('email').value = d.email || '';
+            document.getElementById('phone').value = d.phone || '';
+            document.getElementById('role').value = d.role || '';
+            document.getElementById('companyId').value = d.company_id;
+            document.getElementById('licenceClass').value = d.licence_class;
+            document.getElementById('licenceNumber').value = d.licence_number;
+            document.getElementById('licenceExpiry').value = d.licence_expiry;
+            document.getElementById('status').value = d.status;
+            document.getElementById('address').value = d.address || '';
+            document.getElementById('city').value = d.city || '';
+            document.getElementById('state').value = d.state || '';
+            document.getElementById('postcode').value = d.postcode || '';
+            
+            // Initialize Select2 for company select
+            $('#companyId').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Select Company',
+                allowClear: true,
+                dropdownParent: $('#driverModal')
+            });
+            
+            document.getElementById('driverModal').classList.add('show');
+        }
+    });
+}
+
+function saveDriver() {
+    const id = document.getElementById('driverId').value;
+    const formData = new FormData();
+    formData.append('first_name', document.getElementById('firstName').value);
+    formData.append('last_name', document.getElementById('lastName').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('phone', document.getElementById('phone').value);
+    formData.append('role', document.getElementById('role').value);
+    formData.append('company_id', document.getElementById('companyId').value);
+    formData.append('licence_class', document.getElementById('licenceClass').value);
+    formData.append('licence_number', document.getElementById('licenceNumber').value);
+    formData.append('licence_expiry', document.getElementById('licenceExpiry').value);
+    formData.append('status', document.getElementById('status').value);
+    formData.append('address', document.getElementById('address').value);
+    formData.append('city', document.getElementById('city').value);
+    formData.append('state', document.getElementById('state').value);
+    formData.append('postcode', document.getElementById('postcode').value);
+    
+    let url = id ? `/admin/drivers/edit/${id}/` : '/admin/drivers/add/';
+    fetch(url, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+        body: formData
+    }).then(r=>r.json()).then(data => {
+        if(data.success){
+            showToast(id ? 'Driver updated!' : 'Driver added!');
+            closeModal('driverModal');
+            setTimeout(()=>location.reload(), 800);
+        } else showToast(data.error, 'error');
+    });
+}
+
+function approveDriver(id) {
+    if(confirm('Approve this driver?')){
+        fetch(`/admin/drivers/approve/${id}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': getCookie('csrftoken')}
+        }).then(r=>r.json()).then(data => {
+            if(data.success){ showToast('Driver approved!'); setTimeout(()=>location.reload(), 800); }
+            else showToast(data.error, 'error');
+        });
+    }
+}
+
+function rejectDriver(id) {
+    document.getElementById('rejectDriverId').value = id;
+    document.getElementById('rejectionReason').value = '';
+    document.getElementById('rejectModal').classList.add('show');
+}
+
+function submitRejection() {
+    const id = document.getElementById('rejectDriverId').value;
+    const reason = document.getElementById('rejectionReason').value;
+    const formData = new FormData();
+    formData.append('rejection_reason', reason);
+    
+    fetch(`/admin/drivers/reject/${id}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+        body: formData
+    }).then(r=>r.json()).then(data => {
+        if(data.success){
+            showToast('Driver rejected!');
+            closeModal('rejectModal');
+            setTimeout(()=>location.reload(), 800);
+        } else showToast(data.error, 'error');
+    });
+}
+
+function deleteDriver(id) {
+    if(confirm('Delete this driver?')){
+        fetch(`/admin/drivers/delete/${id}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': getCookie('csrftoken')}
+        }).then(r=>r.json()).then(data => {
+            if(data.success){ showToast('Driver deleted!'); setTimeout(()=>location.reload(), 800); }
+            else showToast(data.error, 'error');
+        });
+    }
+}
+
+function closeModal(modalId) {
+    // Destroy Select2 instances when closing modal
+    if (modalId === 'driverModal') {
+        $('#companyId').select2('destroy');
+    }
+    document.getElementById(modalId).classList.remove('show');
+}
+
+document.querySelectorAll('.modal-bg').forEach(modal => {
+    modal.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('show'); });
+});
+</script>
+{% endblock %}

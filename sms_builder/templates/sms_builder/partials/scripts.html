@@ -1,0 +1,155 @@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// ---- CHATBOT ----
+let chatOpen = false;
+
+function toggleChat() {
+    chatOpen = !chatOpen;
+    const win = document.getElementById("chatWindow");
+    const icon = document.getElementById("chatIcon");
+    win.classList.toggle("open", chatOpen);
+    icon.className = chatOpen
+        ? "bi bi-x-lg"
+        : "bi bi-chat-dots-fill";
+}
+
+function sendQuickReply(text) {
+    document.getElementById("quickReplies").style.display = "none";
+    addMessage(text, "user");
+    fetchAIResponse(text);
+}
+
+function sendChat() {
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    document.getElementById("quickReplies").style.display = "none";
+    addMessage(text, "user");
+    fetchAIResponse(text);
+}
+
+function addMessage(text, role) {
+    const msgs = document.getElementById("chatMessages");
+    const now = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+    const div = document.createElement("div");
+    div.className = `msg msg-${role}`;
+    div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${now}</div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+}
+
+function showTyping() {
+    const msgs = document.getElementById("chatMessages");
+    const div = document.createElement("div");
+    div.className = "msg msg-bot";
+    div.id = "typingIndicator";
+    div.innerHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+    const el = document.getElementById("typingIndicator");
+    if (el) el.remove();
+}
+
+async function fetchAIResponse(userMessage) {
+    showTyping();
+    try {
+        const response = await fetch(
+            "https://api.anthropic.com/v1/messages",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "claude-sonnet-4-20250514",
+                    max_tokens: 1000,
+                    system: `You are a friendly and knowledgeable assistant for PRODRIVE Compliance, an Australian web-based Safety Management System (SMS) Builder for heavy vehicle transport businesses. 
+        
+        Your role: Answer questions about PRODRIVE's platform, features, pricing, and Heavy Vehicle National Law (HVNL) compliance. Be helpful, concise, and professional.
+        
+        Key facts about PRODRIVE:
+        - Platform: Web-based SMS Builder for heavy vehicle operators in Australia
+        - Location: Sydney, Australia
+        - Contact: info@prodrivecompliance.com, +61 4XX XXX XXX
+        - Pricing: Starter $29/mo, Professional $59/mo, Enterprise $99/mo
+        - Features: SMS Document Builder, Compliance Tracking, Driver & Fleet Records, Incident Reporting, Analytics Dashboard, Secure User Access
+        - Compliance: Aligned with HVNL (Heavy Vehicle National Law), NHVR, Chain of Responsibility, Risk Assessments, Audit Readiness
+        
+        Keep responses brief (2-4 sentences max). Use simple language. End with a helpful next step when appropriate. Do not make up specific details not listed above.`,
+                    messages: [
+                        { role: "user", content: userMessage },
+                    ],
+                }),
+            },
+        );
+        const data = await response.json();
+        removeTyping();
+        const reply =
+            data.content && data.content[0]
+                ? data.content[0].text
+                : "Thanks for your message! For detailed assistance, please email us at info@prodrivecompliance.com.";
+        addMessage(reply, "bot");
+    } catch (err) {
+        removeTyping();
+        addMessage(
+            "Sorry, I'm having trouble connecting right now. Please email us at info@prodrivecompliance.com or call +61 4XX XXX XXX.",
+            "bot",
+        );
+    }
+}
+
+// ---- CONTACT FORM VALIDATION ----
+function submitContactForm() {
+    let valid = true;
+
+    function check(inputId, errorId, testFn) {
+        const el = document.getElementById(inputId);
+        const err = document.getElementById(errorId);
+        const bad = !testFn(el.value.trim());
+        el.classList.toggle("err", bad);
+        err.classList.toggle("show", bad);
+        if (bad) valid = false;
+    }
+
+    check("contactName", "nameError", (v) => v.length >= 2);
+    check("contactEmail", "emailError", (v) =>
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+    );
+    check(
+        "contactMessage",
+        "messageErrorMsg",
+        (v) => v.length >= 20,
+    );
+
+    const privacy = document.getElementById("privacyCheck").checked;
+    document
+        .getElementById("privacyError")
+        .classList.toggle("show", !privacy);
+    if (!privacy) valid = false;
+
+    if (!valid) return;
+
+    const btn = document.getElementById("contactSubmitBtn");
+    document.getElementById("btnText").classList.add("d-none");
+    document
+        .getElementById("btnLoading")
+        .classList.remove("d-none");
+    btn.disabled = true;
+
+    setTimeout(() => {
+        document
+            .getElementById("contactForm")
+            .classList.add("d-none");
+        document
+            .getElementById("formSuccess")
+            .classList.remove("d-none");
+    }, 1400);
+}
+</script>

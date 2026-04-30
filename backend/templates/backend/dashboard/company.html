@@ -1,0 +1,960 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<style>
+    /* DataTables */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        margin-bottom: 15px;
+        color: #9ca3af;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    padding: 0;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #ffffff;
+}
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        padding: 5px 10px;
+        color: #ffffff;
+        font-size: 12px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 8px;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 6px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        color: #9ca3af !important;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+        text-decoration: none;
+        line-height: 1;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.4);
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        background: #0d0d0d;
+        border-color: #1a1a1a;
+        color: #4a4a4a !important;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-head">
+            <div class="card-title">
+                <i class="bi bi-buildings-fill"></i>All Companies
+            </div>
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="bi bi-plus-lg"></i>Add Company
+            </button>
+        </div>
+        <div class="filter-bar">
+            <div class="search-field">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchInput" placeholder="Search companies, ABN…" onkeyup="filterCompanies()" />
+            </div>
+            <select class="sel" id="statusFilter" onchange="filterCompanies()">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="suspended">Suspended</option>
+                <option value="rejected">Rejected</option>
+                <option value="inactive">Inactive</option>
+            </select>
+            <select class="sel" id="planFilter" onchange="filterCompanies()">
+                <option value="">All Plans</option>
+                <option value="starter">Starter</option>
+                <option value="professional">Professional</option>
+                <option value="enterprise">Enterprise</option>
+            </select>
+        </div>
+        <div class="tbl-wrap">
+            <table class="dt" id="companiesTable">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Contact</th>
+                        <th>Plan</th>
+                        <th>Vehicles</th>
+                        <th>Drivers</th>
+                        <th>Compliance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                    <tr data-id="{{ company.id }}">
+                        <td>
+                            <div class="ent">
+                                <div class="ent-av" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+                                    {{ company.company_name|slice:":2"|upper }}
+                                </div>
+                                <div>
+                                    <div class="ent-name">{{ company.company_name }}</div>
+                                    <div class="ent-sub">ABN 
+                                        {{ company.abn|slice:":2" }} 
+                                        {{ company.abn|slice:"2:5" }} 
+                                        {{ company.abn|slice:"5:8" }} 
+                                        {{ company.abn|slice:"8:11" }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strong">{{ company.contact_person }}</div>
+                            <div style="font-size: 11px; color: #64748b; font-family: monospace;">
+                                {{ company.email }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if company.subscription_plan == 'professional' %}
+                            <span class="plan p-pro">Professional</span>
+                            {% elif company.subscription_plan == 'enterprise' %}
+                            <span class="plan p-ent">Enterprise</span>
+                            {% else %}
+                            <span class="plan p-starter">Starter</span>
+                            {% endif %}
+                        </td>
+                        <td class="strong">{{ company.vehicles_count|default:"0" }}</td>
+                        <td class="strong">{{ company.drivers_count|default:"0" }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="prog-track">
+                                    <div class="prog-fill" style="width: {{ company.compliance_score|default:"75" }}%; background: #10b981;"></div>
+                                </div>
+                                <span style="font-size: 11px; font-weight: 700; color: #10b981; font-family: monospace;">
+                                    {{ company.compliance_score|default:"75" }}%
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if company.status == 'approved' %}
+                            <span class="badge b-green"><span class="dot"></span>Approved</span>
+                            {% elif company.status == 'pending' %}
+                            <span class="badge b-amber"><span class="dot"></span>Pending</span>
+                            {% elif company.status == 'suspended' %}
+                            <span class="badge b-cyan"><span class="dot"></span>Suspended</span>
+                            {% elif company.status == 'rejected' %}
+                            <span class="badge b-red"><span class="dot"></span>Rejected</span>
+                            {% else %}
+                            <span class="badge b-gray"><span class="dot"></span>Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 6px">
+                                <button class="btn btn-ghost btn-sm" onclick="openEditModal({{ company.id }})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-ghost btn-sm" onclick="openChangePasswordModal({{ company.id }})" title="Change Password" style="background: #4c1d95; border-color: #6b21a5;">
+                                    <i class="bi bi-key"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCompany({{ company.id }})">
+                                    <i class="bi bi-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #64748b;">
+                            No companies found. Click "Add Company" to create one.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span id="modalHeading">Edit Company</span>
+            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <input type="hidden" id="editCompanyId">
+        <div class="field-row">
+            <div class="field">
+                <label>Company Name</label>
+                <input id="mName" />
+            </div>
+            <div class="field">
+                <label>ABN</label>
+                <input id="mABN" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Contact Person</label>
+                <input id="mContactPerson" placeholder="Full name" />
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input id="mEmail" type="email" placeholder="email@company.com.au" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Phone</label>
+                <input id="mPhone" placeholder="+61 4XX XXX XXX" />
+            </div>
+            <div class="field">
+                <label>Address</label>
+                <input id="mAddress" placeholder="City, State" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Plan</label>
+                <select id="mPlan">
+                    <option value="starter">Starter</option>
+                    <option value="professional">Professional</option>
+                    <option value="enterprise">Enterprise</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Status</label>
+                <select id="mStatus">
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveCompany()">
+                <i class="bi bi-check"></i>Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-bg" id="changePasswordModal">
+    <div class="modal-box" style="max-width: 450px;">
+        <div class="modal-title">
+            <span><i class="bi bi-key"></i> Change User Password</span>
+            <button class="modal-close" onclick="closeModal('changePasswordModal')">&times;</button>
+        </div>
+        <div class="card-pad">
+            <input type="hidden" id="passwordCompanyId">
+            <input type="hidden" id="passwordCompanyUserId">
+            
+            <div class="field-row full">
+                <div class="field">
+                    <label>Company</label>
+                    <input type="text" id="passwordCompanyName" class="modal-input" readonly style="background: #1a1a1a; color: #60a5fa; font-weight: 600;">
+                </div>
+            </div>
+            
+            <div class="field-row full">
+                <div class="field">
+                    <label>User Email</label>
+                    <input type="text" id="passwordUserEmail" class="modal-input" readonly style="background: #1a1a1a;">
+                </div>
+            </div>
+            
+            <div class="alert alert-info" style="background: #1e3a5f; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-size: 12px; color: #93c5fd;">
+                <i class="bi bi-info-circle-fill"></i>
+                <strong>Password Requirements:</strong>
+                <ul style="margin: 8px 0 0 20px; color: #cbd5e1;">
+                    <li>Minimum 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one lowercase letter</li>
+                    <li>At least one number</li>
+                </ul>
+            </div>
+            
+            <div class="field-row full">
+                <div class="field">
+                    <label>New Password *</label>
+                    <input type="password" id="newUserPassword" class="modal-input" placeholder="Enter new password">
+                    <div id="passwordStrengthMsg" style="font-size: 11px; margin-top: 5px;"></div>
+                </div>
+            </div>
+            
+            <div class="field-row full">
+                <div class="field">
+                    <label>Confirm Password *</label>
+                    <input type="password" id="confirmUserPassword" class="modal-input" placeholder="Confirm new password">
+                    <div id="passwordMatchMsg" style="font-size: 11px; margin-top: 5px;"></div>
+                </div>
+            </div>
+            
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn btn-ghost" onclick="closeModal('changePasswordModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="changeCompanyPassword()">
+                    <i class="bi bi-check-lg"></i> Update Password
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ADD MODAL -->
+<div class="modal-bg" id="addModal">
+    <div class="modal-box">
+        <div class="modal-title">
+            <span>Add New Company</span>
+            <button class="modal-close" onclick="closeModal('addModal')">&times;</button>
+        </div>
+        <div class="field-row full">
+            <div class="field">
+                <label>Company Name *</label>
+                <input id="addCompanyName" placeholder="e.g. Apex Freight Pty Ltd" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>ABN *</label>
+                <input id="addABN" placeholder="XX XXX XXX XXX" />
+            </div>
+            <div class="field">
+                <label>Contact Person *</label>
+                <input id="addContactPerson" placeholder="Full name" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Email *</label>
+                <input id="addEmail" type="email" placeholder="email@company.com.au" />
+            </div>
+            <div class="field">
+                <label>Phone</label>
+                <input id="addPhone" placeholder="+61 4XX XXX XXX" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Plan</label>
+                <select id="addPlan">
+                    <option value="starter">Starter</option>
+                    <option value="professional">Professional</option>
+                    <option value="enterprise">Enterprise</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Address</label>
+                <input id="addAddress" placeholder="Sydney NSW 2000" />
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="addNewCompany()">
+                <i class="bi bi-plus-lg"></i>Add Company
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+let companiesTable;
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Initialize DataTable
+$(document).ready(function() {
+    companiesTable = $('#companiesTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'asc']],
+        paging: true,
+        pagingType: 'full_numbers',
+        language: {
+            search: "",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ companies",
+            emptyTable: "No companies found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        },
+        columnDefs: [{ orderable: false, targets: [7] }],
+        initComplete: function() {
+            $('.dataTables_filter').hide();
+        }
+    });
+});
+
+function openAddModal() {
+    document.getElementById('addModal').classList.add('show');
+    document.getElementById('addCompanyName').value = '';
+    document.getElementById('addABN').value = '';
+    document.getElementById('addContactPerson').value = '';
+    document.getElementById('addEmail').value = '';
+    document.getElementById('addPhone').value = '';
+    document.getElementById('addPlan').value = 'starter';
+    document.getElementById('addAddress').value = '';
+}
+// Password strength checker
+function checkPasswordStrength(password) {
+    let strength = 0;
+    let feedback = [];
+    
+    if (password.length >= 8) strength++;
+    else feedback.push('• Minimum 8 characters');
+    
+    if (/[A-Z]/.test(password)) strength++;
+    else feedback.push('• At least one uppercase letter');
+    
+    if (/[a-z]/.test(password)) strength++;
+    else feedback.push('• At least one lowercase letter');
+    
+    if (/[0-9]/.test(password)) strength++;
+    else feedback.push('• At least one number');
+    
+    let strengthText = '';
+    let strengthClass = '';
+    
+    if (password.length === 0) {
+        strengthText = '';
+        strengthClass = '';
+    } else if (strength <= 2) {
+        strengthText = 'Weak';
+        strengthClass = 'password-strength-weak';
+    } else if (strength === 3) {
+        strengthText = 'Medium';
+        strengthClass = 'password-strength-medium';
+    } else {
+        strengthText = 'Strong';
+        strengthClass = 'password-strength-strong';
+    }
+    
+    const msgDiv = document.getElementById('passwordStrengthMsg');
+    if (strengthText) {
+        msgDiv.innerHTML = `<span class="${strengthClass}">${strengthText} password</span>`;
+        if (feedback.length > 0 && strength <= 2) {
+            msgDiv.innerHTML += `<br><span style="color: #9ca3af; font-size: 10px;">${feedback.join('<br>')}</span>`;
+        }
+    } else {
+        msgDiv.innerHTML = '';
+    }
+    
+    return strength >= 3;
+}
+
+// Password match checker
+function checkPasswordMatch() {
+    const password = document.getElementById('newUserPassword').value;
+    const confirm = document.getElementById('confirmUserPassword').value;
+    const msgDiv = document.getElementById('passwordMatchMsg');
+    
+    if (confirm.length === 0) {
+        msgDiv.innerHTML = '';
+        return false;
+    }
+    
+    if (password === confirm) {
+        msgDiv.innerHTML = '<span class="password-match-success">✓ Passwords match</span>';
+        return true;
+    } else {
+        msgDiv.innerHTML = '<span class="password-match-error">✗ Passwords do not match</span>';
+        return false;
+    }
+}
+
+// Open change password modal
+function openChangePasswordModal(companyId) {
+    // Fetch company details to get user info
+    fetch('/admin/companies/get-details/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ company_id: companyId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.company) {
+            document.getElementById('passwordCompanyId').value = companyId;
+            document.getElementById('passwordCompanyUserId').value = data.company.user_id || '';
+            document.getElementById('passwordCompanyName').value = data.company.company_name;
+            document.getElementById('passwordUserEmail').value = data.company.email;
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('confirmUserPassword').value = '';
+            document.getElementById('passwordStrengthMsg').innerHTML = '';
+            document.getElementById('passwordMatchMsg').innerHTML = '';
+            document.getElementById('changePasswordModal').classList.add('show');
+        } else {
+            showToast('Could not load company details', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error loading company details', 'error');
+    });
+}
+
+// Change company user password
+function changeCompanyPassword() {
+    const companyId = document.getElementById('passwordCompanyId').value;
+    const userId = document.getElementById('passwordCompanyUserId').value;
+    const newPassword = document.getElementById('newUserPassword').value;
+    const confirmPassword = document.getElementById('confirmUserPassword').value;
+    
+    // Validation
+    if (!newPassword) {
+        showToast('Please enter a new password', 'error');
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        showToast('Password must be at least 8 characters long', 'error');
+        return;
+    }
+    
+    if (!/[A-Z]/.test(newPassword)) {
+        showToast('Password must contain at least one uppercase letter', 'error');
+        return;
+    }
+    
+    if (!/[a-z]/.test(newPassword)) {
+        showToast('Password must contain at least one lowercase letter', 'error');
+        return;
+    }
+    
+    if (!/[0-9]/.test(newPassword)) {
+        showToast('Password must contain at least one number', 'error');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+    }
+    
+    // Submit password change
+    fetch('/admin/companies/change-password/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            company_id: companyId,
+            user_id: userId,
+            new_password: newPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Password changed successfully!', 'success');
+            closeModal('changePasswordModal');
+        } else {
+            showToast(data.error || 'Error changing password', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred. Please try again.', 'error');
+    });
+}
+
+// Add event listeners for password fields
+document.addEventListener('DOMContentLoaded', function() {
+    const newPasswordInput = document.getElementById('newUserPassword');
+    const confirmPasswordInput = document.getElementById('confirmUserPassword');
+    
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+            if (confirmPasswordInput.value) {
+                checkPasswordMatch();
+            }
+        });
+    }
+    
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    }
+});
+function openEditModal(companyId) {
+    fetch('/admin/companies/get-details/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ company_id: companyId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const company = data.company;
+            document.getElementById('editCompanyId').value = company.id;
+            document.getElementById('mName').value = company.company_name;
+            document.getElementById('mABN').value = company.abn;
+            document.getElementById('mContactPerson').value = company.contact_person || '';
+            document.getElementById('mEmail').value = company.email;
+            document.getElementById('mPhone').value = company.phone || '';
+            document.getElementById('mAddress').value = company.address || '';
+            document.getElementById('mPlan').value = company.subscription_plan || 'starter';
+            document.getElementById('mStatus').value = company.status;
+            document.getElementById('editModal').classList.add('show');
+        }
+    })
+    .catch(error => console.error('Error loading company details:', error));
+}
+
+function saveCompany() {
+    const companyId = document.getElementById('editCompanyId').value;
+    
+    // Get and CLEAN ABN (remove all spaces and non-digits)
+    let abnValue = document.getElementById('mABN').value;
+    abnValue = abnValue.replace(/\s/g, ''); // Remove spaces
+    abnValue = abnValue.replace(/\D/g, ''); // Remove non-digits
+    
+    // Validate ABN length
+    if (abnValue && abnValue.length !== 11) {
+        showToast('ABN must be 11 digits', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('company_name', document.getElementById('mName').value);
+    formData.append('abn', abnValue);
+    formData.append('contact_person', document.getElementById('mContactPerson').value);
+    formData.append('email', document.getElementById('mEmail').value);
+    formData.append('phone', document.getElementById('mPhone').value);
+    formData.append('address', document.getElementById('mAddress').value);
+    formData.append('plan', document.getElementById('mPlan').value);
+    formData.append('status', document.getElementById('mStatus').value);
+    
+    fetch(`/admin/companies/edit/${companyId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Company saved successfully!');
+            closeModal('editModal');
+            location.reload();
+        } else {
+            showToast(data.error, 'error');
+        }
+    })
+    .catch(error => console.error('Error saving company:', error));
+}
+
+function addNewCompany() {
+    // Get and CLEAN ABN (remove all spaces and non-digits)
+    let abnValue = document.getElementById('addABN').value;
+    abnValue = abnValue.replace(/\s/g, ''); // Remove spaces
+    abnValue = abnValue.replace(/\D/g, ''); // Remove non-digits
+    
+    // Validate ABN length
+    if (abnValue.length !== 11) {
+        showToast('ABN must be 11 digits (no spaces)', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('company_name', document.getElementById('addCompanyName').value);
+    formData.append('abn', abnValue);
+    formData.append('contact_person', document.getElementById('addContactPerson').value);
+    formData.append('email', document.getElementById('addEmail').value);
+    formData.append('phone', document.getElementById('addPhone').value);
+    formData.append('plan', document.getElementById('addPlan').value);
+    formData.append('address', document.getElementById('addAddress').value);
+    
+    fetch('/admin/companies/add/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Company added successfully!');
+            closeModal('addModal');
+            location.reload();
+        } else {
+            showToast(data.error, 'error');
+        }
+    })
+    .catch(error => console.error('Error adding company:', error));
+}
+
+function deleteCompany(companyId) {
+    if (confirm('Are you sure you want to deactivate this company?')) {
+        fetch(`/admin/companies/delete/${companyId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Company deactivated successfully!');
+                location.reload();
+            } else {
+                showToast(data.error, 'error');
+            }
+        })
+        .catch(error => console.error('Error deleting company:', error));
+    }
+}
+
+function filterCompanies() {
+    const search = document.getElementById('searchInput').value;
+    const status = document.getElementById('statusFilter').value;
+    const plan = document.getElementById('planFilter').value;
+    
+    let url = '/admin/companies/filter/?';
+    if (search) url += `search=${encodeURIComponent(search)}&`;
+    if (status) url += `status=${encodeURIComponent(status)}&`;
+    if (plan) url += `plan=${encodeURIComponent(plan)}&`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.companies) {
+                renderCompaniesTable(data.companies);
+            }
+        })
+        .catch(error => console.error('Error filtering companies:', error));
+}
+
+function renderCompaniesTable(companies) {
+    const tbody = document.getElementById('coTbody');
+    tbody.innerHTML = '';
+    
+    if (companies.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #64748b;">No companies found</td></tr>';
+        return;
+    }
+    
+    companies.forEach(company => {
+        const initials = company.company_name.substring(0, 2).toUpperCase();
+        let abnFormatted = company.abn || '';
+        if (abnFormatted && abnFormatted.length === 11) {
+            abnFormatted = abnFormatted.replace(/(\d{2})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
+        }
+        
+        let statusClass = 'b-gray';
+        let statusText = company.status || 'Inactive';
+        if (company.status === 'approved') {
+            statusClass = 'b-green';
+            statusText = 'Approved';
+        } else if (company.status === 'pending') {
+            statusClass = 'b-amber';
+            statusText = 'Pending';
+        } else if (company.status === 'suspended') {
+            statusClass = 'b-cyan';
+            statusText = 'Suspended';
+        } else if (company.status === 'rejected') {
+            statusClass = 'b-red';
+            statusText = 'Rejected';
+        }
+        
+        let planClass = 'p-starter';
+        let planText = company.subscription_plan || 'starter';
+        if (planText === 'professional') {
+            planClass = 'p-pro';
+            planText = 'Professional';
+        } else if (planText === 'enterprise') {
+            planClass = 'p-ent';
+            planText = 'Enterprise';
+        } else {
+            planText = 'Starter';
+        }
+        
+        const row = `
+            <tr data-id="${company.id}">
+                <td>
+                    <div class="ent">
+                        <div class="ent-av" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+                            ${escapeHtml(initials)}
+                        </div>
+                        <div>
+                            <div class="ent-name">${escapeHtml(company.company_name)}</div>
+                            <div class="ent-sub">ABN ${escapeHtml(abnFormatted)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="strong">${escapeHtml(company.contact_person || '-')}</div>
+                    <div style="font-size: 11px; color: #64748b; font-family: monospace;">
+                        ${escapeHtml(company.email)}
+                    </div>
+                </td>
+                <td><span class="plan ${planClass}">${planText}</span></td>
+                <td class="strong">0</td>
+                <td class="strong">0</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="prog-track"><div class="prog-fill" style="width: 75%; background: #10b981;"></div></div>
+                        <span style="font-size: 11px; font-weight: 700; color: #10b981; font-family: monospace;">75%</span>
+                    </div>
+                </td>
+                <td><span class="badge ${statusClass}"><span class="dot"></span>${statusText}</span></td>
+                <td>
+                    <div style="display: flex; gap: 6px">
+                        <button class="btn btn-ghost btn-sm" onclick="openEditModal(${company.id})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCompany(${company.id})">
+                            <i class="bi bi-ban"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+    
+    // Reinitialize DataTable after updating table data
+    if (companiesTable) {
+        companiesTable.destroy();
+    }
+    companiesTable = $('#companiesTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[0, 'asc']],
+        paging: true,
+        pagingType: 'full_numbers',
+        language: {
+            search: "",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ companies",
+            emptyTable: "No companies found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        },
+        columnDefs: [{ orderable: false, targets: [7] }]
+    });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#10b981' : '#ef4444'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Add input validation to ABN fields to only allow numbers
+document.addEventListener('DOMContentLoaded', function() {
+    const abnInputs = document.querySelectorAll('#addABN, #mABN');
+    abnInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 11) {
+                this.value = this.value.slice(0, 11);
+            }
+        });
+    });
+});
+
+document.querySelectorAll('.modal-bg').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('show');
+        }
+    });
+});
+</script>
+{% endblock %}

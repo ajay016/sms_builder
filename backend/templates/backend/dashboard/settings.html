@@ -1,0 +1,748 @@
+{% extends "backend/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+<style>
+    .grid-2-eq {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    .card {
+        background: #111111;
+        border-radius: 20px;
+        border: 1px solid #2a2a2a;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .card-head {
+        padding: 20px 24px;
+        border-bottom: 1px solid #2a2a2a;
+        background: #0d0d0d;
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .card-body {
+        padding: 24px;
+    }
+    .field-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .field-row.full {
+        flex-direction: column;
+    }
+    .field {
+        flex: 1;
+    }
+    .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #9ca3af;
+        margin-bottom: 6px;
+    }
+    .field input, .field select, .field textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        font-size: 13px;
+        outline: none;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+        border-color: #2563eb;
+    }
+    .field textarea {
+        resize: vertical;
+        font-family: inherit;
+    }
+    .btn {
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-ghost { background: transparent; border: 1px solid #2a2a2a; color: #9ca3af; }
+    .btn-ghost:hover { background: #1a1a1a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .toggle-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    .toggle-row:last-child {
+        border-bottom: none;
+    }
+    .toggle-info strong {
+        display: block;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+    .toggle-info span {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+    .toggle {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #2a2a2a;
+        transition: 0.3s;
+        border-radius: 24px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+    .toggle input:checked + .toggle-slider {
+        background-color: #2563eb;
+    }
+    .toggle input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .b-green { background: #064e3b; color: #34d399; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; margin-right: 6px; }
+    .preview-box {
+        background: #1a1a1a;
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #9ca3af;
+    }
+    
+    /* Carousel Images Styles */
+    .carousel-images-container {
+        margin-top: 16px;
+    }
+    .carousel-image-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #1a1a1a;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #2a2a2a;
+    }
+    .carousel-image-preview {
+        width: 80px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #0d0d0d;
+    }
+    .carousel-image-info {
+        flex: 1;
+    }
+    .carousel-image-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+    .carousel-image-url {
+        font-size: 11px;
+        color: #9ca3af;
+        font-family: monospace;
+        word-break: break-all;
+    }
+    .carousel-image-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .upload-area {
+        border: 2px dashed #2a2a2a;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 16px;
+    }
+    .upload-area:hover {
+        border-color: #2563eb;
+        background: #1a1a1a;
+    }
+    .upload-area i {
+        font-size: 32px;
+        color: #9ca3af;
+        margin-bottom: 8px;
+    }
+    .upload-area p {
+        color: #9ca3af;
+        font-size: 12px;
+        margin: 0;
+    }
+    .hidden-file-input {
+        display: none;
+    }
+    @media (max-width: 768px) {
+        .grid-2-eq { grid-template-columns: 1fr; }
+        .carousel-image-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        .carousel-image-preview {
+            width: 100%;
+            height: 120px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="grid-2-eq">
+        <!-- Left Column -->
+        <div>
+            <!-- Admin Profile Card -->
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-person-gear"></i>Admin Profile
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Full Name</label>
+                            <input id="fullName" value="{{ admin_user.full_name|default:'Super Admin' }}">
+                        </div>
+                        <div class="field">
+                            <label>Role</label>
+                            <input id="role" value="{{ admin_profile.role|default:'Super Administrator' }}">
+                        </div>
+                    </div>
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Email Address</label>
+                            <input type="email" id="email" value="{{ admin_user.email }}">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Phone</label>
+                            <input id="phone" value="{{ admin_profile.phone|default:'+61 4XX XXX XXX' }}">
+                        </div>
+                        <div class="field">
+                            <label>Location</label>
+                            <input id="location" value="{{ admin_profile.location|default:'Sydney, NSW' }}">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveProfile()">
+                        <i class="bi bi-check"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security Card -->
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-shield-lock-fill"></i>Security
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" placeholder="••••••••">
+                        </div>
+                        <div class="field">
+                            <label>Confirm Password</label>
+                            <input type="password" id="confirmPassword" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost" onclick="updatePassword()">
+                        <i class="bi bi-lock"></i>Update Password
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <!-- Hero Section Settings Card -->
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-stars"></i>Hero Section Settings
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Hero Badge</label>
+                            <input id="heroBadge" value="{{ system_settings.hero_badge|default:'Web-Based Compliance Platform' }}">
+                            <small class="preview-box">Preview: <span id="badgePreview">{{ system_settings.hero_badge|default:'Web-Based Compliance Platform' }}</span></small>
+                        </div>
+                    </div>
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Hero Title</label>
+                            <textarea id="heroTitle" rows="2">{{ system_settings.hero_title|default:'Smarter Safety Management for Heavy Vehicle Operations' }}</textarea>
+                        </div>
+                    </div>
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Hero Description</label>
+                            <textarea id="heroDescription" rows="3">{{ system_settings.hero_description|default:'Build, manage, and monitor Safety Management System documents with a professional, responsive, and user-friendly web platform.' }}</textarea>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Button Text</label>
+                            <input id="heroButtonText" value="{{ system_settings.hero_button_text|default:'Get Started Free' }}">
+                        </div>
+                        <div class="field">
+                            <label>Button Link</label>
+                            <input id="heroButtonLink" value="{{ system_settings.hero_button_link|default:'../../form.html' }}">
+                        </div>
+                    </div>
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>YouTube Video URL</label>
+                            <input id="heroVideoUrl" value="{{ system_settings.hero_video_url|default:'https://www.youtube.com/embed/Cm6eMeOg-KU' }}">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Trust Item 1</label>
+                            <input id="trustItem1" value="{{ system_settings.trust_item_1|default:'No credit card required' }}">
+                        </div>
+                        <div class="field">
+                            <label>Trust Item 2</label>
+                            <input id="trustItem2" value="{{ system_settings.trust_item_2|default:'NHVR aligned' }}">
+                        </div>
+                        <div class="field">
+                            <label>Trust Item 3</label>
+                            <input id="trustItem3" value="{{ system_settings.trust_item_3|default:'Setup in 15 minutes' }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Carousel Images Upload Section -->
+                    <div class="field-row full">
+                        <div class="field">
+                            <label>Carousel Images</label>
+                            <div class="upload-area" onclick="document.getElementById('carouselImageInput').click()">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>Click to upload image</p>
+                                <p style="font-size: 10px;">Supports: JPG, PNG, GIF (Max 5MB)</p>
+                            </div>
+                            <input type="file" id="carouselImageInput" class="hidden-file-input" accept="image/*" onchange="uploadCarouselImage()">
+                            
+                            <div id="carouselImagesList" class="carousel-images-container">
+                                {% for image in system_settings.carousel_images %}
+                                <div class="carousel-image-item" data-url="{{ image }}">
+                                    <img src="{{ image }}" class="carousel-image-preview" onerror="this.src='{% static 'sms_builder/assets/images/placeholder.png' %}'">
+                                    <div class="carousel-image-info">
+                                        <div class="carousel-image-name">{{ image|slice:"-20:" }}</div>
+                                        <div class="carousel-image-url">{{ image|truncatechars:50 }}</div>
+                                    </div>
+                                    <div class="carousel-image-actions">
+                                        <button class="btn btn-danger btn-sm" onclick="removeCarouselImage('{{ image }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="preview-box" style="text-align: center;">No images uploaded yet. Click above to add images.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveHeroSettings()" style="width: 100%; margin-top: 16px;">
+                        <i class="bi bi-check"></i>Save Hero Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notifications Card -->
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-toggles"></i>Notifications
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Email Notifications</strong>
+                            <span>Receive system alerts by email</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="emailNotifications" {% if system_settings.email_notifications %}checked{% endif %}>
+                            <div class="toggle-slider"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>New Registration Alerts</strong>
+                            <span>Alert when a company registers</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="newRegistrationAlerts" {% if system_settings.new_registration_alerts %}checked{% endif %}>
+                            <div class="toggle-slider"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Incident Notifications</strong>
+                            <span>Alert on new incident reports</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="incidentNotifications" {% if system_settings.incident_notifications %}checked{% endif %}>
+                            <div class="toggle-slider"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Compliance Reminders</strong>
+                            <span>Warn on accreditation expiry</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="complianceReminders" {% if system_settings.compliance_reminders %}checked{% endif %}>
+                            <div class="toggle-slider"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <strong>Maintenance Mode</strong>
+                            <span>Disable public site access</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="maintenanceMode" {% if system_settings.maintenance_mode %}checked{% endif %}>
+                            <div class="toggle-slider"></div>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 16px; width: 100%;">
+                        <i class="bi bi-check"></i>Save Notification Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Info Card -->
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <i class="bi bi-info-circle-fill"></i>System Info
+                    </div>
+                </div>
+                <div style="padding: 0">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #2a2a2a;">
+                        <span style="font-size: 12px; font-weight: 600; color: #9ca3af;">Version</span>
+                        <span style="font-size: 12px; font-family: monospace; color: #ffffff;">{{ system_settings.version }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #2a2a2a;">
+                        <span style="font-size: 12px; font-weight: 600; color: #9ca3af;">Environment</span>
+                        <span class="badge b-green"><span class="dot"></span>{{ system_settings.environment }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #2a2a2a;">
+                        <span style="font-size: 12px; font-weight: 600; color: #9ca3af;">Last Backup</span>
+                        <span style="font-size: 12px; font-family: monospace; color: #9ca3af;">{{ system_settings.last_backup|default:"Today, 3:00 AM" }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #2a2a2a;">
+                        <span style="font-size: 12px; font-weight: 600; color: #9ca3af;">Database</span>
+                        <span style="font-size: 12px; font-family: monospace; color: #34d399;">{{ system_settings.database_status }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
+                        <span style="font-size: 12px; font-weight: 600; color: #9ca3af;">Uptime</span>
+                        <span style="font-size: 12px; font-family: monospace; color: #34d399;">{{ system_settings.uptime }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Live preview for badge
+document.getElementById('heroBadge').addEventListener('input', function() {
+    document.getElementById('badgePreview').textContent = this.value;
+});
+
+function uploadCarouselImage() {
+    const fileInput = document.getElementById('carouselImageInput');
+    const file = fileInput.files[0];
+    
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    fetch('/admin/settings/upload-carousel-image/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addImageToList(data.image_url);
+            fileInput.value = '';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error uploading image');
+    });
+}
+
+function addImageToList(imageUrl) {
+    const container = document.getElementById('carouselImagesList');
+    
+    // Remove empty state if exists
+    if (container.querySelector('.preview-box')) {
+        container.innerHTML = '';
+    }
+    
+    const imageItem = document.createElement('div');
+    imageItem.className = 'carousel-image-item';
+    imageItem.setAttribute('data-url', imageUrl);
+    imageItem.innerHTML = `
+        <img src="${imageUrl}" class="carousel-image-preview" onerror="this.src='{% static 'sms_builder/assets/images/placeholder.png' %}'">
+        <div class="carousel-image-info">
+            <div class="carousel-image-name">${imageUrl.split('/').pop()}</div>
+            <div class="carousel-image-url">${imageUrl.substring(0, 50)}${imageUrl.length > 50 ? '...' : ''}</div>
+        </div>
+        <div class="carousel-image-actions">
+            <button class="btn btn-danger btn-sm" onclick="removeCarouselImage('${imageUrl}')">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(imageItem);
+}
+
+function removeCarouselImage(imageUrl) {
+    if (confirm('Remove this image from carousel?')) {
+        fetch('/admin/settings/remove-carousel-image/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ image_url: imageUrl })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const item = document.querySelector(`.carousel-image-item[data-url="${imageUrl}"]`);
+                if (item) item.remove();
+                
+                // Show empty state if no images left
+                if (document.querySelectorAll('.carousel-image-item').length === 0) {
+                    document.getElementById('carouselImagesList').innerHTML = '<div class="preview-box" style="text-align: center;">No images uploaded yet. Click above to add images.</div>';
+                }
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+}
+
+function saveProfile() {
+    const data = {
+        full_name: document.getElementById('fullName').value,
+        role: document.getElementById('role').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        location: document.getElementById('location').value
+    };
+    
+    fetch('/admin/settings/update-profile/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Profile updated successfully!');
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function saveHeroSettings() {
+    // Collect all image URLs from the list
+    const imageItems = document.querySelectorAll('.carousel-image-item');
+    const carouselImages = Array.from(imageItems).map(item => item.getAttribute('data-url'));
+    
+    const data = {
+        hero_badge: document.getElementById('heroBadge').value,
+        hero_title: document.getElementById('heroTitle').value,
+        hero_description: document.getElementById('heroDescription').value,
+        hero_button_text: document.getElementById('heroButtonText').value,
+        hero_button_link: document.getElementById('heroButtonLink').value,
+        hero_video_url: document.getElementById('heroVideoUrl').value,
+        trust_item_1: document.getElementById('trustItem1').value,
+        trust_item_2: document.getElementById('trustItem2').value,
+        trust_item_3: document.getElementById('trustItem3').value,
+        carousel_images: carouselImages
+    };
+    
+    fetch('/admin/settings/update-system/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Hero settings saved successfully!');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function saveSettings() {
+    const data = {
+        email_notifications: document.getElementById('emailNotifications').checked,
+        new_registration_alerts: document.getElementById('newRegistrationAlerts').checked,
+        incident_notifications: document.getElementById('incidentNotifications').checked,
+        compliance_reminders: document.getElementById('complianceReminders').checked,
+        maintenance_mode: document.getElementById('maintenanceMode').checked
+    };
+    
+    fetch('/admin/settings/update-system/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Notification settings saved successfully!');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function updatePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill all password fields');
+        return;
+    }
+    
+    const data = {
+        current_password: currentPassword,
+        new_password: newPassword,
+        confirm_password: confirmPassword
+    };
+    
+    fetch('/admin/settings/update-password/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Password updated successfully! Please login again.');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+</script>
+{% endblock %}

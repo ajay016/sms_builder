@@ -1,0 +1,2299 @@
+{% extends "sms_builder/base.html" %}
+{% load static %}
+
+{% block custom_css %}
+    <style>
+        /* ============ DESIGN SYSTEM (matches index.html) ============ */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --success: #10b981;
+            --dark: #0f172a;
+            --dark2: #1e293b;
+            --light-bg: #f8fafc;
+            --soft: #eef4ff;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --card-radius: 16px;
+            --sidebar-w: 230px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--light-bg);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            padding: 8px 0;
+        }
+
+        .topbar a {
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .topbar a:hover {
+            color: white;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        .brand-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #374151 !important;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all .2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary) !important;
+            background: var(--soft);
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            background: linear-gradient(140deg, #06142e 0%, #0f3d91 60%, #0c2461 100%);
+            color: white;
+            padding: 36px 0 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .page-header-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #7dd3fc;
+            background: rgba(125, 211, 252, 0.1);
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            padding: 5px 14px;
+            border-radius: 40px;
+            margin-bottom: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #cbd5e1;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        /* ── LAYOUT SHELL ── */
+        .form-shell {
+            display: flex;
+            min-height: calc(100vh - 180px);
+        }
+
+        .company-profile-form{
+            display: flex;
+            min-height: calc(100vh - 180px);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 62px;
+            align-self: flex-start;
+            height: calc(100vh - 62px);
+            overflow-y: auto;
+        }
+
+        .sidebar-heading {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            padding: 0 4px;
+            margin-bottom: 12px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: background .15s;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .step-item:hover {
+            background: #f8fafc;
+        }
+
+        .step-item.active {
+            background: var(--soft);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .step-item.completed {
+            color: var(--success);
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            background: #f1f5f9;
+            color: var(--muted);
+            flex-shrink: 0;
+            transition: all .2s;
+        }
+
+        .step-item.active .step-num {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-item.completed .step-num {
+            background: var(--success);
+            color: white;
+        }
+
+        .progress-wrap {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .prog-bar {
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
+            border-radius: 99px;
+            transition: width .4s ease;
+            width: 0%;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .form-main {
+            flex: 1;
+            padding: 32px 40px;
+            max-width: 860px;
+        }
+
+        .step-pane {
+            display: none;
+        }
+
+        .step-pane.active {
+            display: block;
+            animation: fadeUp .25s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pane-header {
+            margin-bottom: 28px;
+        }
+
+        .pane-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .pane-header p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* ── SECTION DIVIDER ── */
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── FORM FIELDS ── */
+        .form-label {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color .15s, box-shadow .15s;
+            background: white;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+            outline: none;
+        }
+
+        .form-control.is-invalid {
+            border-color: #ef4444;
+        }
+
+        .invalid-feedback {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 4px;
+        }
+
+        .field-group {
+            margin-bottom: 16px;
+        }
+
+        /* ── CHECKBOX CARDS ── */
+        .check-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .check-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all .15s;
+            background: white;
+        }
+
+        .check-card:hover {
+            border-color: var(--primary);
+            background: var(--soft);
+        }
+
+        .check-card input {
+            accent-color: var(--primary);
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        .check-card.checked {
+            border-color: var(--primary);
+            background: var(--soft);
+            color: var(--primary);
+        }
+
+        /* ── RISK TABLE ── */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .risk-table th {
+            background: #f8fafc;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--muted);
+        }
+
+        .risk-table td {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .risk-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .risk-med {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .risk-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* ── INCIDENT ROW ── */
+        .incident-row {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        /* ── REVIEW PANEL ── */
+        .review-section {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .review-section-head {
+            background: #f8fafc;
+            padding: 12px 18px;
+            font-weight: 700;
+            font-size: 13px;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .review-section-body {
+            padding: 16px 18px;
+        }
+
+        .review-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .review-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .review-key {
+            color: var(--muted);
+            min-width: 160px;
+            flex-shrink: 0;
+        }
+
+        .review-val {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* ── SUCCESS SCREEN ── */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 24px;
+            animation: fadeUp .4s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), #4ade80);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 36px;
+            color: white;
+        }
+
+        .success-screen h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .success-screen p {
+            color: var(--muted);
+            max-width: 480px;
+            margin: 0 auto 28px;
+        }
+
+        .ref-card {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto 28px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .ref-card .label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .ref-card .value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .ref-card .ref-id {
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* ── NAV BUTTONS ── */
+        .form-nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 10px 22px;
+            border: none;
+            cursor: pointer;
+            transition: all .15s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #374151;
+            border: 1.5px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-lg {
+            padding: 13px 28px;
+            font-size: 15px;
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* ── ADD / REMOVE ── */
+        .btn-add {
+            background: var(--soft);
+            color: var(--primary);
+            border: 1.5px dashed #bfdbfe;
+            border-radius: 10px;
+            width: 100%;
+            padding: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all .15s;
+            font-family: inherit;
+        }
+
+        .btn-add:hover {
+            background: #dbeafe;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
+        /* ── ACCORDION ── */
+        .acc-item {
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .acc-btn {
+            width: 100%;
+            background: #f8fafc;
+            border: none;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: inherit;
+            color: #374151;
+            transition: background .15s;
+        }
+
+        .acc-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .acc-arrow {
+            transition: transform .2s;
+        }
+
+        .acc-btn.open .acc-arrow {
+            transform: rotate(180deg);
+        }
+
+        .acc-body {
+            padding: 14px 16px;
+            display: none;
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+
+        .acc-body.open {
+            display: block;
+        }
+
+        /* ── MOBILE STEP BAR ── */
+        .mobile-steps {
+            display: none;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            padding: 12px 16px;
+            gap: 6px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .mobile-steps::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mobile-step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            min-width: 60px;
+            text-align: center;
+            white-space: nowrap;
+            transition: background .15s;
+            flex-shrink: 0;
+        }
+
+        .mobile-step-item.active {
+            color: var(--primary);
+            background: var(--soft);
+        }
+
+        .mobile-step-item.completed {
+            color: var(--success);
+        }
+
+        .mobile-step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-step-item.active .mobile-step-num {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mobile-step-item.completed .mobile-step-num {
+            background: var(--success);
+            color: white;
+        }
+
+        /* ── MOBILE PROGRESS BAR ── */
+        .mobile-progress {
+            display: none;
+            height: 3px;
+            background: var(--border);
+        }
+
+        .mobile-prog-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
+            transition: width .4s ease;
+            width: 0%;
+        }
+
+        /* success modal styles starts */
+        /* Overlay Background */
+        .cp-success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* Show State */
+        .cp-success-overlay.cp-show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal Box */
+        .cp-success-modal-content {
+            background: #ffffff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transform: scale(0.8) translateY(20px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Box Animation on Show */
+        .cp-success-overlay.cp-show .cp-success-modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Typography */
+        .cp-success-title {
+            margin: 20px 0 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .cp-success-text {
+            margin: 0;
+            font-size: 15px;
+            color: #666666;
+        }
+
+        /* === Animated SVG Checkmark === */
+        .cp-checkmark {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 3;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            margin: 0 auto;
+            box-shadow: inset 0px 0px 0px #28a745;
+            /* Triggers the background fill animation */
+            animation: cp-fill .4s ease-in-out .4s forwards, cp-scale .3s ease-in-out .9s both;
+        }
+
+        .cp-checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: #28a745;
+            fill: none;
+            /* Triggers the circle drawing animation */
+            animation: cp-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .cp-checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            /* Triggers the tick drawing animation */
+            animation: cp-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+        }
+
+        /* OK Button Styling */
+        .cp-success-btn {
+            margin-top: 25px;
+            background-color: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            
+            /* Starts hidden, fades in after tick animation */
+            opacity: 0;
+            animation: cp-fade-in 0.4s ease 1.2s forwards; 
+        }
+
+        .cp-success-btn:hover {
+            background-color: #218838;
+        }
+
+        .cp-success-btn:active {
+            transform: scale(0.96);
+        }
+
+        @keyframes cp-fade-in {
+            to { opacity: 1; }
+        }
+
+        /* Keyframes for Checkmark */
+        @keyframes cp-stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes cp-scale {
+            0%, 100% { transform: none; }
+            50% { transform: scale3d(1.1, 1.1, 1); }
+        }
+        @keyframes cp-fill {
+            100% { box-shadow: inset 0px 0px 0px 40px #28a745; }
+        }
+        /* succcess modal styles ends */
+
+        /* Custom modal styles starts */
+        .custom-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal-content {
+            width: 380px;
+            padding: 30px;
+            border-radius: 18px;
+            text-align: center;
+            color: white;
+            background: linear-gradient(140deg, #06142e 0%, #0f3d91 60%, #0c2461 100%);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .loading-box h3,
+        .success-box h3 {
+            margin-top: 15px;
+            font-size: 20px;
+        }
+
+        .loading-box p,
+        .success-box p {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            margin: auto;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .check-icon {
+            font-size: 40px;
+            color: #4ade80;
+        }
+
+        .btn-ok {
+            margin-top: 15px;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #0f3d91;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        /* Custom modal styles end */
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 991px) {
+            .form-main {
+                padding: 28px 28px;
+            }
+
+            .sidebar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 767px) {
+
+            /* Topbar */
+            .topbar {
+                font-size: 12px;
+            }
+
+            .topbar .d-md-inline {
+                display: none !important;
+            }
+
+            /* Navbar */
+            .brand-title {
+                font-size: 22px;
+            }
+
+            .navbar-collapse {
+                background: white;
+                border-radius: 14px;
+                padding: 14px;
+                margin-top: 8px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            }
+
+            #navAuthBtns {
+                flex-direction: row;
+                padding-top: 8px;
+                border-top: 1px solid var(--border);
+            }
+
+            #navAuthBtns a {
+                flex: 1;
+                text-align: center;
+            }
+
+            /* Page header */
+            .page-header {
+                padding: 28px 0 20px;
+            }
+
+            .page-header h1 {
+                font-size: 22px;
+            }
+
+            .page-header p {
+                font-size: 14px;
+            }
+
+            /* Show mobile steps, hide desktop sidebar */
+            .sidebar {
+                display: none !important;
+            }
+
+            .mobile-steps {
+                display: flex !important;
+            }
+
+            .mobile-progress {
+                display: block !important;
+            }
+
+            /* Form main */
+            .form-shell {
+                flex-direction: column;
+            }
+
+            .form-shell {
+                flex-direction: column;
+            }
+
+            .form-main {
+                padding: 20px 16px;
+                max-width: 100%;
+            }
+
+            .pane-header h3 {
+                font-size: 18px;
+            }
+
+            .check-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .check-card {
+                font-size: 13px;
+            }
+
+            .form-nav {
+                gap: 8px;
+            }
+
+            .form-nav .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .form-nav .btn-lg {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            /* Risk table horizontal scroll */
+            .risk-table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .risk-table {
+                min-width: 600px;
+            }
+
+            /* Review */
+            .review-key {
+                min-width: 110px;
+                font-size: 12px;
+            }
+
+            .review-val {
+                font-size: 12px;
+            }
+
+            /* Success */
+            .success-screen {
+                padding: 40px 16px;
+            }
+
+            .success-screen h2 {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 20px;
+            }
+
+            .row.g-3>[class*="col-md"] {
+                width: 100%;
+            }
+
+            .btn {
+                font-size: 13px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- ── TOPBAR ── -->
+
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+        <div class="container position-relative">
+            <div class="page-header-eyebrow"><i class="bi bi-shield-check"></i>Safety Management System</div>
+            <h1>SMS Builder Form</h1>
+            <p>Complete your Safety Management System profile — 7 steps, takes about 10 minutes.</p>
+        </div>
+    </div>
+
+    <!-- ── MOBILE PROGRESS ── -->
+    <div class="mobile-progress">
+        <div class="mobile-prog-fill" id="mobileProg"></div>
+    </div>
+
+    <!-- ── MOBILE STEP NAV ── -->
+    <div class="mobile-steps" id="mobileSteps">
+        <div class="mobile-step-item active" data-step="0">
+            <div class="mobile-step-num">1</div>Company
+        </div>
+        <div class="mobile-step-item" data-step="1">
+            <div class="mobile-step-num">2</div>Operations
+        </div>
+        <div class="mobile-step-item" data-step="2">
+            <div class="mobile-step-num">3</div>Fleet
+        </div>
+        <div class="mobile-step-item" data-step="3">
+            <div class="mobile-step-num">4</div>Risk
+        </div>
+        <div class="mobile-step-item" data-step="4">
+            <div class="mobile-step-num">5</div>Subs
+        </div>
+        <div class="mobile-step-item" data-step="5">
+            <div class="mobile-step-num">6</div>Incidents
+        </div>
+        <div class="mobile-step-item" data-step="6">
+            <div class="mobile-step-num">7</div>Review
+        </div>
+    </div>
+
+    <!-- ── FORM SHELL ── -->
+    <div class="form-shell" id="formShell">
+        <form id="smsProfileForm" class="company-profile-form" onsubmit="event.preventDefault();">
+            {% csrf_token %}
+            <!-- SIDEBAR (desktop) -->
+            <aside class="sidebar">
+                <div class="sidebar-heading">Steps</div>
+                <div class="step-item active" data-step="0"><span class="step-num">1</span>Company</div>
+                <div class="step-item" data-step="1"><span class="step-num">2</span>Operations</div>
+                <div class="step-item" data-step="2"><span class="step-num">3</span>Fleet</div>
+                <div class="step-item" data-step="3"><span class="step-num">4</span>Risk</div>
+                <div class="step-item" data-step="4"><span class="step-num">5</span>Subcontractors</div>
+                <div class="step-item" data-step="5"><span class="step-num">6</span>Incidents</div>
+                <div class="step-item" data-step="6"><span class="step-num">7</span>Review</div>
+                <div class="progress-wrap">
+                    <div class="progress-label">Step <span id="progStep">1</span> of 7</div>
+                    <div class="prog-bar">
+                        <div class="prog-fill" id="progFill"></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="form-main">
+
+                <!-- ══ STEP 1 – Company ══ -->
+                <div class="step-pane active" data-pane="0">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-building me-2 text-primary"></i>Company Details</h3>
+                        <p>Tell us about your business and primary contact person.</p>
+                    </div>
+
+                    <div class="section-label">Business Information</div>
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="field-group">
+                                <label class="form-label">Company Name *</label>
+                                <input id="company" class="form-control" placeholder="e.g. Apex Freight Pty Ltd" value="{{ company.company_name|default:'' }}">
+                                <div class="invalid-feedback" id="e-company">Company name is required</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="field-group">
+                                <label class="form-label">ABN *</label>
+                                <input id="abn" class="form-control" placeholder="XX XXX XXX XXX" value="{{ company.abn|default:'' }}">
+                                <div class="invalid-feedback" id="e-abn">ABN is required</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-label">Address</div>
+                    <div class="field-group">
+                        <label class="form-label">Street Address *</label>
+                        <input id="address" class="form-control" placeholder="123 Main Street" value="{{ company.address_street|default:'' }}">
+                        <div class="invalid-feedback" id="e-address">Address is required</div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <div class="field-group">
+                                <label class="form-label">City / Suburb *</label>
+                                <input id="city" class="form-control" placeholder="Sydney" value="{{ company.city|default:'' }}">
+                                <div class="invalid-feedback" id="e-city">City is required</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="field-group">
+                                <label class="form-label">State *</label>
+                                <select id="state" class="form-select">
+                                    <option value="">Select state</option>
+                                    <option value="NSW" {% if company.state == 'NSW' %}selected{% endif %}>NSW</option>
+                                    <option value="VIC" {% if company.state == 'VIC' %}selected{% endif %}>VIC</option>
+                                    <option value="QLD" {% if company.state == 'QLD' %}selected{% endif %}>QLD</option>
+                                    <option value="WA" {% if company.state == 'WA' %}selected{% endif %}>WA</option>
+                                    <option value="SA" {% if company.state == 'SA' %}selected{% endif %}>SA</option>
+                                    <option value="TAS" {% if company.state == 'TAS' %}selected{% endif %}>TAS</option>
+                                    <option value="ACT" {% if company.state == 'ACT' %}selected{% endif %}>ACT</option>
+                                    <option value="NT" {% if company.state == 'NT' %}selected{% endif %}>NT</option>
+                                </select>
+                                <div class="invalid-feedback" id="e-state">State is required</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="field-group">
+                                <label class="form-label">Postcode *</label>
+                                <input id="postcode" class="form-control" placeholder="2000" value="{{ company.postcode|default:'' }}">
+                                <div class="invalid-feedback" id="e-post">Postcode is required</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-label">Contact Details</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label class="form-label">Phone *</label>
+                                <input id="phone" class="form-control" placeholder="+61 4XX XXX XXX" 
+                                    value="{% if company.contact_phone %}{{ company.contact_phone }}{% elif user.is_authenticated %}{{ user.phone|default:'' }}{% endif %}">
+                                <div class="invalid-feedback" id="e-phone">Phone is required</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label class="form-label">Email Address *</label>
+                                <input id="email" type="email" class="form-control" placeholder="name@company.com.au" 
+                                    value="{% if company.contact_email %}{{ company.contact_email }}{% elif user.is_authenticated %}{{ user.email|default:'' }}{% endif %}">
+                                <div class="invalid-feedback" id="e-email">Valid email is required</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label class="form-label">Primary Contact Person *</label>
+                                <input id="contact" class="form-control" placeholder="Full name" 
+                                    value="{% if company.contact_person %}{{ company.contact_person }}{% elif user.is_authenticated %}{{ user.full_name|default:'' }}{% endif %}">
+                                <div class="invalid-feedback" id="e-contact">Contact name is required</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label class="form-label">Role / Position *</label>
+                                <input id="role" class="form-control" placeholder="e.g. Fleet Manager" 
+                                    value="{% if company.contact_role %}{{ company.contact_role }}{% elif user.is_authenticated %}{{ user.role|default:'' }}{% endif %}">
+                                <div class="invalid-feedback" id="e-role">Role is required</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">Next: Operations <i class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 2 – Operations ══ -->
+                <div class="step-pane" data-pane="1">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-diagram-3 me-2 text-primary"></i>Operational Details</h3>
+                        <p>Describe your transport operations and working patterns.</p>
+                    </div>
+
+                    <div class="section-label">Work Types</div>
+                    <div class="check-grid" id="workTypeGrid">
+                        <label class="check-card"><input type="checkbox" value="Local Delivery" {% if "Local Delivery" in company.operations.work_types %}checked{% endif %}> Local Delivery</label>
+                        <label class="check-card"><input type="checkbox" value="Regional Transport" {% if "Regional Transport" in company.operations.work_types %}checked{% endif %}> Regional Transport</label>
+                        <label class="check-card"><input type="checkbox" value="Cross-Border Operations" {% if "Cross-Border Operations" in company.operations.work_types %}checked{% endif %}> Cross-Border Operations</label>
+                        <label class="check-card"><input type="checkbox" value="Express / Courier" {% if "Express / Courier" in company.operations.work_types %}checked{% endif %}> Express / Courier</label>
+                        <label class="check-card"><input type="checkbox" value="Contract Carriage" {% if "Contract Carriage" in company.operations.work_types %}checked{% endif %}> Contract Carriage</label>
+                        <label class="check-card"><input type="checkbox" value="Metropolitan Distribution" {% if "Metropolitan Distribution" in company.operations.work_types %}checked{% endif %}> Metropolitan Distribution</label>
+                        <label class="check-card"><input type="checkbox" value="Interstate Freight" {% if "Interstate Freight" in company.operations.work_types %}checked{% endif %}> Interstate Freight</label>
+                        <label class="check-card"><input type="checkbox" value="Linehaul" {% if "Linehaul" in company.operations.work_types %}checked{% endif %}> Linehaul</label>
+                        <label class="check-card"><input type="checkbox" value="Bulk Haulage" {% if "Bulk Haulage" in company.operations.work_types %}checked{% endif %}> Bulk Haulage</label>
+                        <label class="check-card"><input type="checkbox" value="Subcontracting" {% if "Subcontracting" in company.operations.work_types %}checked{% endif %}> Subcontracting</label>
+                    </div>
+
+                    <div class="section-label">Accreditation</div>
+                    <div class="check-grid">
+                        <label class="check-card"><input type="checkbox" name="accred" value="Mass Management" {% if "Mass Management" in company.operations.accreditations %}checked{% endif %}> Mass Management</label>
+                        <label class="check-card"><input type="checkbox" name="accred" value="Fatigue Management" {% if "Fatigue Management" in company.operations.accreditations %}checked{% endif %}> Fatigue Management</label>
+                        <label class="check-card"><input type="checkbox" name="accred" value="Maintenance Management" {% if "Maintenance Management" in company.operations.accreditations %}checked{% endif %}> Maintenance Management</label>
+                        <label class="check-card"><input type="checkbox" id="acc-none" value="None" onchange="toggleAccDates()" {% if "None" in company.operations.accreditations %}checked{% endif %}> None</label>
+                        <label class="check-card"><input type="checkbox" id="acc-track" value="TruckSafe" onchange="toggleAccDates()" {% if "TruckSafe" in company.operations.accreditations %}checked{% endif %}> TruckSafe</label>
+                        <label class="check-card"><input type="checkbox" id="acc-wahva" value="WAHVA" onchange="toggleAccDates()" {% if "WAHVA" in company.operations.accreditations %}checked{% endif %}> WAHVA</label>
+                    </div>
+                    
+                    <div id="date-none" style="{% if 'None' in company.operations.accreditations %}display:block;{% else %}display:none;{% endif %}" class="mt-2">
+                        <label class="form-label">None – Last Audit Date</label>
+                        <input type="date" id="dateNone" class="form-control" style="max-width:240px" value="{{ company.operations.audit_date_none|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div id="date-track" style="{% if 'TruckSafe' in company.operations.accreditations %}display:block;{% else %}display:none;{% endif %}" class="mt-2">
+                        <label class="form-label">TruckSafe – Last Audit Date</label>
+                        <input type="date" id="dateTrack" class="form-control" style="max-width:240px" value="{{ company.operations.audit_date_trucksafe|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div id="date-wahva" style="{% if 'WAHVA' in company.operations.accreditations %}display:block;{% else %}display:none;{% endif %}" class="mt-2">
+                        <label class="form-label">WAHVA – Last Audit Date</label>
+                        <input type="date" id="dateWahva" class="form-control" style="max-width:240px" value="{{ company.operations.audit_date_wahva|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="section-label">Operating Area</div>
+                    <div class="check-grid">
+                        <label class="check-card"><input type="checkbox" value="Local" {% if "Local" in company.operations.operating_areas %}checked{% endif %}> Local</label>
+                        <label class="check-card"><input type="checkbox" value="Intrastate" {% if "Intrastate" in company.operations.operating_areas %}checked{% endif %}> Intrastate</label>
+                        <label class="check-card"><input type="checkbox" value="Interstate" {% if "Interstate" in company.operations.operating_areas %}checked{% endif %}> Interstate</label>
+                        <label class="check-card"><input type="checkbox" value="International" {% if "International" in company.operations.operating_areas %}checked{% endif %}> International</label>
+                    </div>
+
+                    <div class="section-label">Workforce</div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Typical Operating Hours</label>
+                            <select id="opHours" class="form-select">
+                                <option value="">Select hours</option>
+                                <option value="Day Shift (6am–6pm)" {% if company.operations.operating_hours == "Day Shift (6am–6pm)" %}selected{% endif %}>Day Shift (6am–6pm)</option>
+                                <option value="Night Shift (6pm–6am)" {% if company.operations.operating_hours == "Night Shift (6pm–6am)" %}selected{% endif %}>Night Shift (6pm–6am)</option>
+                                <option value="24/7 Operations" {% if company.operations.operating_hours == "24/7 Operations" %}selected{% endif %}>24/7 Operations</option>
+                                <option value="Mixed Shifts" {% if company.operations.operating_hours == "Mixed Shifts" %}selected{% endif %}>Mixed Shifts</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Number of Employed Drivers</label>
+                            <input id="numDrivers" class="form-control" type="number" min="0" placeholder="e.g. 15" value="{{ company.operations.num_drivers|default:'' }}">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <label class="check-card w-100">
+                                <input type="checkbox" id="usesSubs" {% if company.subcontractor_profile.engages_subcontractors %}checked{% endif %}> We use subcontractor drivers
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-left"></i>Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next: Fleet <i
+                                class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 3 – Fleet ══ -->
+                <div class="step-pane" data-pane="2">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-truck me-2 text-primary"></i>Fleet Information</h3>
+                        <p>Tell us about your vehicle fleet and cargo types.</p>
+                    </div>
+
+                    <div class="row g-3 mb-2">
+                        <div class="col-md-4">
+                            <label class="form-label">Total Number of Vehicles</label>
+                            <input id="totalVehicles" class="form-control" type="number" min="0" placeholder="e.g. 10" value="{{ company.fleet.total_vehicles|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Maximum GVM in Fleet</label>
+                            <select id="maxGVM" class="form-select">
+                                <option value="">Select GVM</option>
+                                <option value="Under 4.5t" {% if company.fleet.max_gvm == 'Under 4.5t' %}selected{% endif %}>Under 4.5t</option>
+                                <option value="4.5t – 12t" {% if company.fleet.max_gvm == '4.5t – 12t' %}selected{% endif %}>4.5t – 12t</option>
+                                <option value="Over 12t" {% if company.fleet.max_gvm == 'Over 12t' %}selected{% endif %}>Over 12t</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Average Vehicle Age</label>
+                            <select id="vehicleAge" class="form-select">
+                                <option value="">Select range</option>
+                                <option value="Under 5 years" {% if company.fleet.average_age == 'Under 5 years' %}selected{% endif %}>Under 5 years</option>
+                                <option value="5 – 10 years" {% if company.fleet.average_age == '5 – 10 years' %}selected{% endif %}>5 – 10 years</option>
+                                <option value="10 – 15 years" {% if company.fleet.average_age == '10 – 15 years' %}selected{% endif %}>10 – 15 years</option>
+                                <option value="Over 15 years" {% if company.fleet.average_age == 'Over 15 years' %}selected{% endif %}>Over 15 years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="section-label">Vehicle Types</div>
+                    <div class="check-grid">
+                        <label class="check-card"><input type="checkbox" value="Rigid Trucks (<4.5t)" {% if "Rigid Trucks (<4.5t)" in company.fleet.vehicle_types %}checked{% endif %}> Rigid Trucks &lt;4.5t)</label>
+                        <label class="check-card"><input type="checkbox" value="Rigid Trucks (4.5t-12t)" {% if "Rigid Trucks (4.5t-12t)" in company.fleet.vehicle_types %}checked{% endif %}> Rigid Trucks (4.5t–12t)</label>
+                        <label class="check-card"><input type="checkbox" value="Rigid Trucks (>12t)" {% if "Rigid Trucks (>12t)" in company.fleet.vehicle_types %}checked{% endif %}> Rigid Trucks (&gt;12t)</label>
+                        <label class="check-card"><input type="checkbox" value="B-Doubles" {% if "B-Doubles" in company.fleet.vehicle_types %}checked{% endif %}> B-Doubles</label>
+                        <label class="check-card"><input type="checkbox" value="Tankers" {% if "Tankers" in company.fleet.vehicle_types %}checked{% endif %}> Tankers</label>
+                        <label class="check-card"><input type="checkbox" value="Tippers" {% if "Tippers" in company.fleet.vehicle_types %}checked{% endif %}> Tippers</label>
+                        <label class="check-card"><input type="checkbox" value="Prime Movers" {% if "Prime Movers" in company.fleet.vehicle_types %}checked{% endif %}> Prime Movers</label>
+                        <label class="check-card"><input type="checkbox" value="Road Trains" {% if "Road Trains" in company.fleet.vehicle_types %}checked{% endif %}> Road Trains</label>
+                        <label class="check-card"><input type="checkbox" value="Refrigerated Vehicles" {% if "Refrigerated Vehicles" in company.fleet.vehicle_types %}checked{% endif %}> Refrigerated Vehicles</label>
+                        <label class="check-card"><input type="checkbox" value="Flatbeds" {% if "Flatbeds" in company.fleet.vehicle_types %}checked{% endif %}> Flatbeds</label>
+                    </div>
+
+                    <div class="section-label">Special Cargo</div>
+                    <div class="check-grid">
+                        <label class="check-card"><input type="checkbox" value="Dangerous Goods" {% if "Dangerous Goods" in company.fleet.special_cargo %}checked{% endif %}> Dangerous Goods (DG licence held)</label>
+                        <label class="check-card"><input type="checkbox" value="Oversize / Overmass" {% if "Oversize / Overmass" in company.fleet.special_cargo %}checked{% endif %}> Oversize / Overmass loads</label>
+                    </div>
+
+                    <div class="section-label">NHVR Vehicle Configurations</div>
+                    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select all National Heavy Vehicle configurations operated:</p>
+                    
+                    <div class="acc-item">
+                        <button type="button" class="acc-btn" onclick="toggleAcc(this,'nhvr1')">1. Common Rigid Trucks – General Access <i class="bi bi-chevron-down acc-arrow"></i></button>
+                        <div class="acc-body" id="nhvr1">
+                            <div class="check-grid">
+                                <label class="check-card"><input type="checkbox" value="2 Axle Rigid" {% if "2 Axle Rigid" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 2 Axle Rigid Truck</label>
+                                <label class="check-card"><input type="checkbox" value="3 Axle Rigid" {% if "3 Axle Rigid" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 3 Axle Rigid Truck</label>
+                                <label class="check-card"><input type="checkbox" value="4 Axle Rigid" {% if "4 Axle Rigid" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 4 Axle Rigid Truck</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="acc-item">
+                        <button type="button" class="acc-btn" onclick="toggleAcc(this,'nhvr2')">2. Common Semitrailer Combinations – General Access <i class="bi bi-chevron-down acc-arrow"></i></button>
+                        <div class="acc-body" id="nhvr2">
+                            <div class="check-grid">
+                                <label class="check-card"><input type="checkbox" value="3 Axle Semi" {% if "3 Axle Semi" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 3 Axle Semitrailer</label>
+                                <label class="check-card"><input type="checkbox" value="4 Axle Semi" {% if "4 Axle Semi" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 4 Axle Semitrailer</label>
+                                <label class="check-card"><input type="checkbox" value="5 Axle Semi" {% if "5 Axle Semi" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 5 Axle Semitrailer</label>
+                                <label class="check-card"><input type="checkbox" value="6 Axle Semi" {% if "6 Axle Semi" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 6 Axle Semitrailer</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="acc-item">
+                        <button type="button" class="acc-btn" onclick="toggleAcc(this,'nhvr3')">3. Common Rigid Truck and Trailer Combinations <i class="bi bi-chevron-down acc-arrow"></i></button>
+                        <div class="acc-body" id="nhvr3">
+                            <div class="check-grid">
+                                <label class="check-card"><input type="checkbox" value="Rigid + Dog" {% if "Rigid + Dog" in company.fleet.flat_nhvr_configs %}checked{% endif %}> Rigid + Dog Trailer</label>
+                                <label class="check-card"><input type="checkbox" value="Rigid + Tag" {% if "Rigid + Tag" in company.fleet.flat_nhvr_configs %}checked{% endif %}> Rigid + Tag Trailer</label>
+                                <label class="check-card"><input type="checkbox" value="Rigid + Pig" {% if "Rigid + Pig" in company.fleet.flat_nhvr_configs %}checked{% endif %}> Rigid + Pig Trailer</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="acc-item">
+                        <button type="button" class="acc-btn" onclick="toggleAcc(this,'nhvr4')">4. Common B-Double Combinations – Class 2 <i class="bi bi-chevron-down acc-arrow"></i></button>
+                        <div class="acc-body" id="nhvr4">
+                            <div class="check-grid">
+                                <label class="check-card"><input type="checkbox" value="B-Double 6 Axle" {% if "B-Double 6 Axle" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 6 Axle B-Double</label>
+                                <label class="check-card"><input type="checkbox" value="B-Double 7 Axle" {% if "B-Double 7 Axle" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 7 Axle B-Double</label>
+                                <label class="check-card"><input type="checkbox" value="B-Double 8 Axle" {% if "B-Double 8 Axle" in company.fleet.flat_nhvr_configs %}checked{% endif %}> 8 Axle B-Double</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="acc-item">
+                        <button type="button" class="acc-btn" onclick="toggleAcc(this,'nhvr5')">5. Common Type 1 Road Trains – Class 2 <i class="bi bi-chevron-down acc-arrow"></i></button>
+                        <div class="acc-body" id="nhvr5">
+                            <div class="check-grid">
+                                <label class="check-card"><input type="checkbox" value="Type 1 A-Train" {% if "Type 1 A-Train" in company.fleet.flat_nhvr_configs %}checked{% endif %}> A-Train Double</label>
+                                <label class="check-card"><input type="checkbox" value="Type 1 B-Train" {% if "Type 1 B-Train" in company.fleet.flat_nhvr_configs %}checked{% endif %}> B-Train Double</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="acc-item">
+                        <button type="button" class="acc-btn" onclick="toggleAcc(this,'nhvr6')">6. Common Type 2 Road Trains – Class 2 <i class="bi bi-chevron-down acc-arrow"></i></button>
+                        <div class="acc-body" id="nhvr6">
+                            <div class="check-grid">
+                                <label class="check-card"><input type="checkbox" value="Type 2 A-Triple" {% if "Type 2 A-Triple" in company.fleet.flat_nhvr_configs %}checked{% endif %}> A-Train Triple</label>
+                                <label class="check-card"><input type="checkbox" value="Type 2 B-Triple" {% if "Type 2 B-Triple" in company.fleet.flat_nhvr_configs %}checked{% endif %}> B-Train Triple</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="mt-3" style="font-size:11px;color:var(--muted)">Source: National Heavy Vehicle Regulator (NHVR). Visit nhvr.gov.au for complete info.</p>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-left"></i>Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next: Risk <i class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 4 – Risk ══ -->
+                <div class="step-pane" data-pane="3">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-shield-exclamation me-2 text-primary"></i>Risk Assessment</h3>
+                        <p>Identify key hazards and rate risk levels across your operations.</p>
+                    </div>
+
+                    <div class="section-label">Risk Register</div>
+                    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Complete the risk register for your key
+                        operational hazards:</p>
+                    <div class="risk-table-wrap">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Hazard / Risk</th>
+                                    <th>Likelihood</th>
+                                    <th>Consequence</th>
+                                    <th>Risk Level</th>
+                                    <th>Control Measure</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="riskBody">
+                                {% for risk in company.risk_profile.risk_register %}
+                                <tr>
+                                    <td><input type="text" class="form-control form-control-sm" name="hazard" value="{{ risk.hazard }}"></td>
+                                    <td>
+                                        <select class="form-select form-select-sm" name="likelihood">
+                                            <option value="">Select</option>
+                                            <option value="Rare" {% if risk.likelihood == 'Rare' %}selected{% endif %}>Rare</option>
+                                            <option value="Possible" {% if risk.likelihood == 'Possible' %}selected{% endif %}>Possible</option>
+                                            <option value="Likely" {% if risk.likelihood == 'Likely' %}selected{% endif %}>Likely</option>
+                                            <option value="Almost Certain" {% if risk.likelihood == 'Almost Certain' %}selected{% endif %}>Almost Certain</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" name="consequence">
+                                            <option value="">Select</option>
+                                            <option value="Minor" {% if risk.consequence == 'Minor' %}selected{% endif %}>Minor</option>
+                                            <option value="Moderate" {% if risk.consequence == 'Moderate' %}selected{% endif %}>Moderate</option>
+                                            <option value="Major" {% if risk.consequence == 'Major' %}selected{% endif %}>Major</option>
+                                            <option value="Severe" {% if risk.consequence == 'Severe' %}selected{% endif %}>Severe</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm" name="risk_level" value="{{ risk.risk_level }}" readonly></td>
+                                    <td><input type="text" class="form-control form-control-sm" name="control_measure" value="{{ risk.control_measure }}"></td>
+                                    <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove()"><i class="bi bi-trash"></i></button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="btn-add mt-2" onclick="addRiskRow()"><i class="bi bi-plus-circle me-2"></i>Add
+                        Hazard</button>
+
+                    <div class="section-label mt-4">Safety Management Policies</div>
+                    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Which safety policies do you currently
+                        have documented?</p>
+                    <div class="check-grid">
+                        <label class="check-card"><input type="checkbox" value="Fatigue Management Policy" {% if "Fatigue Management Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Fatigue Management Policy</label>
+                        <label class="check-card"><input type="checkbox" value="Drug & Alcohol Policy" {% if "Drug & Alcohol Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Drug &amp; Alcohol Policy</label>
+                        <label class="check-card"><input type="checkbox" value="Speed Management Policy" {% if "Speed Management Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Speed Management Policy</label>
+                        <label class="check-card"><input type="checkbox" value="Load Restraint Policy" {% if "Load Restraint Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Load Restraint Policy</label>
+                        <label class="check-card"><input type="checkbox" value="Vehicle Maintenance Policy" {% if "Vehicle Maintenance Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Vehicle Maintenance Policy</label>
+                        <label class="check-card"><input type="checkbox" value="Emergency Response Plan" {% if "Emergency Response Plan" in company.risk_profile.safety_policies %}checked{% endif %}> Emergency Response Plan</label>
+                        <label class="check-card"><input type="checkbox" value="Chain of Responsibility Policy" {% if "Chain of Responsibility Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Chain of Responsibility Policy</label>
+                        <label class="check-card"><input type="checkbox" value="Incident Reporting Policy" {% if "Incident Reporting Policy" in company.risk_profile.safety_policies %}checked{% endif %}> Incident Reporting Policy</label>
+                    </div>
+
+                    <div class="section-label mt-3">Additional Risk Notes</div>
+                    <textarea class="form-control" id="riskNotes" rows="3"
+                        placeholder="Any other significant risks or special operational hazards…">{{ company.risk_profile.additional_notes|default:'' }}</textarea>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-left"></i>Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next: Subcontractors <i
+                                class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 5 – Subcontractors ══ -->
+                <div class="step-pane" data-pane="4">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-people me-2 text-primary"></i>Subcontractor Management</h3>
+                        <p>Provide details about subcontractors engaged in your operations.</p>
+                    </div>
+
+                    <div class="section-label">Subcontractor Use</div>
+                    <div class="check-grid mb-3" style="max-width:480px">
+                        <label class="check-card">
+                            <input type="checkbox" id="subYes" onchange="toggleSubForm()" {% if company.subcontractor_profile.engages_subcontractors %}checked{% endif %}> We engage subcontractors
+                        </label>
+                        <label class="check-card">
+                            <input type="checkbox" id="subNo" onchange="toggleSubNone()" {% if not company.subcontractor_profile.engages_subcontractors %}checked{% endif %}> No subcontractors used
+                        </label>
+                    </div>
+
+                    <div id="subForm" style="{% if company.subcontractor_profile.engages_subcontractors %}display:block;{% else %}display:none;{% endif %}">
+                        <div class="section-label">Subcontractor Compliance Practices</div>
+                        <div class="check-grid mb-3">
+                            <label class="check-card"><input type="checkbox" value="Written agreements in place" {% if "Written agreements in place" in company.subcontractor_profile.compliance_practices %}checked{% endif %}> Written agreements in place</label>
+                            <label class="check-card"><input type="checkbox" value="Verified licences held" {% if "Verified licences held" in company.subcontractor_profile.compliance_practices %}checked{% endif %}> Verified licences held</label>
+                            <label class="check-card"><input type="checkbox" value="Insurance certificates collected" {% if "Insurance certificates collected" in company.subcontractor_profile.compliance_practices %}checked{% endif %}> Insurance certificates collected</label>
+                            <label class="check-card"><input type="checkbox" value="Inducted into safety system" {% if "Inducted into safety system" in company.subcontractor_profile.compliance_practices %}checked{% endif %}> Inducted into safety system</label>
+                            <label class="check-card"><input type="checkbox" value="Regular performance reviews" {% if "Regular performance reviews" in company.subcontractor_profile.compliance_practices %}checked{% endif %}> Regular performance reviews</label>
+                            <label class="check-card"><input type="checkbox" value="COR obligations communicated" {% if "COR obligations communicated" in company.subcontractor_profile.compliance_practices %}checked{% endif %}> COR obligations communicated</label>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Number of Active Subcontractors</label>
+                                <input class="form-control" id="numSubs" type="number" min="0" placeholder="e.g. 5" value="{{ company.subcontractor_profile.number_of_active_subs|default:'' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Primary Engagement Type</label>
+                                <select class="form-select" id="subType">
+                                    <option value="">Select type</option>
+                                    <option value="Owner-Driver" {% if company.subcontractor_profile.primary_engagement_type == "Owner-Driver" %}selected{% endif %}>Owner-Driver</option>
+                                    <option value="Labour Hire" {% if company.subcontractor_profile.primary_engagement_type == "Labour Hire" %}selected{% endif %}>Labour Hire</option>
+                                    <option value="Transport Company" {% if company.subcontractor_profile.primary_engagement_type == "Transport Company" %}selected{% endif %}>Transport Company</option>
+                                    <option value="Mixed" {% if company.subcontractor_profile.primary_engagement_type == "Mixed" %}selected{% endif %}>Mixed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Review Frequency</label>
+                                <select class="form-select" id="subReview">
+                                    <option value="">Select</option>
+                                    <option value="Monthly" {% if company.subcontractor_profile.review_frequency == "Monthly" %}selected{% endif %}>Monthly</option>
+                                    <option value="Quarterly" {% if company.subcontractor_profile.review_frequency == "Quarterly" %}selected{% endif %}>Quarterly</option>
+                                    <option value="Annually" {% if company.subcontractor_profile.review_frequency == "Annually" %}selected{% endif %}>Annually</option>
+                                    <option value="As required" {% if company.subcontractor_profile.review_frequency == "As required" %}selected{% endif %}>As required</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="section-label">Subcontractor Register</div>
+                        <div id="subRows">
+                            {% for sub in company.subcontractor_profile.subcontractor_list %}
+                            <div class="row g-2 mb-2 align-items-center sub-row">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control form-control-sm" name="sub_name" value="{{ sub.name }}" placeholder="Subcontractor Name">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control form-control-sm" name="sub_service" value="{{ sub.service }}" placeholder="Service/Role">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.sub-row').remove()"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn-add" onclick="addSubRow()"><i class="bi bi-plus-circle me-2"></i>Add
+                            Subcontractor</button>
+                    </div>
+
+                    <div class="section-label mt-3">Chain of Responsibility</div>
+                    <div class="field-group">
+                        <label class="form-label">How do you ensure subcontractors meet CoR obligations?</label>
+                        <textarea class="form-control" id="corText" rows="3"
+                            placeholder="Describe your CoR management procedures…">{{ company.subcontractor_profile.cor_management_procedures|default:'' }}</textarea>
+                    </div>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-left"></i>Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next: Incidents <i
+                                class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 6 – Incidents ══ -->
+                <div class="step-pane" data-pane="5">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-exclamation-triangle me-2 text-primary"></i>Incident History</h3>
+                        <p>Record relevant incidents, near-misses or safety events from the past 3 years.</p>
+                    </div>
+
+                    <div class="section-label">Incident Reporting Process</div>
+                    <div class="check-grid mb-3">
+                        <label class="check-card"><input type="checkbox" value="Formal incident reporting system in place" {% if "Formal incident reporting system in place" in company.incident_profile.reporting_process %}checked{% endif %}> Formal incident reporting system in place</label>
+                        <label class="check-card"><input type="checkbox" value="Near-miss reporting encouraged" {% if "Near-miss reporting encouraged" in company.incident_profile.reporting_process %}checked{% endif %}> Near-miss reporting encouraged</label>
+                        <label class="check-card"><input type="checkbox" value="Root cause analysis conducted" {% if "Root cause analysis conducted" in company.incident_profile.reporting_process %}checked{% endif %}> Root cause analysis conducted</label>
+                        <label class="check-card"><input type="checkbox" value="Corrective actions tracked" {% if "Corrective actions tracked" in company.incident_profile.reporting_process %}checked{% endif %}> Corrective actions tracked</label>
+                        <label class="check-card"><input type="checkbox" value="Staff informed of outcomes" {% if "Staff informed of outcomes" in company.incident_profile.reporting_process %}checked{% endif %}> Staff informed of outcomes</label>
+                        <label class="check-card"><input type="checkbox" value="Regulator notified when required" {% if "Regulator notified when required" in company.incident_profile.reporting_process %}checked{% endif %}> Regulator notified when required</label>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Incidents (Last 12 months)</label>
+                            <input class="form-control" id="inc12" type="number" min="0" placeholder="0" value="{{ company.incident_profile.incidents_last_12_months|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Incidents (Last 3 years)</label>
+                            <input class="form-control" id="inc36" type="number" min="0" placeholder="0" value="{{ company.incident_profile.incidents_last_3_years|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Injuries Resulting</label>
+                            <input class="form-control" id="incInj" type="number" min="0" placeholder="0" value="{{ company.incident_profile.injuries_resulting|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="section-label">Significant Incidents</div>
+                    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Log any significant incidents for your
+                        records:</p>
+                    <div id="incidentRows">
+                        {% for incident in company.incident_records.all %}
+                        <div class="incident-row">
+                            <div class="d-flex gap-2 align-items-start flex-wrap">
+                                <div style="flex:1;min-width:110px">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-control" value="{{ incident.incident_date|date:'Y-m-d' }}">
+                                </div>
+                                <div style="flex:2;min-width:130px">
+                                    <label class="form-label">Description</label>
+                                    <input class="form-control" placeholder="Brief description" value="{{ incident.description|default:'' }}">
+                                </div>
+                                <div style="flex:1;min-width:110px">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-select">
+                                        <option value="Accident" {% if incident.incident_type == "Accident" %}selected{% endif %}>Accident</option>
+                                        <option value="Near-Miss" {% if incident.incident_type == "Near-Miss" %}selected{% endif %}>Near-Miss</option>
+                                        <option value="Injury" {% if incident.incident_type == "Injury" %}selected{% endif %}>Injury</option>
+                                        <option value="Property Damage" {% if incident.incident_type == "Property Damage" %}selected{% endif %}>Property Damage</option>
+                                        <option value="Dangerous Goods" {% if incident.incident_type == "Dangerous Goods" %}selected{% endif %}>Dangerous Goods</option>
+                                    </select>
+                                </div>
+                                <div style="flex:1;min-width:110px">
+                                    <label class="form-label">Outcome</label>
+                                    <input class="form-control" placeholder="e.g. No injury" value="{{ incident.outcome|default:'' }}">
+                                </div>
+                                <button type="button" class="btn-remove mt-4" onclick="this.closest('.incident-row').remove()">&times;</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn-add" onclick="addIncidentRow()"><i class="bi bi-plus-circle me-2"></i>Add
+                        Incident</button>
+
+                    <div class="section-label mt-3">Improvement Actions</div>
+                    <textarea class="form-control" id="improvements" rows="3"
+                        placeholder="Describe any safety improvements made following incidents…">{{ company.incident_profile.improvement_actions|default:'' }}</textarea>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-left"></i>Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Review &amp; Submit <i
+                                class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 7 – Review ══ -->
+                <div class="step-pane" data-pane="6">
+                    <div class="pane-header">
+                        <h3><i class="bi bi-clipboard-check me-2 text-primary"></i>Review &amp; Submit</h3>
+                        <p>Review your information before submitting your Safety Management System profile.</p>
+                    </div>
+
+                    <div id="reviewContent"></div>
+
+                    <div class="field-group mt-3">
+                        <label class="check-card" style="max-width:520px">
+                            <input type="checkbox" id="declareCheck" onchange="toggleSubmit()">
+                            I declare that the information provided is accurate and complete to the best of my knowledge.
+                        </label>
+                    </div>
+
+                    <div class="form-nav">
+                        <button class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-left"></i>Back</button>
+                        <button class="btn btn-success btn-lg" id="submitBtn" disabled onclick="submitForm()">
+                            <i class="bi bi-send-check"></i>Submit SMS Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ══ SUCCESS ══ -->
+                <div class="success-screen" id="successScreen">
+                    <div class="success-icon"><i class="bi bi-check-lg"></i></div>
+                    <h2>SMS Profile Submitted!</h2>
+                    <p>Your Safety Management System profile has been received. Our team will review it and be in touch
+                        within 2 business days.</p>
+                    <div class="ref-card">
+                        <div class="label">Submitted for</div>
+                        <div class="value mb-3" id="successCompany">—</div>
+                        <div class="label">Reference ID</div>
+                        <div class="ref-id" id="refId">—</div>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="sms_builder/templates/index.html" class="btn btn-secondary btn-lg"><i
+                                class="bi bi-house"></i>Return Home</a>
+                        <button class="btn btn-primary btn-lg" onclick="window.print()"><i class="bi bi-printer"></i>Print
+                            Summary</button>
+                    </div>
+                </div>
+
+            </main>
+        </form>
+    </div><!-- /form-shell -->
+
+    <div id="cpSuccessModal" class="cp-success-overlay">
+        <div class="cp-success-modal-content">
+            <svg class="cp-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="cp-checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="cp-checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            <h3 class="cp-success-title">Success!</h3>
+            <p class="cp-success-text">Your company profile has been saved successfully.</p>
+            
+            <button id="cpSuccessBtn" class="cp-success-btn">Continue to SMS Manual</button>
+        </div>
+    </div>
+
+    <div id="loadingModal" class="custom-modal hidden">
+        <div class="modal-content loading-box">
+            <div class="spinner"></div>
+            <h3>Saving Company</h3>
+            <p>Creating profile and generating documents...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ── STATE ──
+        let current = 0;
+        const TOTAL = 7;
+
+        // Standard helper to grab the CSRF token for Django POST requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // ── HELPERS FOR DATA EXTRACTION ──
+        function getCheckedValues(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return [];
+            return [...container.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value || cb.closest('label').textContent.trim());
+        }
+
+        function getStep1Data() {
+            return {
+                company_name: document.getElementById('company').value.trim(),
+                abn: document.getElementById('abn').value.trim(),
+                address_street: document.getElementById('address').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                state: document.getElementById('state').value,
+                postcode: document.getElementById('postcode').value.trim(),
+                contact_phone: document.getElementById('phone').value.trim(),
+                contact_email: document.getElementById('email').value.trim(),
+                contact_person: document.getElementById('contact').value.trim(),
+                contact_role: document.getElementById('role').value.trim(),
+                declaration_accepted: document.getElementById('declareCheck') ? document.getElementById('declareCheck').checked : false
+            };
+        }
+
+        function getStep2Data() {
+            const accreditations = [];
+            document.querySelectorAll('input[name="accred"]:checked').forEach(cb => accreditations.push(cb.value));
+            if (document.getElementById('acc-none').checked) accreditations.push('None');
+            if (document.getElementById('acc-track').checked) accreditations.push('TruckSafe');
+            if (document.getElementById('acc-wahva').checked) accreditations.push('WAHVA');
+
+            const opAreaGrid = document.querySelectorAll('.check-grid')[2]; 
+            const operating_areas = opAreaGrid ? [...opAreaGrid.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value) : [];
+
+            return {
+                work_types: getCheckedValues('workTypeGrid'),
+                accreditations: accreditations,
+                audit_date_none: document.getElementById('dateNone').value, 
+                audit_date_trucksafe: document.getElementById('dateTrack').value,
+                audit_date_wahva: document.getElementById('dateWahva').value,
+                operating_areas: operating_areas,
+                operating_hours: document.getElementById('opHours').value,
+                num_drivers: document.getElementById('numDrivers').value || 0,
+                uses_subs: document.getElementById('usesSubs').checked 
+            };
+        }
+
+        function getStep3Data() {
+            const step3Pane = document.querySelector('.step-pane[data-pane="2"]');
+            const grids = step3Pane.querySelectorAll('.check-grid');
+            
+            const vehicleTypes = [...grids[0].querySelectorAll('input:checked')].map(cb => cb.value);
+            const specialCargo = [...grids[1].querySelectorAll('input:checked')].map(cb => cb.value);
+            
+            // Map the HTML IDs to your actual parent categories
+            const nhvrCategories = {
+                'nhvr1': '1. Common Rigid Trucks – General Access',
+                'nhvr2': '2. Common Semitrailer Combinations – General Access',
+                'nhvr3': '3. Common Rigid Truck and Trailer Combinations',
+                'nhvr4': '4. Common B-Double Combinations – Class 2',
+                'nhvr5': '5. Common Type 1 Road Trains – Class 2',
+                'nhvr6': '6. Common Type 2 Road Trains – Class 2'
+            };
+
+            const nhvr = {};
+            for (let i = 1; i <= 6; i++) {
+                const accId = 'nhvr' + i;
+                const accBody = document.getElementById(accId);
+                if (accBody) {
+                    const checked = [...accBody.querySelectorAll('input:checked')].map(cb => cb.value);
+                    if (checked.length > 0) {
+                        // Save using the category name instead of the ID!
+                        nhvr[nhvrCategories[accId]] = checked; 
+                    }
+                }
+            }
+
+            return {
+                totalVehicles: document.getElementById('totalVehicles').value || 0,
+                maxGVM: document.getElementById('maxGVM').value,
+                vehicleAge: document.getElementById('vehicleAge').value,
+                vehicle_types: vehicleTypes,
+                special_cargo: specialCargo,
+                nhvr_configurations: nhvr
+            };
+        }
+
+        function getStep4Data() {
+            // Scope our search to Step 4's pane
+            const step4Pane = document.querySelector('.step-pane[data-pane="3"]');
+            
+            // The only check-grid in Step 4 is for Safety Policies.
+            // Note: Your HTML doesn't have "value" attributes on these checkboxes, 
+            // so we extract the text content of the parent label instead.
+            const policyGrid = step4Pane.querySelector('.check-grid');
+            const safety_policies = policyGrid ? [...policyGrid.querySelectorAll('input:checked')].map(cb => cb.closest('label').textContent.trim()) : [];
+            
+            // Loop through the dynamic Risk Table rows
+            const risk_hazards = [];
+            document.querySelectorAll('#riskBody tr').forEach(tr => {
+                const inputs = tr.querySelectorAll('input');
+                const selects = tr.querySelectorAll('select');
+                
+                // Ensure the row has the expected inputs before extracting
+                if (inputs.length >= 2 && selects.length >= 2) {
+                    risk_hazards.push({
+                        hazard_description: inputs[0].value.trim(),
+                        likelihood: selects[0].value,
+                        consequence: selects[1].value,
+                        control_measures: inputs[1].value.trim()
+                    });
+                }
+            });
+
+            return {
+                safety_policies: safety_policies,
+                riskNotes: document.getElementById('riskNotes').value.trim(),
+                risk_hazards: risk_hazards
+            };
+        }
+
+        function getStep5Data() {
+            const step5Pane = document.querySelector('.step-pane[data-pane="4"]');
+            const engages_subs = document.getElementById('subYes').checked;
+            
+            // Compliance Practices (from the first visible check-grid in the subForm)
+            const complianceGrid = document.querySelector('#subForm .check-grid');
+            const compliance_practices = complianceGrid ? [...complianceGrid.querySelectorAll('input:checked')].map(cb => cb.closest('label').textContent.trim()) : [];
+            
+            // Dynamic Subcontractor rows
+            const subcontractor_records = [];
+            document.querySelectorAll('#subRows .incident-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs.length >= 4) {
+                    subcontractor_records.push({
+                        subcontractor_name: inputs[0].value.trim(),
+                        abn: inputs[1].value.trim(),
+                        licence_type: inputs[2].value.trim(),
+                        contract_expiry: inputs[3].value // date input
+                    });
+                }
+            });
+
+            return {
+                engages_subcontractors: engages_subs,
+                compliance_practices: compliance_practices,
+                active_subcontractors: document.getElementById('numSubs').value,
+                primary_engagement_type: document.getElementById('subType').value,
+                review_frequency: document.getElementById('subReview').value,
+                cor_procedures: document.getElementById('corText').value.trim(),
+                subcontractor_records: subcontractor_records
+            };
+        }
+
+        function getStep6Data() {
+            const step6Pane = document.querySelector('.step-pane[data-pane="5"]');
+            
+            // Reporting Process
+            const reportingGrid = step6Pane.querySelector('.check-grid');
+            const reporting_process = reportingGrid ? [...reportingGrid.querySelectorAll('input:checked')].map(cb => cb.closest('label').textContent.trim()) : [];
+            
+            // Dynamic Incident rows
+            const incident_records = [];
+            document.querySelectorAll('#incidentRows .incident-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const selects = row.querySelectorAll('select');
+                if (inputs.length >= 3 && selects.length >= 1) {
+                    incident_records.push({
+                        incident_date: inputs[0].value, // date input
+                        description: inputs[1].value.trim(),
+                        incident_type: selects[0].value,
+                        outcome: inputs[2].value.trim()
+                    });
+                }
+            });
+
+            return {
+                reporting_process: reporting_process,
+                incidents_last_12_months: document.getElementById('inc12').value,
+                incidents_last_3_years: document.getElementById('inc36').value,
+                injuries_resulting: document.getElementById('incInj').value,
+                improvement_actions: document.getElementById('improvements').value.trim(),
+                incident_records: incident_records
+            };
+        }
+
+        // ── UI UPDATE ──
+        function updateUI() {
+            // Desktop sidebar
+            document.querySelectorAll('.sidebar .step-item').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i < current) el.classList.add('completed');
+                if (i === current) el.classList.add('active');
+                const num = el.querySelector('.step-num');
+                if (i < current) num.innerHTML = '<i class="bi bi-check-lg" style="font-size:11px"></i>';
+                else num.textContent = i + 1;
+            });
+            // Mobile step bar
+            document.querySelectorAll('#mobileSteps .mobile-step-item').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i < current) el.classList.add('completed');
+                if (i === current) el.classList.add('active');
+                const num = el.querySelector('.mobile-step-num');
+                if (i < current) num.innerHTML = '<i class="bi bi-check-lg" style="font-size:10px"></i>';
+                else num.textContent = i + 1;
+                if (i === current) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            });
+            // Panes
+            document.querySelectorAll('.step-pane').forEach((p, i) => {
+                p.classList.toggle('active', i === current);
+            });
+            // Progress
+            const pct = (current / (TOTAL - 1) * 100);
+            document.getElementById('progFill').style.width = pct + '%';
+            document.getElementById('mobileProg').style.width = pct + '%';
+            document.getElementById('progStep').textContent = current + 1;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (current === 6) buildReview();
+        }
+
+        function nextStep() { if (current === 0 && !validateStep1()) return; if (current === 1 && !validateStep2()) return; if (current < TOTAL - 1) { current++; updateUI(); } }
+        function prevStep() { if (current > 0) { current--; updateUI(); } }
+
+        // ── VALIDATION ──
+        function setErr(id, errId, valid) {
+            const el = document.getElementById(id); const er = document.getElementById(errId);
+            el.classList.toggle('is-invalid', !valid); er.style.display = valid ? 'none' : 'block'; return valid;
+        }
+        function validateStep1() {
+            const fields = [['company', 'e-company'], ['abn', 'e-abn'], ['address', 'e-address'], ['city', 'e-city'], ['state', 'e-state'], ['postcode', 'e-post'], ['phone', 'e-phone'], ['contact', 'e-contact'], ['role', 'e-role']];
+            let ok = true;
+            fields.forEach(([id, err]) => { if (!setErr(id, err, !!document.getElementById(id).value.trim())) ok = false; });
+            const email = document.getElementById('email').value.trim();
+            if (!setErr('email', 'e-email', /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email))) ok = false;
+            return ok;
+        }
+        function validateStep2() {
+            const none = document.getElementById('acc-none').checked;
+            const track = document.getElementById('acc-track').checked;
+            const wahva = document.getElementById('acc-wahva').checked;
+            if (none && !document.getElementById('dateNone').value) { alert('Please enter an audit date for None'); return false; }
+            if (track && !document.getElementById('dateTrack').value) { alert('Please enter an audit date for TruckSafe'); return false; }
+            if (wahva && !document.getElementById('dateWahva').value) { alert('Please enter an audit date for WAHVA'); return false; }
+            return true;
+        }
+
+        // ── ACCREDITATION DATES ──
+        function toggleAccDates() {
+            document.getElementById('date-none').style.display = document.getElementById('acc-none').checked ? 'block' : 'none';
+            document.getElementById('date-track').style.display = document.getElementById('acc-track').checked ? 'block' : 'none';
+            document.getElementById('date-wahva').style.display = document.getElementById('acc-wahva').checked ? 'block' : 'none';
+        }
+
+        // ── ACCORDION ──
+        function toggleAcc(btn, id) {
+            const body = document.getElementById(id); const isOpen = body.classList.contains('open');
+            body.classList.toggle('open', !isOpen); btn.classList.toggle('open', !isOpen);
+        }
+
+        // ── RISK REGISTER ──
+        const defaultRisks = [
+            { hazard: 'Driver fatigue', likelihood: 'Possible', consequence: 'Major', control: 'Fatigue management policy, logbook checks' },
+            { hazard: 'Vehicle brake failure', likelihood: 'Unlikely', consequence: 'Catastrophic', control: 'Scheduled maintenance, pre-start checks' },
+            { hazard: 'Load shifting/falling', likelihood: 'Possible', consequence: 'Major', control: 'Load restraint training, inspections' },
+        ];
+        function riskLevel(l, c) {
+            const lMap = { Rare: 1, Unlikely: 2, Possible: 3, Likely: 4, 'Almost Certain': 5 };
+            const cMap = { Insignificant: 1, Minor: 2, Moderate: 3, Major: 4, Catastrophic: 5 };
+            const score = (lMap[l] || 0) * (cMap[c] || 0);
+            if (score >= 12) return '<span class="risk-badge risk-high">High</span>';
+            if (score >= 6) return '<span class="risk-badge risk-med">Medium</span>';
+            return '<span class="risk-badge risk-low">Low</span>';
+        }
+        function addRiskRow(data = {}) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+    <td><input class="form-control" style="min-width:140px" placeholder="Describe hazard" value="${data.hazard || ''}"></td>
+    <td><select class="form-select" style="min-width:120px" onchange="updateRiskLevel(this)">${['Rare', 'Unlikely', 'Possible', 'Likely', 'Almost Certain'].map(o => `<option${data.likelihood === o ? ' selected' : ''}>${o}</option>`).join('')}</select></td>
+    <td><select class="form-select" style="min-width:130px" onchange="updateRiskLevel(this)">${['Insignificant', 'Minor', 'Moderate', 'Major', 'Catastrophic'].map(o => `<option${data.consequence === o ? ' selected' : ''}>${o}</option>`).join('')}</select></td>
+    <td class="risk-level-cell">${riskLevel(data.likelihood || 'Possible', data.consequence || 'Major')}</td>
+    <td><input class="form-control" style="min-width:160px" placeholder="Control measures" value="${data.control || ''}"></td>
+    <td><button class="btn-remove" onclick="this.closest('tr').remove()" title="Remove">&times;</button></td>`;
+            document.getElementById('riskBody').appendChild(tr);
+        }
+        function updateRiskLevel(sel) {
+            const tr = sel.closest('tr'); const selects = tr.querySelectorAll('select');
+            tr.querySelector('.risk-level-cell').innerHTML = riskLevel(selects[0].value, selects[1].value);
+        }
+        defaultRisks.forEach(r => addRiskRow(r));
+
+        // ── SUBCONTRACTORS ──
+        function toggleSubForm() { document.getElementById('subForm').style.display = document.getElementById('subYes').checked ? 'block' : 'none'; }
+        function toggleSubNone() { if (document.getElementById('subNo').checked) { document.getElementById('subYes').checked = false; document.getElementById('subForm').style.display = 'none'; } }
+        function addSubRow() {
+            const div = document.createElement('div'); div.className = 'incident-row';
+            div.innerHTML = `<div class="d-flex gap-2 align-items-start flex-wrap">
+    <div style="flex:2;min-width:130px"><label class="form-label">Company / Name</label><input class="form-control" placeholder="Subcontractor name"></div>
+    <div style="flex:1;min-width:100px"><label class="form-label">ABN</label><input class="form-control" placeholder="ABN"></div>
+    <div style="flex:1;min-width:100px"><label class="form-label">Licence Type</label><input class="form-control" placeholder="e.g. MR/HR"></div>
+    <div style="flex:1;min-width:120px"><label class="form-label">Contract Expiry</label><input type="date" class="form-control"></div>
+    <button class="btn-remove mt-4" onclick="this.closest('.incident-row').remove()">&times;</button>
+    </div>`;
+            document.getElementById('subRows').appendChild(div);
+        }
+
+        // ── INCIDENTS ──
+        function addIncidentRow() {
+            const div = document.createElement('div'); div.className = 'incident-row';
+            div.innerHTML = `<div class="d-flex gap-2 align-items-start flex-wrap">
+    <div style="flex:1;min-width:110px"><label class="form-label">Date</label><input type="date" class="form-control"></div>
+    <div style="flex:2;min-width:130px"><label class="form-label">Description</label><input class="form-control" placeholder="Brief description"></div>
+    <div style="flex:1;min-width:110px"><label class="form-label">Type</label><select class="form-select"><option>Accident</option><option>Near-Miss</option><option>Injury</option><option>Property Damage</option><option>Dangerous Goods</option></select></div>
+    <div style="flex:1;min-width:110px"><label class="form-label">Outcome</label><input class="form-control" placeholder="e.g. No injury"></div>
+    <button class="btn-remove mt-4" onclick="this.closest('.incident-row').remove()">&times;</button>
+    </div>`;
+            document.getElementById('incidentRows').appendChild(div);
+        }
+
+        // ── CHECK CARD TOGGLE ──
+        document.addEventListener('change', e => {
+            const cb = e.target;
+            if (cb.type === 'checkbox') { const card = cb.closest('.check-card'); if (card) card.classList.toggle('checked', cb.checked); }
+        });
+
+        // ── REVIEW ──
+        function getChecked(container) { return [...(container || document).querySelectorAll('.check-card input:checked')].map(c => c.value || c.closest('.check-card').textContent.trim()).filter(Boolean).join(', ') || '—'; }
+        function val(id) { const el = document.getElementById(id); return el ? (el.value.trim() || '—') : '—'; }
+        function reviewSection(icon, title, rows) {
+            return `<div class="review-section"><div class="review-section-head"><i class="bi ${icon} text-primary"></i> ${title}</div><div class="review-section-body">${rows.map(([k, v]) => `<div class="review-row"><span class="review-key">${k}</span><span class="review-val">${v}</span></div>`).join('')}</div></div>`;
+        }
+        function buildReview() {
+            const html = [
+                reviewSection('bi-building', 'Company Details', [['Company Name', val('company')], ['ABN', val('abn')], ['Address', `${val('address')}, ${val('city')} ${val('state')} ${val('postcode')}`], ['Phone', val('phone')], ['Email', val('email')], ['Contact Person', val('contact')], ['Role', val('role')]]),
+                reviewSection('bi-diagram-3', 'Operations', [['Work Types', getChecked(document.getElementById('workTypeGrid'))], ['Operating Hours', val('opHours')], ['Number of Drivers', val('numDrivers')], ['Uses Subcontractors', document.getElementById('usesSubs').checked ? 'Yes' : 'No']]),
+                reviewSection('bi-truck', 'Fleet', [['Total Vehicles', val('totalVehicles')], ['Max GVM', val('maxGVM')], ['Average Age', val('vehicleAge')]]),
+                reviewSection('bi-shield-exclamation', 'Risk', [['Risk Notes', val('riskNotes') || 'None provided']]),
+                reviewSection('bi-people', 'Subcontractors', [['Number of Subcontractors', val('numSubs')], ['Engagement Type', val('subType')], ['Review Frequency', val('subReview')], ['CoR Notes', val('corText')]]),
+                reviewSection('bi-exclamation-triangle', 'Incidents', [['Incidents (12 months)', val('inc12')], ['Incidents (3 years)', val('inc36')], ['Injuries', val('incInj')], ['Improvements', val('improvements')]]),
+            ].join('');
+            document.getElementById('reviewContent').innerHTML = html;
+        }
+
+        // ── SUBMIT ──
+        function toggleSubmit() { document.getElementById('submitBtn').disabled = !document.getElementById('declareCheck').checked; }
+
+        // Function to show modal and bind the redirect to the button
+        function showSuccessModalAndRedirect(redirectUrl) {
+            const modal = document.getElementById('cpSuccessModal');
+            const btn = document.getElementById('cpSuccessBtn');
+            
+            // Show the modal to start animations
+            modal.classList.add('cp-show');
+            
+            // When the user clicks the OK button, redirect them
+            btn.onclick = function() {
+                window.location.href = redirectUrl;
+            };
+        }
+
+        function showLoadingModal() {
+            document.getElementById("loadingModal").classList.remove("hidden");
+        }
+
+        function hideLoadingModal() {
+            document.getElementById("loadingModal").classList.add("hidden");
+        }
+        
+        async function submitForm() {
+            // 1. Call the helpers to gather the data into one master payload object
+            const payload = {
+                ...getStep1Data(),
+                ...getStep2Data(),
+                ...getStep3Data(),
+                ...getStep4Data(),
+                ...getStep5Data(),
+                ...getStep6Data(),
+            };
+
+            // 2. Fire the fetch promise to your Django URL
+            try {
+
+                // ✅ SHOW MODAL BEFORE REQUEST STARTS
+                showLoadingModal();
+
+                const response = await fetch('/api/save-company-profile/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                // ❗ ALWAYS HIDE MODAL AFTER RESPONSE
+                hideLoadingModal();
+
+                if (result.status === 'success') {
+                    showSuccessModalAndRedirect(result.redirect_url);
+                } else {
+                    alert('Error saving profile: ' + result.message);
+                    console.error('Backend error:', result.message);
+                }
+
+            } catch (error) {
+
+                // ❗ HIDE MODAL ON ERROR TOO
+                hideLoadingModal();
+
+                console.error('Submission failed:', error);
+                alert('A network error occurred while submitting the form.');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const abnInput = document.getElementById("abn");
+            const phoneInput = document.getElementById("phone");
+
+            if (abnInput) {
+                abnInput.addEventListener("input", function(e) {
+                    // The regex \D matches any character that is NOT a digit (0-9).
+                    // We replace any non-digit character with an empty string.
+                    this.value = this.value.replace(/\D/g, "");
+                });
+            }
+
+            if (phoneInput) {
+                phoneInput.addEventListener("input", function(e) {
+                    // Step 1: Remove any character that is NOT a digit (\d) or a plus sign (+)
+                    let cleanedValue = this.value.replace(/[^\d+]/g, "");
+                    
+                    // Step 2 (Optional but recommended): Ensure '+' can ONLY be the first character.
+                    // This prevents a user from typing "61+412+345"
+                    cleanedValue = cleanedValue.replace(/(?!^)\+/g, "");
+
+                    // Update the input field
+                    this.value = cleanedValue;
+                });
+            }
+        });
+        
+    </script>
+{% endblock %}
+
