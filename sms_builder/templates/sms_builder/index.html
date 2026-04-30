@@ -319,7 +319,7 @@
                 </p>
 
                 <div class="hero-cta-group">
-                    <a href="{{ system_settings.hero_button_link|default:'#' }}" class="btn-hero-primary">
+                    <a href="{% url 'sms_builder_form' %}" class="btn-hero-primary">
                         <i class="bi bi-rocket-takeoff-fill"></i>
                         {{ system_settings.hero_button_text|default:"Get Started" }}
                     </a>
