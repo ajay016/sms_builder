@@ -61,6 +61,24 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# Custom Django additions:
+# Ignore the root media folder (where user uploads go)
+/media/
+/media_root/
+# Ignore the root static folder (often used for collectstatic)
+/static/
+/staticfiles/
+/static_root/
+
+# OS generated files:
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
 # Flask stuff:
 instance/
 .webassets-cache
