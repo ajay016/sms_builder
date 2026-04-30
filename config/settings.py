@@ -117,9 +117,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# The absolute path to the directory where collectstatic will collect static files for deployment.
+# This will create a 'static' folder in your project root.
+STATIC_ROOT = BASE_DIR / "static"
+
+# Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    # Removed BASE_DIR / "static" from here to prevent the Django crash!
     BASE_DIR / "sms_builder" / "static",
     BASE_DIR / "backend" / "static",
 ]
