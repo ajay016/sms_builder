@@ -1,0 +1,4 @@
+systemctl daemon-reload
+systemctl restart sms_builder_gunicorn
+nginx -t
+systemctl restart nginx
