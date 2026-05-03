@@ -446,6 +446,17 @@ document.getElementById('abnField').addEventListener('input', function() {
     document.getElementById('abnErr').classList.remove('show');
   }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Select the input field by its ID
+    const fullNameInput = document.getElementById("fullName");
+
+    // Add an event listener that triggers every time the user types or pastes
+    fullNameInput.addEventListener("input", function() {
+        // Strip out any characters that are not letters (a-z, A-Z) or spaces
+        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+    });
+});
 </script>
 </body>
 </html>
