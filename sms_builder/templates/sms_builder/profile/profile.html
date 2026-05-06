@@ -1904,4 +1904,18 @@ window.submitPlanChange = submitPlanChange;
 window.cancelPlanChange = cancelPlanChange;
 window.cancelCurrentSubscription = cancelCurrentSubscription;
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactPersonInput = document.getElementById('editContactPerson');
+
+        if (contactPersonInput) {
+            contactPersonInput.addEventListener('input', function() {
+                // The regex /\d/g finds all digits (0-9) globally in the string.
+                // .replace() removes them by replacing them with an empty string.
+                this.value = this.value.replace(/\d/g, '');
+            });
+        }
+    });
+</script>
 {% endblock %}

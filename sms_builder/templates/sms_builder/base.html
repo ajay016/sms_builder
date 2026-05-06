@@ -562,7 +562,43 @@ function submitContactForm() {
         btnText.classList.remove('d-none');
         btnLoading.classList.add('d-none');
     });
+
 }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const contactName = document.getElementById('contactName');
+    const nameError = document.getElementById('nameError');
+
+    if (!contactName || !nameError) return; // safety
+
+    nameError.style.display = 'none';
+
+    contactName.addEventListener('input', function () {
+        const original = this.value;
+
+        // remove digits instantly
+        const cleaned = original.replace(/\d+/g, '');
+
+        if (original !== cleaned) {
+            this.value = cleaned;
+            nameError.textContent = "Numbers are not allowed in the name.";
+            nameError.style.display = 'block';
+            return;
+        }
+
+        // empty validation
+        if (this.value.trim() === '') {
+            nameError.textContent = "Please enter your name.";
+            nameError.style.display = 'block';
+        } else {
+            nameError.style.display = 'none';
+        }
+    });
+
+});
 </script>
     {% block custom_js %}{% endblock %}
 </body>
