@@ -458,5 +458,36 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const roleField = document.getElementById('roleField');
+    const phoneField = document.getElementById('phoneField');
+
+    // 1. Validate Role Field: No numbers/digits allowed
+    if (roleField) {
+      roleField.addEventListener('input', function() {
+        // \d matches any digit (0-9). 
+        // We replace any digit the user types with an empty string.
+        this.value = this.value.replace(/\d/g, '');
+      });
+    }
+
+    // 2. Validate Phone Field: Only numbers and '+' allowed
+    if (phoneField) {
+      phoneField.addEventListener('input', function() {
+        // [^\d+\s] matches anything that is NOT a digit (\d), a plus sign (+), or a space (\s).
+        // Note: I included \s to allow spaces so users can match your placeholder format ("+61 4XX XXX XXX"). 
+        // If you want to strictly ban spaces too, change the regex to: /[^\d+]/g
+        this.value = this.value.replace(/[^\d+\s]/g, '');
+        
+        // Optional extra rule: Ensure '+' can only be at the very beginning
+        // If you want to enforce this, uncomment the line below:
+        // this.value = this.value.replace(/(?!^)\+/g, '');
+      });
+    }
+  });
+</script>
 </body>
 </html>

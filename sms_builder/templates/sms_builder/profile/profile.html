@@ -1916,6 +1916,19 @@ window.cancelCurrentSubscription = cancelCurrentSubscription;
                 this.value = this.value.replace(/\d/g, '');
             });
         }
+
+        // Get the input by its ID "editPhone"
+        const editPhoneInput = document.getElementById('editPhone');
+
+        // Validate Phone Field: Only numbers, spaces, and '+' allowed
+        if (editPhoneInput) {
+        editPhoneInput.addEventListener('input', function() {
+            // [^\d+\s] matches anything that is NOT a digit (\d), a plus sign (+), or a space (\s).
+            // It instantly replaces unauthorized characters with an empty string.
+            this.value = this.value.replace(/[^\d+\s]/g, '');
+        });
+        }
     });
 </script>
+
 {% endblock %}

@@ -2295,5 +2295,21 @@
         });
         
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the input by its new ID "role"
+            const roleInput = document.getElementById('role');
+
+            // Validate Role Field: No numbers/digits allowed
+            if (roleInput) {
+            roleInput.addEventListener('input', function() {
+                // \d matches any digit (0-9). 
+                // Replaces any digit the user types with an empty string instantly.
+                this.value = this.value.replace(/\d/g, '');
+            });
+            }
+        });
+    </script>
 {% endblock %}
 
